@@ -1,0 +1,9 @@
+# Ignora a pasta de dependências em qualquer nível do projeto
+**/node_modules/
+**/dist/
+**/build/
+.env
+
+# Ignorar os arquivos temporários gerados pelas planilhas e PDFs
+**/public/downloads/excel/*.xlsx
+**/public/downloads/pdf/*.pdf
