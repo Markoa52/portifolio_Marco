@@ -7,3 +7,4 @@
 # Ignorar os arquivos temporários gerados pelas planilhas e PDFs
 **/public/downloads/excel/*.xlsx
 **/public/downloads/pdf/*.pdf
+**/public/downloads/
