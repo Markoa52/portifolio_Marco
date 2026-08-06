@@ -27,7 +27,7 @@ export function enviarMensagem(fila: string, mensagem: any): void {
     }
 
     // Garante que a fila exista antes de despachar a mensagem
-    estadoRabbit.channel.assertQueue(fila, { durable: true });
+    //estadoRabbit.channel.assertQueue(fila, { durable: true });
 
     estadoRabbit.channel.sendToQueue(
         fila,

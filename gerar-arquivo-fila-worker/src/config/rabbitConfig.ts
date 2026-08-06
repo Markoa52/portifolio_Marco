@@ -1,21 +1,21 @@
-// src/config/rabbitConfig.ts (No Microsserviço)
 import amqp, { Channel } from 'amqplib';
 
-// CORREÇÃO: Função tipada para retornar uma Promise contendo o Channel legítimo do amqplib
-export async function connectRabbit(queue: string): Promise<Channel> {
+// Deixamos o parâmetro como opcional apenas para logs
+export async function connectRabbit(queue?: string): Promise<Channel> {
     try {
         const connection = await amqp.connect('amqp://guest:guest@localhost:5672?heartbeat=0');
         const channel = await connection.createChannel();
 
-        // O worker é responsável por criar e garantir a persistência da fila
-        await channel.assertQueue(queue, { durable: true });
+        // >>> REMOVIDO: O assertQueue simples foi tirado daqui <<<
+        // Agora não há mais risco de criar a fila sem os argumentos da DLQ!
 
-        console.log(`RabbitMQ conectado. Fila "${queue}" pronta para consumo.`);
+        if (queue) {
+            console.log(`Canal do RabbitMQ aberto para o fluxo da fila: "${queue}"`);
+        }
 
-        // Retorna o canal criado para que o arquivo de consumer possa utilizá-lo diretamente
         return channel;
     } catch (error: any) {
-        console.error(`Erro ao conectar no RabbitMQ para a fila ${queue}:`, error.message);
+        console.error(`Erro ao conectar no RabbitMQ:`, error.message);
         throw error;
     }
 }

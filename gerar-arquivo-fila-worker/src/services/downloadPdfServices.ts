@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 // Função auxiliar para dar fôlego ao Event Loop (evitar quedas do RabbitMQ)
 const deixarRespirar = () => new Promise(resolve => setImmediate(resolve));
 
-export const geraArquivoPdf = async (payload: any): Promise<string> => {
+export const geraArquivoPdfDw = async (payload: any): Promise<string> => {
   try {
 
     // CORREÇÃO DOS DADOS: Extrai o array de dentro da propriedade 'js' que a Controller enviou

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",                          /* Versão moderna do JS */
+    "module": "NodeNext",                        /* Suporte a módulos modernos */
+    "moduleResolution": "NodeNext",
+    "types": ["node"],                           /* Diz explicitamente ao TS para carregar o Node */
+    "esModuleInterop": true,                     /* Melhora compatibilidade de imports */
+    "strict": true,                              /* Ativa checagem rigorosa de tipos */
+    "skipLibCheck": true                         /* Ignora checagem de tipos de bibliotecas externas */
+  }
+}

@@ -35,9 +35,9 @@ export const arquivoSend = async (req: Request, res: Response): Promise<Response
         // Mapeamento do tipo de arquivo para a fila correspondente
         let FILA: string;
         if (formatoDesejado === "excel") {
-            FILA = 'processa-arquivoExcel';
+            FILA = 'download-arquivoExcel';
         } else if (formatoDesejado === "pdf") {
-            FILA = 'processa-arquivoPdf';
+            FILA = 'download-arquivoPdf';
         } else {
             return res.status(400).json({
                 sucesso: false,
