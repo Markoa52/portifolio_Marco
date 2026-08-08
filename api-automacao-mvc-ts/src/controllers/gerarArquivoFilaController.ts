@@ -32,7 +32,7 @@ export const arquivoSend = async (req: Request, res: Response): Promise<Response
         console.log("REQ BODY:", corpoRequisicao);
         console.log("tipoArquivo:", formatoDesejado);
 
-              // Busca os dados do banco de dados que preencherão o arquivo
+        // Busca os dados do banco de dados que preencherão o arquivo
         const dadosLimpos = await obterDadosBrutosBypass();
 
         // CORREÇÃO 2: Monta o payload unindo as configurações e a lista de dados ('js')
