@@ -9,14 +9,19 @@ const __dirname = path.dirname(__filename);
 
 export const geraArquivoExcelDw = async (payload: any): Promise<string> => {
   try {
-    const dados = payload && payload.js ? payload.js : payload;
-    
-    // CAPTURA O ID ENVIADO PELA CONTROLLER (Ou gera um fallback se não vier)
-    const protocoloId = payload && payload.protocoloId ? payload.protocoloId : Date.now();
+     
+// CAPTURA O ID ENVIADO PELA CONTROLLER (Ou gera um fallback se não vier)
+// 1. Garante que estamos olhando para o objeto interno se ele vier envelopado
+const mensagemReal = payload?.payload ? payload.payload : payload;
 
-    if (!dados || !Array.isArray(dados) || dados.length === 0) {
-      throw new Error("Os dados fornecidos para gerar o Excel não são um array ou estão vazios.");
-    }
+// 2. Extrai a lista do campo 'js' ou usa o próprio objeto se ele já for a lista
+const dados = mensagemReal?.js || mensagemReal;
+
+// 3. Sua validação para o Excel (agora vai passar com sucesso!)
+if (!dados || !Array.isArray(dados) || dados.length === 0) {
+  console.error("Estrutura recebida inválida para Excel:", payload);
+  throw new Error("Os dados fornecidos para gerar o Excel não são um array ou estão vazios.");
+}
 
     const planilha = XLSX.utils.json_to_sheet(dados);
     const livro = XLSX.utils.book_new();
@@ -29,7 +34,7 @@ export const geraArquivoExcelDw = async (payload: any): Promise<string> => {
     planilha['!cols'] = larguras;
     
     // CORREÇÃO CRÍTICA: O nome do arquivo agora usa obrigatoriamente o protocoloId
-    const nomeDoArquivo = `planilha_${protocoloId}.xlsx`;
+    const nomeDoArquivo = `planilha_${mensagemReal.protocoloId}.xlsx`;
      // CORREÇÃO 2: Ajuste no caminho absoluto para garantir que a pasta 'public' seja criada fora de 'src/'
     const caminhoDestino = path.join(__dirname, '..', '..', 'public', 'downloads', 'excel', nomeDoArquivo);
     const urlGerada = `http://localhost:3001/downloads/excel/${nomeDoArquivo}`;

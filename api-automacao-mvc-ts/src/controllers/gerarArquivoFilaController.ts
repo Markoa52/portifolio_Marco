@@ -1,6 +1,6 @@
 import { obterDadosBrutosBypass } from '../models/arquivoModel';
-import { enviarMensagem } from '../config/rabbitConfig';
 import type { Request, Response } from 'express';
+import {publisherEvent} from '../queue/publisher';
 
 export const arquivoSend = async (req: Request, res: Response): Promise<Response | void> =>  {
     res.set({
@@ -32,34 +32,76 @@ export const arquivoSend = async (req: Request, res: Response): Promise<Response
         console.log("REQ BODY:", corpoRequisicao);
         console.log("tipoArquivo:", formatoDesejado);
 
-        // Mapeamento do tipo de arquivo para a fila correspondente
-        let FILA: string;
-        if (formatoDesejado === "excel") {
-            FILA = 'download-arquivoExcel';
-        } else if (formatoDesejado === "pdf") {
-            FILA = 'download-arquivoPdf';
-        } else {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: 'Tipo de arquivo inválido. Use "excel" ou "pdf".'
-            });
-        }
-
-        // Busca os dados do banco de dados que preencherão o arquivo
+              // Busca os dados do banco de dados que preencherão o arquivo
         const dadosLimpos = await obterDadosBrutosBypass();
 
         // CORREÇÃO 2: Monta o payload unindo as configurações e a lista de dados ('js')
         // Assim o seu worker do Excel receberá o array esperado no .forEach()
        // Na sua Controller (arquivoSend), mude o final do bloco try para:
        const protocoloId = `arq_${Date.now()}`;
-       
-       const payloadMensagem = {
-           protocoloId, // Envia o ID para o worker nomear o arquivo com ele
-           tipoArquivo: formatoDesejado,
-           js: Array.isArray(dadosLimpos) ? dadosLimpos : [dadosLimpos] 
-       };
-       // Despacha o payload completo e estruturado para o RabbitMQ
-       await enviarMensagem(FILA, payloadMensagem);
+
+        // Mapeamento do tipo de arquivo para a fila correspondente
+        if (formatoDesejado === "excel") {
+
+        // 2. CONEXÃO COM O RABBITMQ
+        // 3. MONTA O PAYLOAD PARA O WORKER
+        console.log("[DEBUG AGENDADOR] Payload final que será enviado ao RabbitMQ:", JSON.stringify(dadosLimpos, null, 2));
+        // 4. PUBLICAÇÃO NA ESTRUTURA BLINDADA DO SEU CONSUMER
+        const EXCHANGE = 'reports.exchange';
+        const ROUTING_KEY = 'reports.v1.trigger.download_excel';
+      
+        // Escreva nomes comuns para a sua rota principal de sucesso
+        await publisherEvent(
+            'reports.exchange',                // Nome da sua Exchange Principal
+            'reports.v1.trigger.download_excel', // Chave de Rota Principal
+            
+            // PAYLOAD: Dados que a sua função 'geraArquivoPdf(dados)' precisa
+            { 
+                protocoloId,
+                task: 'generate_daily_report_excel',
+                tipoArquivo: 'excel', 
+                solicitadoEm: new Date().toISOString(),
+                // Garante que os dados coletados sejam enviados como um array legítimo
+                js: Array.isArray(dadosLimpos) ? dadosLimpos : [dadosLimpos]
+            }
+        );
+
+        console.log(`[Agendador] Mensagem publicada na exchange "${EXCHANGE}". Rota: "${ROUTING_KEY}"`);
+        console.log(`[Agendador] Protocolo: ${protocoloId}`);
+
+        } else if (formatoDesejado === "pdf") {
+            // 2. CONEXÃO COM O RABBITMQ
+        // 3. MONTA O PAYLOAD PARA O WORKER
+        console.log("[DEBUG AGENDADOR] Payload final que será enviado ao RabbitMQ:", JSON.stringify(dadosLimpos, null, 2));
+        // 4. PUBLICAÇÃO NA ESTRUTURA BLINDADA DO SEU CONSUMER
+        const EXCHANGE = 'reports.exchange';
+        const ROUTING_KEY = 'reports.v1.trigger.download_pdf';
+      
+        // Escreva nomes comuns para a sua rota principal de sucesso
+        await publisherEvent(
+            'reports.exchange',                // Nome da sua Exchange Principal
+            'reports.v1.trigger.download_pdf', // Chave de Rota Principal
+            
+            // PAYLOAD: Dados que a sua função 'geraArquivoPdf(dados)' precisa
+            { 
+                protocoloId,
+                task: 'generate_daily_report_pdf',
+                tipoArquivo: 'excel', 
+                solicitadoEm: new Date().toISOString(),
+                // Garante que os dados coletados sejam enviados como um array legítimo
+                js: Array.isArray(dadosLimpos) ? dadosLimpos : [dadosLimpos]
+            }
+        );
+
+        console.log(`[Agendador] Mensagem publicada na exchange "${EXCHANGE}". Rota: "${ROUTING_KEY}"`);
+        console.log(`[Agendador] Protocolo: ${protocoloId}`);
+
+        } else {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: 'Tipo de arquivo inválido. Use "excel" ou "pdf".'
+            });
+        }
        
        // Retorna o ID para o front-end monitorar
        return res.status(200).json({

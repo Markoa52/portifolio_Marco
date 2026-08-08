@@ -14,18 +14,20 @@ const deixarRespirar = () => new Promise(resolve => setImmediate(resolve));
 export const geraArquivoPdfDw = async (payload: any): Promise<string> => {
   try {
 
-    // CORREÇÃO DOS DADOS: Extrai o array de dentro da propriedade 'js' que a Controller enviou
-    const dados = payload && payload.js ? payload.js : payload;
+    // CAPTURA O ID ENVIADO PELA CONTROLLER (Ou gera um fallback se não vier)
+// 1. Garante que estamos olhando para o objeto interno se ele vier envelopado
+const mensagemReal = payload?.payload ? payload.payload : payload;
 
-    // 1. Captura o ID do protocolo enviado pela nova Controller
-    const protocoloId = payload && payload.protocoloId ? payload.protocoloId : Date.now();
+// 2. Extrai a lista do campo 'js' ou usa o próprio objeto se ele já for a lista
+const dados = mensagemReal?.js || mensagemReal;
 
-    // Proteção: Garante que os dados são uma lista válida antes de continuar
-    if (!dados || !Array.isArray(dados) || dados.length === 0) {
-      throw new Error("Os dados fornecidos para gerar o PDF não são um array ou estão vazios.");
-    }
+// 3. Sua validação para o Excel (agora vai passar com sucesso!)
+if (!dados || !Array.isArray(dados) || dados.length === 0) {
+  console.error("Estrutura recebida inválida para Excel:", payload);
+  throw new Error("Os dados fornecidos para gerar o Excel não são um array ou estão vazios.");
+}
 
-    console.log(`[PDF] Iniciando processamento do protocolo: ${protocoloId} com ${dados.length} linhas.`);
+    console.log(`[PDF] Iniciando processamento do protocolo: ${mensagemReal.protocoloId} com ${dados.length} linhas.`);
 
     const pdfDoc = await PDFDocument.create();
     
@@ -122,7 +124,7 @@ if (dados && Array.isArray(dados)) {
 
     // 2. CORREÇÃO CRÍTICA: Alinhe o nome exatamente com o que a rota de checagem procura
     // CORREÇÃO DO NOME E PASTA DESTINO
-    const nomeDoArquivo = `documento_${protocoloId}.pdf`;
+    const nomeDoArquivo = `documento_${mensagemReal.protocoloId}.pdf`;
     const caminhoDestino = path.join(__dirname, '../../public/downloads/pdf', nomeDoArquivo);
     const urlGerada = `http://localhost:5173/public/downloads/pdf/${nomeDoArquivo}`;
 
