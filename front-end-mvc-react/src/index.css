@@ -123,17 +123,40 @@ body {
 }
 
 /* Mantém os seus cards juntos no lado esquerdo */
+/* 1. MUDANÇA CRUCIAL: Limita o tamanho máximo da área de botões */
 .grid-cards-esquerda {
   display: flex !important;
   flex-direction: row !important;
-  gap: 15px !important; /* Ajuste o espaço entre um card e outro aqui */
+  gap: 12px !important; 
+  flex: 1 !important;          /* Faz os botões ocuparem o espaço flexível esquerdo */
+  flex-wrap: wrap !important;  /* Se a tela encolher, os menus quebram linha em vez de esmagar os gastos */
 }
 
 /* Estilo do bloco de Gastos (Alinhado à direita) */
-.container-gastos-direita {
-  margin-left: auto !important; /* Força o bloco a ir para o extremo direito se houver espaço sobressalente */
-  text-align: right !important;
+/* 1. MUDANÇA CRUCIAL: Limita o tamanho máximo da área de botões */
+.grid-cards-esquerda {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important; 
+  flex: 1 !important;          /* Faz os botões ocuparem o espaço flexível esquerdo */
+  flex-wrap: wrap !important;  /* Se a tela encolher, os menus quebram linha em vez de esmagar os gastos */
 }
+
+/* 2. FORÇA O CONTAINER DE GASTOS A REAPARECER */
+.container-gastos-direita-fixo {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important; /* Garante que tudo grude perfeitamente na direita */
+  width: 200px !important;           /* Proporção perfeita para telas de computadores */
+  min-width: 200px !important;
+  max-width: 200px !important;
+  margin-left: 20px !important;      /* Margem de segurança confortável dos menus */
+  flex-shrink: 0 !important;         /* Impede os menus de esmagarem a barra */
+}
+
+
+
+
 
 .container-gastos-direita h2 {
   margin: 0 !important;
@@ -2252,6 +2275,88 @@ h2.titulo-com-linha {
   justify-content: flex-end !important; /* Empurra os botões de cadastro para a direita */
   gap: 12px !important;                 /* Espaço entre os dois botões */
   width: 100% !important;
+}
+/* Container de Gastos na Direita */
+.container-gastos-direita {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important; /* Mantém os textos na direita */
+  width: 220px !important;           /* Força a largura de 220px */
+  min-width: 220px !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;         /* Impede que o header esmague o bloco */
+}
+
+/* Alinha o título e a legenda da meta lado a lado */
+.gastos-valores-topo {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  width: 100% !important;
+  gap: 15px !important;
+}
+
+.container-gastos-direita h3 {
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  color: #ffffff !important;
+}
+
+.gastos-limite-legenda {
+  font-size: 0.75rem !important;
+  color: #94a3b8 !important; /* Cinza sutil */
+}
+
+/* Número do Gasto Principal */
+.gastos-valor-num {
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+}
+
+/* O Fundo da Barra de Progressão */
+.progresso-barra-container {
+  width: 100% !important;            /* Ocupa 100% dos 220px do container */
+  height: 10px !important;           /* Um pouquinho mais alta para melhor visibilidade */
+  background-color: #2d2d2d !important; 
+  border-radius: 10px !important;
+  overflow: hidden !important;       
+  margin-top: 6px !important;
+  display: block !important;         /* Garante que o navegador renderize como bloco */
+}
+
+/* O Preenchimento */
+.progresso-barra-preenchimento {
+  height: 100% !important;
+  background: linear-gradient(90deg, #4f46e5, #6366f1) !important; 
+  border-radius: 10px !important;
+  display: block !important;         /* Garante a renderização do bloco interno */
+}
+
+/* Texto de rodapé com a porcentagem */
+.gastos-porcentagem-texto {
+  font-size: 0.75rem !important;
+  color: #64748b !important;
+  margin-top: 2px !important;
+}
+
+/* Animação para a barra crescer da esquerda para a direita ao carregar */
+@keyframes carregarBarra {
+  from { width: 0%; }
+}
+
+/* Nova Classe Isolada e Blindada */
+.container-gastos-direita-fixo {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-end !important;
+  width: 240px !important;           /* Largura ideal para a barra ficar visível */
+  min-width: 240px !important;
+  max-width: 240px !important;
+  flex-shrink: 0 !important;         /* Impede o flexbox pai de esmagar o bloco */
+  visibility: visible !important;    /* Força o navegador a renderizar */
+  opacity: 1 !important;             /* Garante que não esteja transparente */
 }
 
 

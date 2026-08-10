@@ -24,6 +24,13 @@ interface ISidebarProps {
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
 export const Contrato: React.FC<ISidebarProps> = () => {
 
+  // const gasto = 3200;
+  // const limite = 5000;
+  // const porcentagem = (gasto / limite) * 100; // 64
+
+  // No style: style={{ width: `${porcentagem}%`, background: porcentagem > 90 ? '#ef4444' : '#4f46e5' }}
+
+
   const [menuAberto, setMenuAberto] = useState<string | null>(null);
   const [abaAtiva, setAbaAtiva] = useState<AbaInferior>('cards-gerais');
 
@@ -136,9 +143,21 @@ export const Contrato: React.FC<ISidebarProps> = () => {
             </div>  
           </div>
 
-          <div className="container-gastos-direita">
-            <h3>Gastos atuais</h3>
-            <p>Valores aqui</p>
+          {/* Lado Direito: Bloco de Gastos Atuais Reforçado */}
+          <div className="container-gastos-direita-fixo">
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#ffffff' }}>Gastos atuais</h3>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Limite: R$ 5.000,00</span>
+          </div>
+          
+          <p style={{ fontSize: '1.6rem', fontWeight: 700, color: '#ffffff', margin: '4px 0' }}>R$ 3.200,00</p>
+          
+          {/* A Barra de Progressão com CSS Inline Forçado para Teste Absoluto */}
+          <div style={{ width: '100%', height: '10px', backgroundColor: '#2d2d2d', borderRadius: '10px', overflow: 'hidden', display: 'block', margin: '6px 0' }}>
+            <div style={{ width: '64%', height: '100%', background: 'linear-gradient(90deg, #4f46e5, #6366f1)', borderRadius: '10px', display: 'block' }}></div>
+          </div>
+          
+          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>64% consumido</span>
           </div>
           
         </div>
