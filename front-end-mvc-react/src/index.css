@@ -1704,6 +1704,484 @@ h2.titulo-com-linha {
   margin-bottom: 20px !important;
 }
 
+/* Container Geral da Página da Tabela */
+.tabela-pagina-container {
+  width: 100% !important;
+  animation: fadeIn 0.3s ease-in-out; /* Efeito suave ao abrir */
+}
+
+.tabela-header-acoes {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin-bottom: 25px !important;
+}
+
+/* Botão Voltar Clean */
+.botao-voltar-moderno {
+  background-color: transparent !important;
+  border: 1px solid #ddd !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  color: #555 !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.botao-voltar-moderno:hover {
+  background-color: #f5f5f5 !important;
+  color: #000 !important;
+  border-color: #bbb !important;
+}
+
+/* Wrapper de Responsividade */
+.tabela-responsiva-wrapper {
+  width: 100% !important;
+  overflow-x: auto !important; /* Cria barra de rolagem se a tela for menor que a tabela */
+  background-color: #ffffff !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important; /* Sombra suave moderna */
+  border: 1px solid #eaeaea !important;
+}
+
+/* A Tabela em si */
+.tabela-moderna {
+  width: 100% !important;
+  border-collapse: collapse !important; /* Remove bordas duplas */
+  text-align: left !important;
+  font-size: 0.95rem !important;
+}
+
+/* Cabeçalho da Tabela */
+.tabela-moderna th {
+  background-color: #f8f9fa !important;
+  color: #555555 !important;
+  font-weight: 600 !important;
+  padding: 16px 20px !important;
+  border-bottom: 2px solid #eaeaea !important;
+}
+
+/* Linhas e Células */
+.tabela-moderna td {
+  padding: 16px 20px !important;
+  border-bottom: 1px solid #f0f0f0 !important;
+  color: #444444 !important;
+}
+
+/* Efeito Zebra (Linhas alternadas) */
+.tabela-moderna tbody tr:nth-child(even) {
+  background-color: #fcfcfc !important;
+}
+
+/* Efeito Hover (Destaque ao passar o mouse) */
+.tabela-moderna tbody tr:hover {
+  background-color: #f7f9fc !important;
+}
+
+/* Detalhes de Texto */
+.texto-negrito {
+  font-weight: 600 !important;
+  color: #1a1a1a !important;
+}
+
+.texto-valor {
+  font-weight: 600 !important;
+}
+
+/* Badges/Etiquetas de Status Estilizadas */
+.badge {
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  display: inline-block !important;
+}
+
+.status-pago {
+  background-color: #e6f7ed !important;
+  color: #2e7d32 !important;
+}
+
+.status-pendente {
+  background-color: #fff8e1 !important;
+  color: #f57f17 !important;
+}
+
+.status-cancelado {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+}
+
+/* Animação de entrada */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* Container e Header (Reutiliza conceitos anteriores) */
+.faturas-pagina-container {
+  width: 100% !important;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.faturas-header-acoes {
+  display: flex !important;
+  align-items: center !important;
+  gap: 20px !important;
+  margin-bottom: 25px !important;
+}
+
+/* Grid configurado para se ajustar em qualquer tela (Responsivo) */
+.faturas-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+  gap: 20px !important;
+  width: 100% !important;
+}
+
+/* Estilo do Card Individual de Fatura */
+.fatura-card-item {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.fatura-card-item:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Alerta visual se a fatura for urgente */
+.borda-urgente {
+  border-left: 4px solid #ef4444 !important; /* Borda vermelha chamativa no canto esquerdo */
+}
+
+/* Elementos do Topo do Card */
+.fatura-card-topo {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-bottom: 15px !important;
+}
+
+.fatura-categoria {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+}
+
+.fatura-id {
+  color: #94a3b8 !important;
+  font-size: 0.85rem !important;
+}
+
+/* Elementos do Corpo do Card */
+.fatura-label-valor {
+  color: #64748b !important;
+  font-size: 0.85rem !important;
+  margin: 0 0 4px 0 !important;
+}
+
+.fatura-valor-destaque {
+  font-size: 1.8rem !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  margin: 0 0 15px 0 !important;
+}
+
+.fatura-detalhes-linha {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 0.9rem !important;
+  margin-bottom: 6px !important;
+  color: #334155 !important;
+}
+
+.texto-alerta {
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+}
+
+.fatura-mes-referencia {
+  font-size: 0.8rem !important;
+  color: #94a3b8 !important;
+  margin: 0 !important;
+}
+
+/* Botão de Ação do Rodapé */
+.fatura-card-rodape {
+  margin-top: 20px !important;
+}
+
+.botao-pagar-pix {
+  width: 100% !important;
+  background-color: #2d2d2d !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 10px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.botao-pagar-pix:hover {
+  background-color: #000000 !important;
+}
+/* Container que força os cards a ficarem um abaixo do outro */
+.faturas-lista-vertical {
+  display: flex !important;
+  flex-direction: column !important; /* Alinha os cards de cima para baixo */
+  gap: 15px !important;              /* Espaço entre um card empilhado e outro */
+  width: 100% !important;
+}
+
+/* O novo card em formato horizontal largo */
+.fatura-card-item-longo {
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03) !important;
+  display: flex !important;
+  flex-direction: column !important; /* Divide o card internamente entre informações e botões */
+  gap: 15px !important;
+  transition: box-shadow 0.2s ease !important;
+}
+
+.fatura-card-item-longo:hover {
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Organiza os dados da fatura lado a lado dentro do card */
+.fatura-card-conteudo-alinhado {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important; /* Espalha as informações horizontalmente */
+  align-items: center !important;
+  flex-wrap: wrap !important; /* Garante que se a tela encolher, os dados quebrem linha sem amassar */
+  gap: 15px !important;
+}
+
+/* Cada coluna menor de informação interna */
+.bloco-info-fatura {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.fatura-valor-destaque-pequeno {
+  font-size: 1.3rem !important;
+  margin: 0 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* Alinhamento dos 3 botões no final do card */
+.fatura-card-tres-botoes {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-end !important; /* Empurra o grupo de botões para a direita */
+  gap: 10px !important;                 /* Espaço entre os botões */
+  border-top: 1px solid #f1f5f9 !important; /* Linha divisória sutil acima dos botões */
+  padding-top: 12px !important;
+}
+
+/* Estilo base para os 3 botões */
+.btn-fatura {
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+/* Estilo para Demonstrativo e Visualizar PDF (Borda cinza) */
+.btn-fatura.secundario {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+.btn-fatura.secundario:hover {
+  background-color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+}
+
+/* Estilo para Nota Fiscal (Destaque Escuro) */
+.btn-fatura.primario {
+  background-color: #2d2d2d !important;
+  border: 1px solid #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+.btn-fatura.primario:hover {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+}
+/* Garante que o texto do valor e a etiqueta do topo fiquem alinhados perfeitamente na esquerda */
+.bloco-info-fatura {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important; /* Alinha o texto na esquerda do bloco */
+  gap: 4px !important;
+}
+
+/* Modificação opcional para dar ainda mais peso visual ao valor já que ele abre a linha */
+.fatura-valor-destaque-pequeno {
+  font-size: 1.4rem !important;
+  margin: 0 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+/* Estilo para o texto do Código da Fatura */
+.texto-negrito-id {
+  font-weight: 600 !important;
+  color: #334155 !important;
+  font-family: monospace !important; /* Estilo padrão para códigos/IDs */
+  font-size: 0.95rem !important;
+}
+
+/* Novo botão Detalhes da Fatura (Estilo minimalista/link para não sobrecarregar) */
+.btn-fatura.link-detalhes {
+  background-color: transparent !important;
+  border: none !important;
+  color: #4f46e5 !important; /* Cor azul/roxa moderna */
+  text-decoration: underline !important;
+  padding: 8px 12px !important;
+  margin-right: auto !important; /* TRUQUE: Empurra os outros 3 botões para a extrema direita e mantém este na esquerda! */
+}
+
+.btn-fatura.link-detalhes:hover {
+  color: #3730a3 !important;
+}
+/* Container dos botões dentro da célula da tabela */
+.tabela-grupo-botoes {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important; /* Espaçamento bem apertado para caber tudo na linha */
+}
+
+/* Estilo base dos botões compactos da tabela */
+.btn-tabela-acao {
+  padding: 6px 10px !important;
+  border: 1px solid #cbd5e1 !important;
+  background-color: #ffffff !important;
+  color: #475569 !important;
+  border-radius: 4px !important;
+  font-size: 0.75rem !important; /* Fonte menor para não esticar a tabela */
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important; /* Impede o botão de quebrar o texto interno */
+}
+
+.btn-tabela-acao:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Botão Detalhes (Estilo Link roxo/azul) */
+.btn-tabela-acao.link {
+  border: none !important;
+  background-color: transparent !important;
+  color: #4f46e5 !important;
+  text-decoration: underline !important;
+}
+
+.btn-tabela-acao.link:hover {
+  color: #3730a3 !important;
+}
+
+/* Botão Nota Fiscal (Destaque escuro compacto) */
+.btn-tabela-acao.destaque {
+  background-color: #2d2d2d !important;
+  border-color: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+.btn-tabela-acao.destaque:hover {
+  background-color: #000000 !important;
+  border-color: #000000 !important;
+}
+
+/* Centraliza o título da coluna de ações */
+.texto-centralizado {
+  text-align: center !important;
+}
+/* Container que envelopa a página Contrato por completo */
+.pagina-container {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important; /* Ocupa toda a altura injetada pelo App.tsx */
+  overflow: hidden !important; /* Impede vazamentos */
+}
+
+/* O Header do sistema agora fica travado no topo da área útil */
+.header-sistema {
+  width: 100% !important;
+  padding: 15px 0 !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important; /* Impede o header de ser esmagado pelo conteúdo de baixo */
+}
+
+/* O VERDADEIRO GERENCIADOR DE ROLAGEM INTERNA */
+.conteudo-principal-abaixo {
+  width: 100% !important;
+  flex: 1 !important;        /* Ocupa todo o espaço restante que sobrar abaixo do header */
+  overflow-y: auto !important; /* Cria a barra de rolagem apenas para as tabelas ou listas longas! */
+  padding-top: 20px !important;
+  box-sizing: border-box !important;
+}
+/* 1. SELETORES PARA O CHROME, EDGE E SAFARI */
+.main-content::-webkit-scrollbar,
+.conteudo-principal-abaixo::-webkit-scrollbar {
+  width: 8px !important;               /* Deixa a barra vertical bem fina e discreta */
+  height: 8px !important;              /* Deixa a barra horizontal bem fina caso apareça */
+}
+
+/* O Fundo da barra (Track) - Deixamos totalmente transparente para sumir com o bloco cinza */
+.main-content::-webkit-scrollbar-track,
+.conteudo-principal-abaixo::-webkit-scrollbar-track {
+  background: transparent !important; 
+}
+
+/* O "Pino" de rolagem (Thumb) - Uma pílula escura sutil que combina com o seu fundo #121212 */
+.main-content::-webkit-scrollbar-thumb,
+.conteudo-principal-abaixo::-webkit-scrollbar-thumb {
+  background-color: #333333 !important; /* Cor cinza escura muito sutil */
+  border-radius: 20px !important;       /* Deixa as pontas arredondadas modernas */
+  border: 2px solid #121212 !important; /* Cria um espaçamento invisível ao redor do pino */
+}
+
+/* Efeito ao passar o mouse no pino de rolagem */
+.main-content::-webkit-scrollbar-thumb:hover,
+.conteudo-principal-abaixo::-webkit-scrollbar-thumb:hover {
+  background-color: #4f46e5 !important; /* Opcional: ganha a cor do seu sistema ao interagir */
+}
+
+/* 2. SUPORTE PARA O FIREFOX */
+.main-content,
+.conteudo-principal-abaixo {
+  scrollbar-width: thin !important;          /* Deixa fina no Firefox */
+  scrollbar-color: #333333 transparent !important; /* Pino cinza escuro e fundo transparente */
+}
 
 
 

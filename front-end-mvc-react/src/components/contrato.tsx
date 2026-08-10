@@ -5,11 +5,19 @@ import fatura from '../assets/fatura.png';
 import relatorio from '../assets/relatorio.png'; 
 import Detalhes from '../assets/detalhes.jpg'; 
 import DetalhesVpr from '../assets/detalhesvpr.png';
+
 import { DetalhesPedagio } from './saldoVpr'; // Importa a nova página 
+import { HistoricoFaturas } from './historicoFaturamento'; // Importa a nova página 
+import {FaturasAbertas} from './faturasEmAberto';
 
-type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-faturas';
+type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas';
+type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato';
 
-export const Contrato: React.FC = () => {
+interface ISidebarProps {
+  setPaginaAtiva: (pagina: PaginaTipo) => void;
+}
+
+export const Contrato: React.FC<ISidebarProps> = ({}) => {
 
   // Estado para controlar qual submenu está aberto (guarda o nome do menu ou null)
   const [menuAberto, setMenuAberto] = useState<string | null>(null);
@@ -40,7 +48,7 @@ export const Contrato: React.FC = () => {
             {/* ITEM 2: FROTA (Com Submenu) */}
             <div className="card-com-submenu">
                 
-              <div className="card" onClick={() => alternarSubmenu('frota')}>
+              <div className="card" onClick={() => alternarSubmenu('frota')} style={{ cursor: 'pointer' }}>
                 <img src={frota} alt="Ícone de Frota" className="card-imagem"/>
                 <h2>Frota ▾</h2>
               </div>
@@ -55,21 +63,35 @@ export const Contrato: React.FC = () => {
             
             {/* ITEM 3: FATURAS (Com Submenu) */}
             <div className="card-com-submenu">
-              <div className="card" onClick={() => alternarSubmenu('faturas')}>
-                <img src={fatura} alt="Ícone de Frota" className="card-imagem"/>
-                <h2>Faturas ▾</h2>
-              </div>
-              {menuAberto === 'faturas' && (
-                <ul className="submenu-lista">
-                  <li onClick={() => console.log('Faturas Abertas')}>Faturas Abertas</li>
-                  <li onClick={() => console.log('Histórico')}>Histórico de Pagamentos</li>
-                </ul>
-              )}
+            <div className="card" onClick={() => alternarSubmenu('faturas')} style={{ cursor: 'pointer' }}>
+            <img src={fatura} alt="Ícone de Frota" className="card-imagem"/>
+            <h2>Faturas ▾</h2>
             </div>
+  
+            {menuAberto === 'faturas' && (
+            <ul className="submenu-lista">
+            {/* Opção 1: Abre a página de histórico de faturas */}
+            <li onClick={() => {
+            setAbaAtiva('historico-fatura'); // Abre a nova página que você acabou de criar
+            setMenuAberto(null);              // Fecha a listinha suspensa
+            }}>
+            Histórico de Pagamentos
+            </li>
+
+           {/* Opção 2: Exemplo caso você crie outra aba no futuro */}
+           <li onClick={() => {
+            setAbaAtiva('faturas-abertas'); 
+            setMenuAberto(null);
+           }}>
+            Faturas Abertas
+           </li>
+           </ul>
+           )}
+           </div>
 
             {/* ITEM 4: RELATÓRIOS (Com Submenu) */}
             <div className="card-com-submenu">
-              <div className="card" onClick={() => alternarSubmenu('relatorios')}>
+              <div className="card" onClick={() => alternarSubmenu('relatorios')} style={{ cursor: 'pointer' }}>
                 <img src={relatorio} alt="Ícone de Frota" className="card-imagem"/>
                 <h2>Relatórios ▾</h2>
               </div>
@@ -83,7 +105,7 @@ export const Contrato: React.FC = () => {
 
             <div className="card-com-submenu">
 
-            <div className="card">
+            <div className="card" style={{ cursor: 'pointer' }}>
                 <img src={Detalhes} alt="Ícone de Frota" className="card-imagem"/>
                 <h2>Detalhes</h2>
             </div>
@@ -148,6 +170,18 @@ export const Contrato: React.FC = () => {
           // Chamamos o componente isolado e passamos a ação de voltar
           <DetalhesPedagio onVoltar={() => setAbaAtiva('cards-gerais')} />
         )}
+
+        {abaAtiva === 'historico-fatura' && (
+          // Chamamos o componente isolado e passamos a ação de voltar
+          <HistoricoFaturas />
+        )}
+
+        {abaAtiva === 'faturas-abertas' && (
+          // Chamamos o componente isolado e passamos a ação de voltar
+          <FaturasAbertas  />
+        )}
+
+        
 
 </main>
 
