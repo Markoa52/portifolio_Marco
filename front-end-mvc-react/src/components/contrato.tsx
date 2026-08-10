@@ -143,23 +143,24 @@ export const Contrato: React.FC<ISidebarProps> = () => {
             </div>  
           </div>
 
-          {/* Lado Direito: Bloco de Gastos Atuais Reforçado */}
-          <div className="container-gastos-direita-fixo">
-          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#ffffff' }}>Gastos atuais</h3>
-            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Limite: R$ 5.000,00</span>
+          {/* Lado Direito: Bloco de Gastos Atuais com Barra de Progressão */}
+          <div className="container-gastos-direita">
+            <div className="gastos-valores-topo">
+              <h3>Gastos atuais</h3>
+              <span className="gastos-limite-legenda">Meta: R$ 5.000,00</span>
+            </div>
+            
+            <p className="gastos-valor-num">R$ 3.200,00</p>
+            
+            {/* A Barra de Progressão */}
+            <div className="progresso-barra-container" title="64% do orçamento utilizado">
+              {/* Você pode mudar o width dinamicamente no futuro com dados da API */}
+              <div className="progresso-barra-preenchimento" style={{ width: '64%' }}></div>
+            </div>
+            
+            <span className="gastos-porcentagem-texto">64% consumido</span>
           </div>
-          
-          <p style={{ fontSize: '1.6rem', fontWeight: 700, color: '#ffffff', margin: '4px 0' }}>R$ 3.200,00</p>
-          
-          {/* A Barra de Progressão com CSS Inline Forçado para Teste Absoluto */}
-          <div style={{ width: '100%', height: '10px', backgroundColor: '#2d2d2d', borderRadius: '10px', overflow: 'hidden', display: 'block', margin: '6px 0' }}>
-            <div style={{ width: '64%', height: '100%', background: 'linear-gradient(90deg, #4f46e5, #6366f1)', borderRadius: '10px', display: 'block' }}></div>
-          </div>
-          
-          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>64% consumido</span>
-          </div>
-          
+  
         </div>
       </header>
 

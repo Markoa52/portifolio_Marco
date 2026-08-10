@@ -128,18 +128,8 @@ body {
   display: flex !important;
   flex-direction: row !important;
   gap: 12px !important; 
-  flex: 1 !important;          /* Faz os botões ocuparem o espaço flexível esquerdo */
-  flex-wrap: wrap !important;  /* Se a tela encolher, os menus quebram linha em vez de esmagar os gastos */
-}
-
-/* Estilo do bloco de Gastos (Alinhado à direita) */
-/* 1. MUDANÇA CRUCIAL: Limita o tamanho máximo da área de botões */
-.grid-cards-esquerda {
-  display: flex !important;
-  flex-direction: row !important;
-  gap: 12px !important; 
-  flex: 1 !important;          /* Faz os botões ocuparem o espaço flexível esquerdo */
-  flex-wrap: wrap !important;  /* Se a tela encolher, os menus quebram linha em vez de esmagar os gastos */
+  align-items: center !important;
+  flex-wrap: wrap !important; /* Mantém a quebra de linha de segurança */
 }
 
 /* 2. FORÇA O CONTAINER DE GASTOS A REAPARECER */
@@ -153,10 +143,6 @@ body {
   margin-left: 20px !important;      /* Margem de segurança confortável dos menus */
   flex-shrink: 0 !important;         /* Impede os menus de esmagarem a barra */
 }
-
-
-
-
 
 .container-gastos-direita h2 {
   margin: 0 !important;
