@@ -3,8 +3,8 @@ import React from 'react';
 import logoEmpresa from '../assets/logo.png'; 
 
 interface ISidebarProps {
-  paginaAtiva: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI';
-  setPaginaAtiva: (pagina: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI') => void;
+  paginaAtiva: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato';
+  setPaginaAtiva: (pagina: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato') => void;
 }
 
 export const Sidebar: React.FC<ISidebarProps> = ({ paginaAtiva, setPaginaAtiva }) => {
@@ -47,6 +47,14 @@ export const Sidebar: React.FC<ISidebarProps> = ({ paginaAtiva, setPaginaAtiva }
           onClick={() => setPaginaAtiva('consumoAPI')}
         >
          📍 API externa CEP
+        </button>
+
+        {/* Botão ConsumoAPI */}
+        <button 
+          className={`nav-btn ${paginaAtiva === 'contrato' ? 'active' : ''}`}
+          onClick={() => setPaginaAtiva('contrato')}
+        >
+         Contrato
         </button>
       </div>
     </div>

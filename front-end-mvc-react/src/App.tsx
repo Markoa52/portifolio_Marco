@@ -4,10 +4,11 @@ import { VisaoGeral } from './components/visaoGeral.tsx';
 import { Gerenciador } from './components/gerenciador.tsx';
 import { Dashboard } from './components/dashboard.tsx';
 import { ConsumoAPI } from './components/consumoAPI.tsx';
+import { Contrato } from './components/contrato.tsx';
 
 import type { IEmailRegistro } from './types/index.ts';
 
-type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI';
+type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato';
 
 function App() {
   const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('visao-geral');
@@ -110,6 +111,10 @@ function App() {
 
           {paginaAtiva === 'consumoAPI' && (
           <ConsumoAPI />
+        )}
+
+          {paginaAtiva === 'contrato' && (
+          <Contrato paginaAtiva={paginaAtiva} setPaginaAtiva={setPaginaAtiva} />
         )}
       </div>
     </div>

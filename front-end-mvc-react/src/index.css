@@ -112,6 +112,167 @@ body {
   width: 100%;
 }
 
+/* Container Pai: Alinha os Cards e os Gastos lado a lado */
+.layout-horizontal-container {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important; /* Cria o espaço máximo entre a esquerda e a direita */
+  align-items: flex-start !important;       /* Mantém o topo deles alinhados */
+  width: 100% !important;
+  gap: 20px !important;                      /* Espaço mínimo de segurança entre os blocos */
+}
+
+/* Mantém os seus cards juntos no lado esquerdo */
+.grid-cards-esquerda {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 15px !important; /* Ajuste o espaço entre um card e outro aqui */
+}
+
+/* Estilo do bloco de Gastos (Alinhado à direita) */
+.container-gastos-direita {
+  margin-left: auto !important; /* Força o bloco a ir para o extremo direito se houver espaço sobressalente */
+  text-align: right !important;
+}
+
+.container-gastos-direita h2 {
+  margin: 0 !important;
+  white-space: nowrap !important; /* Impede que o título quebre em duas linhas */
+}
+
+.container-saldo-Vpr {
+  margin-left: auto !important; /* Força o bloco a ir para o extremo direito se houver espaço sobressalente */
+  text-align: center !important;
+}
+
+/* Container Geral da Página */
+.pagina-container {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+/* O Header que você acabou de criar */
+.header-sistema {
+  width: 100% !important;
+  padding: 15px 0 !important;
+  border-bottom: 1px solid #e0e0e0 !important; /* Linha sutil opcional para separar o header do conteúdo */
+  margin-bottom: 30px !important; /* Força um espaçamento confortável para os elementos de baixo */
+}
+
+/* O Container do conteúdo inferior (Abaixo do menu) */
+.conteudo-principal-abaixo {
+  width: 100% !important;
+  margin-top: 10px !important;
+}
+
+/* Força exatamente 2 colunas lado a lado */
+.novos-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important; /* Cria 2 colunas com tamanhos iguais (50% cada) */
+  gap: 20px !important; /* Espaçamento de 20px entre os cards (tanto do lado quanto abaixo) */
+  width: 100% !important;
+}
+
+/* Estilização padrão dos novos cards */
+.novo-card-item {
+  background-color: #efecec !important;
+  border: 1px solid #efecec !important;
+  padding: 25px !important;
+  border-radius: 8px !important;
+  box-sizing: border-box !important;
+  text-align: left !important;
+}
+
+/* Estilo específico para o H3 (Título) dentro do novo card */
+.novo-card-item h3 {
+  color: #2d2d2d !important;        /* Substitua pela cor de texto que você deseja */
+  text-align: left !important;
+  margin-bottom: 8px !important;    /* Espaço sutil entre o título e o parágrafo */
+}
+
+/* Estilo específico para o P (Texto/Parágrafo) dentro do novo card */
+.novo-card-item p {
+  color:#2d2d2d !important;        /* Substitua pela cor de texto que você deseja */
+  text-align: left !important;
+  margin: 0 !important;
+}
+
+/* Container que envolve o botão e a lista oculta */
+.card-com-submenu {
+  position: relative !important; /* Essencial para alinhar o submenu logo abaixo */
+  display: inline-block !important;
+}
+
+/* A lista suspensa flutuante */
+.submenu-lista {
+  position: absolute !important;
+  top: 105% !important; /* Coloca a lista colada logo abaixo do card */
+  left: 0 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  padding: 8px 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  min-width: 160px !important; /* Largura mínima da caixinha */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1) !important; /* Sombra sutil para dar efeito flutuante */
+  z-index: 999 !important; /* Garante que a lista fique POR CIMA dos cards de baixo */
+}
+
+/* Cada item/linha da lista de submenu */
+.submenu-lista li {
+  padding: 10px 16px !important;
+  color: #333333 !important;
+  font-size: 0.9rem !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+/* Efeito ao passar o mouse nos itens do submenu */
+.submenu-lista li:hover {
+  background-color: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+/* Atualização do card para aceitar imagem lado a lado */
+.novo-card-item {
+  background-color: #ffffff !important;
+  border: 1px solid #ddd !important;
+  padding: 25px !important;
+  border-radius: 8px !important;
+  box-sizing: border-box !important;
+  
+  /* Adicione estas linhas abaixo */
+  display: flex !important;
+  flex-direction: row !important; /* Coloca imagem e textos lado a lado */
+  align-items: center !important;  /* Centraliza a imagem verticalmente com o texto */
+  gap: 15px !important;            /* Espaço entre a imagem e o texto */
+}
+
+/* Controla o tamanho e comportamento da imagem */
+.card-imagem {
+  width: 50px !important;          /* Tamanho ideal para ícones de painel */
+  height: 50px !important;         /* Mantém a proporção quadrada */
+  object-fit: contain !important;  /* Garante que a imagem não distorça */
+}
+
+.card-imagem-vpr {
+  width: 30px !important;          /* Tamanho ideal para ícones de painel */
+  height: 30px !important;         /* Mantém a proporção quadrada */
+  object-fit: contain !important;  /* Garante que a imagem não distorça */
+  margin-right: 10px;
+}
+
+/* Garante que o bloco de texto ocupe o restante do espaço */
+.card-texto-conteudo {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+
 .header-container-sistema {
   display: flex; 
   justify-content: space-between; 
@@ -1131,6 +1292,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
   .grupo-operacional-pesquisa {
     display: flex !important;
     align-items: center !important;
+    gap: 10px !important; 
   }
 }
 
