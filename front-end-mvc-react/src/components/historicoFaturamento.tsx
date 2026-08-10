@@ -7,6 +7,18 @@ const DADOS_MOCK = [
   { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00', status: 'Pendente' },
   { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', status: 'Pago' },
   { id: 'FAT-2026-1027', fechamento: '01/09/2026', vencimento: '10/09/2026', valor: 'R$ 2.100,00', status: 'Cancelado' },
+    { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', status: 'Pago' },
+  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00', status: 'Pendente' },
+  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', status: 'Pago' },
+  { id: 'FAT-2026-1027', fechamento: '01/09/2026', vencimento: '10/09/2026', valor: 'R$ 2.100,00', status: 'Cancelado' },
+    { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', status: 'Pago' },
+  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00', status: 'Pendente' },
+  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', status: 'Pago' },
+  { id: 'FAT-2026-1027', fechamento: '01/09/2026', vencimento: '10/09/2026', valor: 'R$ 2.100,00', status: 'Cancelado' },
+    { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', status: 'Pago' },
+  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00', status: 'Pendente' },
+  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', status: 'Pago' },
+  { id: 'FAT-2026-1027', fechamento: '01/09/2026', vencimento: '10/09/2026', valor: 'R$ 2.100,00', status: 'Cancelado' },
 ];
 
 export const HistoricoFaturas: React.FC = () => {
