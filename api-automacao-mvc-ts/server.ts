@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-import { connectRabbit } from './src/config/rabbitConfig';
+//import { connectRabbit } from './src/config/rabbitConfig';
 
 // 1. Primeiramente, importe as rotas novas
 import checarArquivoRoutes from './src/routes/checarArquivoRoutes.js';
@@ -99,17 +99,17 @@ app.listen(PORT, () => {
     console.log(`Interface Frontend activa em: http://localhost:${PORT}\n`);
 });
 
-async function iniciarServidor() {
-    try {
-        await connectRabbit();
+// async function iniciarServidor() {
+//     try {
+//         await connectRabbit();
 
-        app.listen(PORT, () => {
-            console.log(`Servidor rodando na porta ${PORT}`);
-        });
+//         app.listen(PORT, () => {
+//             console.log(`Servidor rodando na porta ${PORT}`);
+//         });
 
-    } catch (erro) {
-        console.error('Erro ao iniciar servidor:', erro);
-    }
-}
+//     } catch (erro) {
+//         console.error('Erro ao iniciar servidor:', erro);
+//     }
+// }
 
-iniciarServidor();
+// iniciarServidor();

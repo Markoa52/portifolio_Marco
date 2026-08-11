@@ -5,13 +5,14 @@ import { Gerenciador } from './components/gerenciador.tsx';
 import { Dashboard } from './components/dashboard.tsx';
 import { ConsumoAPI } from './components/consumoAPI.tsx';
 import { Contrato } from './components/contrato.tsx';
+import { Atendimento } from './components/atendimento.tsx';
 
 import type { IEmailRegistro } from './types/index.ts';
 
-type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato';
+type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato' | 'atendimento';
 
 function App() {
-  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('visao-geral');
+  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('atendimento');
   const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
   const [carregando, setCarregando] = useState<boolean>(true);
   const [erro, setErro] = useState<string | null>(null);
@@ -106,6 +107,11 @@ function App() {
         {paginaAtiva === 'contrato' && (
           <Contrato setPaginaAtiva={setPaginaAtiva} />
         )}
+
+         {paginaAtiva === 'atendimento' && (
+          <Atendimento />
+        )}
+
       </div>
     </div>
   );

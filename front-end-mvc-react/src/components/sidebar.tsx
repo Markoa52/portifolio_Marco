@@ -3,7 +3,7 @@ import React from 'react';
 import logoEmpresa from '../assets/logo.png'; 
 
 interface ISidebarProps {
-  paginaAtiva: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato';
+  paginaAtiva: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato' | 'atendimento';
   setPaginaAtiva: (pagina: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato') => void;
 }
 

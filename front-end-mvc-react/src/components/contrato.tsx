@@ -1,9 +1,12 @@
+import './contrato.css'; // Toda a estilização do header e abas fica presa aqui!
+
 import React, { useState } from 'react';
+
 import inicial from '../assets/inicial.png'; 
 import frota from '../assets/frota.png'; 
 import fatura from '../assets/fatura.png'; 
 import relatorio from '../assets/relatorio.png'; 
-import Detalhes from '../assets/detalhes.jpg'; 
+//import Detalhes from '../assets/detalhes.jpg'; 
 import DetalhesVpr from '../assets/detalhesvpr.png';
 
 import { DetalhesPedagio } from './saldoVpr'; 
@@ -12,6 +15,9 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
+
+// 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
+import { MenuHamburguer } from './menuHumburguer'; 
 
 type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato';
 
@@ -22,14 +28,17 @@ interface ISidebarProps {
 }
 
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
-export const Contrato: React.FC<ISidebarProps> = () => {
+export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
 
-  // const gasto = 3200;
-  // const limite = 5000;
-  // const porcentagem = (gasto / limite) * 100; // 64
+  const valorGasto  = 4700;
+  const valorMeta  = 5000;
+     // O React calcula a porcentagem exata automaticamente
+  const porcentagemConsumida = Math.min((valorGasto / valorMeta) * 100, 100); // 64
 
-  // No style: style={{ width: `${porcentagem}%`, background: porcentagem > 90 ? '#ef4444' : '#4f46e5' }}
-
+  // Formata os números para o padrão de moeda brasileiro (R$ 3.200,00)
+  const formatarMoeda = (valor: number) => {
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
 
   const [menuAberto, setMenuAberto] = useState<string | null>(null);
   const [abaAtiva, setAbaAtiva] = useState<AbaInferior>('cards-gerais');
@@ -41,10 +50,20 @@ export const Contrato: React.FC<ISidebarProps> = () => {
   return (
     <div className="pagina-container">
         
-      <header className="header-sistema">
-        <div className="layout-horizontal-container"> 
-          <div className="grid-cards-esquerda">
-            
+      <header className="header-sistema-novo">
+        
+        <div className="layout-horizontal-container-novo"> 
+          
+           {/* BLOCO ÚNICO EM LINHA RETA: Menu, Contrato, Saldo e Gastos */}
+           <div className="bloco-valores-layout-painel">
+
+            {/* ==========================================
+            1. MENU HAMBÚRGUER (Agora colado na direita, abrindo a linha de valores)
+            ========================================== */}
+            <div className="central-menu-container">
+            <MenuHamburguer  setAbaAtiva={setAbaAtiva} setPaginaAtiva={setPaginaAtiva} />
+            </div>
+
             {/* ITEM 1: INÍCIO */}
             <div className="card" onClick={() => { setAbaAtiva('cards-gerais'); setMenuAberto(null); }} style={{ cursor: 'pointer' }}>
               <img src={inicial} alt="Ícone" className="card-imagem"/>
@@ -121,47 +140,84 @@ export const Contrato: React.FC<ISidebarProps> = () => {
             )}
             </div>
 
-            <div className="card-com-submenu">
+            {/* <div className="card-com-submenu">
               <div className="card" style={{ cursor: 'pointer' }}>
                 <img src={Detalhes} alt="Ícone" className="card-imagem"/>
                 <h2>Detalhes</h2>
               </div>
-            </div>
+            </div> */}
+
+            
 
           </div>
 
-          <div className="container-saldo-Vpr">
-            <h4>Contrato: </h4> 
-            <h4> 1 Teste</h4><br></br>
+          {/* 1. BLOCO DE SALDO DO CONTRATO COM ESPAÇAMENTO */}
+          <div className="container-saldo-Vpr-novo" >
+            
+            {/* Linha superior: Informações do Contrato */}
+            <div style={{ display: 'flex', flexDirection: 'column'}}>
+              <span  className="legenda-mini-painel">CONTRATO:</span>
+              <span>1 Teste</span>
+            </div>
+          
+            {/* Linha inferior: Título do Saldo e Valor (Adicionado margin-top para dar o espaço) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '30px' }}>
+              <span className="legenda-mini-painel">SALDO VALE PEDÁGIO</span>
 
-            <div className="grupo-operacional-pesquisa">
-              <h4>Saldo Vale Pedágio: </h4> 
-              <h4> R$ 1.000.00 </h4>     
-              <div onClick={() => setAbaAtiva('detalhes-pedagio')} style={{ cursor: 'pointer' }}>
-                <img src={DetalhesVpr} alt="Ícone" className="card-imagem-vpr"/>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '35px' }}>
+                <span>R$ 1.000,00</span>     
+                
+                <div 
+                  onClick={() => setAbaAtiva('detalhes-pedagio')} 
+                  className="botao-icone-vpr-click"
+                  title="Ver detalhes do saldo"
+                >
+                  <img src={DetalhesVpr} alt="Ver detalhes" className="card-imagem-vpr-nova" />
+                </div>
               </div>
             </div>  
+            
           </div>
 
+
           {/* Lado Direito: Bloco de Gastos Atuais com Barra de Progressão */}
-          <div className="container-gastos-direita">
-            <div className="gastos-valores-topo">
-              <h3>Gastos atuais</h3>
-              <span className="gastos-limite-legenda">Meta: R$ 5.000,00</span>
-            </div>
-            
-            <p className="gastos-valor-num">R$ 3.200,00</p>
-            
-            {/* A Barra de Progressão */}
-            <div className="progresso-barra-container" title="64% do orçamento utilizado">
-              {/* Você pode mudar o width dinamicamente no futuro com dados da API */}
-              <div className="progresso-barra-preenchimento" style={{ width: '64%' }}></div>
-            </div>
-            
-            <span className="gastos-porcentagem-texto">64% consumido</span>
+          {/* 2. GASTOS ATUAIS AUTOMÁTICO E DINÂMICO */}
+          <div className="container-gastos-painel" style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '160px' }}>
+          <div className="gastos-titulos-linha" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <span className="legenda-mini-painel">GASTOS ATUAIS</span>
+    
+          {/* Exibe a porcentagem real arredondada */}
+          <span className="gastos-porcentagem-numero" style={{ fontSize: '0.75rem', color: porcentagemConsumida >= 90 ? '#ef4444' : '#6366f1', fontWeight: 700 }}>
+            {Math.round(porcentagemConsumida)}%
+          </span>
           </div>
   
+          {/* Exibe o valor gasto formatado automaticamente */}
+          <span className="valor-num-painel">{formatarMoeda(valorGasto)}</span>
+  
+          {/* A BARRA DE PROGRESSÃO: O preenchimento muda de cor se passar de 90% */}
+          <div style={{ width: '100%', height: '6px', backgroundColor: '#222222', borderRadius: '10px', overflow: 'hidden', display: 'block', marginTop: '6px' }}>
+          <div 
+          style={{ 
+          width: `${porcentagemConsumida}%`, // <-- A MÁGICA: A largura agora é dinâmica!
+          height: '100%', 
+          background: porcentagemConsumida >= 90 
+          ? 'linear-gradient(90deg, #ef4444, #b91c1c)' // Vermelho de alerta se estourar 90%
+          : 'linear-gradient(90deg, #4f46e5, #6366f1)', // Roxo padrão do sistema
+          borderRadius: '10px', 
+          display: 'block',
+          transition: 'width 0.5s ease-in-out' // Cria um efeito suave de deslize quando o valor muda
+          }}
+          
+          
+        ></div>
+        
         </div>
+        <span>Limite: {formatarMoeda(valorMeta)} </span>
+        
+        </div>
+        </div>
+        
       </header>
 
       {/* CONTEÚDO PRINCIPAL (Muda dinamicamente conforme a aba) */}
