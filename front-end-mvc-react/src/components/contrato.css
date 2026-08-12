@@ -1168,3 +1168,172 @@
   flex-direction: column !important;
   flex: 1 !important;
 }
+
+/* ==========================================================================
+   📦 DESIGN DA TIMELINE HORIZONTAL PREMIUM
+   ========================================================================== */
+
+.pedido-timeline-horizontal-container {
+  display: flex !important;
+  flex-direction: row !important; /* Força os blocos a ficarem lado a lado */
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-top: 24px !important;
+  padding: 0 10px !important;
+  box-sizing: border-box !important;
+}
+
+/* Cada um dos 3 blocos da linha do tempo */
+.timeline-etapa-h {
+  display: flex !important;
+  flex-direction: column !important; /* Alinha o marcador em cima e o texto embaixo */
+  flex: 1 !important;                 /* Divide o espaço horizontal igualmente (33% cada) */
+  position: relative !important;
+  min-width: 0 !important;
+}
+
+/* Remove o espaço da linha elástica no último elemento para não vazar do card */
+.timeline-etapa-h:last-child {
+  flex: none !important;
+  width: auto !important;
+}
+
+/* Alinhamento do topo: Bolinha + Linha reta horizontal */
+.timeline-marcador-h {
+  display: flex !important;
+  flex-direction: row !important; /* Linha conectora sai da lateral da bolinha */
+  align-items: center !important;
+  width: 100% !important;
+  position: relative !important;
+  height: 20px !important;
+}
+
+/* O trilho horizontal que corre entre as bolinhas */
+.timeline-linha-conectora-h {
+  height: 2px !important;
+  background-color: #e4e4e7 !important; /* Cinza claro padrão */
+  flex-grow: 1 !important;             /* Faz a linha esticar até encostar no próximo bloco */
+  margin: 0 8px !important;
+}
+
+/* Estilo base da bolinha redonda */
+.timeline-marcador-bolinha-h {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background-color: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
+  color: #94a3b8 !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+/* 🟢 LINKS VISUAIS: STATUS CONCLUÍDO */
+.timeline-etapa-h.concluida .timeline-marcador-bolinha-h {
+  background-color: #e6f7ed !important;
+  border-color: #2e7d32 !important;
+  color: #2e7d32 !important;
+}
+.timeline-etapa-h.concluida .timeline-linha-conectora-h {
+  background-color: #2e7d32 !important; /* A linha horizontal também acende em verde */
+}
+
+/* 🔵 LINKS VISUAIS: STATUS ATUAL */
+.timeline-etapa-h.atual .timeline-marcador-bolinha-h {
+  border-color: #6366f1 !important;
+  background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+}
+.timeline-etapa-h.atual .timeline-status-titulo-h {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* ⚪ LINKS VISUAIS: STATUS PENDENTE */
+.timeline-etapa-h.pendente .timeline-marcador-bolinha-h {
+  background-color: #f4f4f5 !important;
+  border-color: #e4e4e7 !important;
+}
+
+/* BLOCO DE TEXTOS (Fica logo abaixo de cada bolinha) */
+.timeline-conteudo-h {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  margin-top: 8px !important;
+  padding-right: 10px !important;
+}
+
+.timeline-status-titulo-h {
+  font-size: 0.82rem !important;
+  margin: 0 !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  white-space: nowrap !important;     /* Evita quebras feias de palavras */
+  text-overflow: ellipsis !important; /* Adiciona ... se o monitor encolher muito */
+  overflow: hidden !important;
+}
+
+.timeline-data-legenda-h {
+  font-size: 0.7rem !important;
+  color: #94a3b8 !important;
+  text-align: left !important;
+}
+
+/* ==========================================================================
+   📱 ADAPTAÇÃO AUTOMÁTICA PARA SMARTPHONE (Telas ≤ 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  
+  /* Ajusta o contêiner para distribuir as 3 etapas sem precisar de carrossel se a tela permitir */
+  .pedido-timeline-horizontal-container {
+    overflow-x: hidden !important; /* Desativa qualquer rolagem lateral */
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    gap: 8px !important; /* Espaçamento compacto entre as 3 colunas */
+    padding: 0 !important;
+  }
+
+  /* Faz cada etapa ocupar sua fatia proporcional perfeitamente no celular */
+  .timeline-etapa-h {
+    flex: 1 !important;
+    min-width: 0 !important; /* Destrói a trava anterior que causava o estouro */
+    width: auto !important;
+  }
+
+  /* Ajusta o espaçamento do bloco de textos */
+  .timeline-conteudo-h {
+    margin-top: 6px !important;
+    padding-right: 0 !important;
+  }
+
+  /* 🌟 O SEGREDO: Permite que o título quebre linha e nasça embaixo se a palavra for grande */
+  .timeline-status-titulo-h {
+    font-size: 0.75rem !important; /* Fonte ligeiramente menor e delicada para celular */
+    white-space: normal !important;  /* 🛠️ PERMITE QUEBRA: O texto desce em vez de cortar! */
+    line-height: 1.1 !important;     /* Deixa as linhas do texto juntinhas e elegantes */
+    text-overflow: clip !important;
+    overflow: visible !important;
+    text-align: left !important;
+  }
+
+  /* Diminui a data e legenda para combinar com o novo texto */
+  .timeline-data-legenda-h {
+    font-size: 0.65rem !important;
+    margin-top: 2px !important;
+  }
+
+  /* Deixa a linha conectora horizontal um pouquinho menor no mobile */
+  .timeline-linha-conectora-h {
+    margin: 0 4px !important;
+  }
+}
+

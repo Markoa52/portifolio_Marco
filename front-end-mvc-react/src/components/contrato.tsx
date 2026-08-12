@@ -8,7 +8,7 @@ import fatura from '../assets/fatura.png';
 import relatorio from '../assets/relatorio.png'; 
 //import Detalhes from '../assets/detalhes.jpg'; 
 import DetalhesVpr from '../assets/detalhesvpr.png';
-import Pagar from '../assets/pagar.png'
+//import Pagar from '../assets/pagar.png'
 
 import { DetalhesPedagio } from './saldoVpr'; 
 import { HistoricoFaturas } from './historicoFaturamento'; 
@@ -185,9 +185,11 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
                 <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar faturas →</button>
               </div><br></br>
 
+                <span>Sua fatura está fechada e aguardando pagamento</span>
+
                 <div className="card-linha-horizontal">
                   <h1 style={{ color:'red' }}>A Pagar</h1>
-
+                  
                 <div>
                   <span>MAIO</span><br></br>
                   <span>VENCIMENTO: 27/08/2024</span><br></br>
@@ -195,26 +197,81 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
                 </div>
                 
               </div>
-              
             </div>
 
 
-            {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
-            <div className="caixa-card-fatura-limpa">
-              <div className="card-linha-horizontal">
-                <h3>Ultimos pedidos</h3>
-                <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar pedidos →</button>
-              </div>
-              conteudo em contrução
+        <div className="caixa-card-fatura-limpa">
+         {/* Cabeçalho do Card */}
+          <div className="card-linha-horizontal">
+           <h3>Últimos pedidos</h3>
+           <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>
+             Consultar pedidos →
+           </button>
+        </div>
+  
+        {/* NOVA LINHA DO TEMPO HORIZONTAL PREMIUM */}
+         <div className="pedido-timeline-horizontal-container">
+          
+          {/* Etapa 1: Concluída */}
+          <div className="timeline-etapa-h concluida">
+            <div className="timeline-marcador-h">
+              <div className="timeline-marcador-bolinha-h">✓</div>
+              <div className="timeline-linha-conectora-h"></div>
             </div>
+            <div className="timeline-conteudo-h">
+              <p className="timeline-status-titulo-h">Realizado</p>
+              <span className="timeline-data-legenda-h">12 Ago • 14:32</span>
+            </div>
+          </div>
+
+          {/* Etapa 2: Atual / Em Andamento */}
+          <div className="timeline-etapa-h atual">
+            <div className="timeline-marcador-h">
+              <div className="timeline-marcador-bolinha-h">2</div>
+              <div className="timeline-linha-conectora-h"></div>
+            </div>
+            <div className="timeline-conteudo-h">
+              <p className="timeline-status-titulo-h">Em separação</p>
+              <span className="timeline-data-legenda-h">12 Ago • 15:10</span>
+            </div>
+          </div>
+
+          {/* Etapa 3: Pendente / Futura */}
+          <div className="timeline-etapa-h pendente">
+            <div className="timeline-marcador-h">
+              <div className="timeline-marcador-bolinha-h">3</div>
+              {/* A última etapa não tem linha conectora na direita */}
+            </div>
+            <div className="timeline-conteudo-h">
+              <p className="timeline-status-titulo-h">Enviado para transportadora</p>
+              <span className="timeline-data-legenda-h">Aguardando...</span>
+            </div>
+           </div>
+
+           </div>
+           </div>
+
+
 
             {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
             <div className="caixa-card-fatura-limpa">
               <div className="card-linha-horizontal">
                 <h3>Veículos</h3>
                 <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar veículos →</button>
+              </div><br></br>
+              
+                <div className="card-linha-horizontal">
+                <h2>2.800</h2>
+
+                <div>
+                  <span>1.800</span><br></br>
+                  <span>Com tag ativa</span><br></br>
+                  <span>400</span><br></br>
+                  <span>Sem tag</span>
+                </div>
+
               </div>
-              conteudo em contrução
+              
             </div>
 
             {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
