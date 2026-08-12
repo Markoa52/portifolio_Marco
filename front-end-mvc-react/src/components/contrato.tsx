@@ -8,6 +8,7 @@ import fatura from '../assets/fatura.png';
 import relatorio from '../assets/relatorio.png'; 
 //import Detalhes from '../assets/detalhes.jpg'; 
 import DetalhesVpr from '../assets/detalhesvpr.png';
+import Pagar from '../assets/pagar.png'
 
 import { DetalhesPedagio } from './saldoVpr'; 
 import { HistoricoFaturas } from './historicoFaturamento'; 
@@ -182,8 +183,19 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
               <div className="card-linha-horizontal">
                 <h3>Fatura</h3>
                 <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar faturas →</button>
+              </div><br></br>
+
+                <div className="card-linha-horizontal">
+                  <h1 style={{ color:'red' }}>A Pagar</h1>
+
+                <div>
+                  <span>MAIO</span><br></br>
+                  <span>VENCIMENTO: 27/08/2024</span><br></br>
+                  <span>R$: 32.965,69</span><br></br>
+                </div>
+                
               </div>
-              conteudo em contrução
+              
             </div>
 
 
