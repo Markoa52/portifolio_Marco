@@ -1,7 +1,52 @@
 /* ==========================================================================
    1. REGRAS GLOBAIS E ALINHAMENTO IMPERIAL À ESQUERDA
    ========================================================================== */
+/* Limpa qualquer herança antiga e cria um bloco zerado */
+/* Avisa o navegador: "Procure a div limpa estritamente dentro da pagina-container" */
+.pagina-container .caixa-card-fatura-limpa {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
 
+/* Garante que o H3 interno também mude para preto para dar leitura */
+.pagina-container .caixa-card-fatura-limpa h3 {
+  color: #000000 !important;
+}
+
+/* Cria o elástico horizontal perfeito */
+.caixa-card-fatura-limpa .card-linha-horizontal {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important; /* Texto na esquerda e Link na direita */
+  align-items: center !important;             /* Alinha ambos no centro vertical */
+  width: 100% !important;
+  gap: 15px !important;
+}
+
+/* Garante que o H3 do cartão não herde margens gigantes antigas */
+.caixa-card-fatura-limpa h3 {
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  color: #ffffff !important;
+  text-align: left !important;
+}
+
+/* Link minimalista na extrema direita */
+.caixa-card-fatura-limpa .link-fatura-direita {
+  background: transparent !important;
+  border: none !important;
+  color: #6366f1 !important; /* Roxo/azul moderno */
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+}
+
+.caixa-card-fatura-limpa .link-fatura-direita:hover {
+  color: #4f46e5 !important;
+  text-decoration: underline !important;
+}
 
 
 
@@ -958,3 +1003,66 @@
   gap: 20px !important;
   margin-bottom: 25px !important;
 }
+
+/* Container que envolve o botão e a lista oculta */
+.card-com-submenu {
+  position: relative !important; /* Essencial para alinhar o submenu logo abaixo */
+  display: inline-block !important;
+}
+
+/* A lista suspensa flutuante */
+.submenu-lista {
+  position: absolute !important;
+  top: 105% !important; /* Coloca a lista colada logo abaixo do card */
+  left: 0 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  padding: 8px 0 !important;
+  margin: 0 !important;
+  list-style: none !important;
+  min-width: 160px !important; /* Largura mínima da caixinha */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1) !important; /* Sombra sutil para dar efeito flutuante */
+  z-index: 999 !important; /* Garante que a lista fique POR CIMA dos cards de baixo */
+}
+
+/* Cada item/linha da lista de submenu */
+.submenu-lista li {
+  padding: 10px 16px !important;
+  color: #333333 !important;
+  font-size: 0.9rem !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+/* Efeito ao passar o mouse nos itens do submenu */
+.submenu-lista li:hover {
+  background-color: #f5f5f5 !important;
+  color: #000000 !important;
+}
+
+/* Controla o tamanho e comportamento da imagem */
+.card-imagem {
+  width: 50px !important;          /* Tamanho ideal para ícones de painel */
+  height: 50px !important;         /* Mantém a proporção quadrada */
+  object-fit: contain !important;  /* Garante que a imagem não distorça */
+}
+
+.card-imagem-vpr {
+  width: 30px !important;          /* Tamanho ideal para ícones de painel */
+  height: 30px !important;         /* Mantém a proporção quadrada */
+  object-fit: contain !important;  /* Garante que a imagem não distorça */
+  margin-right: 10px;
+}
+
+/* Garante que o bloco de texto ocupe o restante do espaço */
+.card-texto-conteudo {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+}
+
+
+
+

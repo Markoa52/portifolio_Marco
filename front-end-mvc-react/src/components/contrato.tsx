@@ -224,11 +224,46 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
       <main className="conteudo-principal-abaixo">
         {abaAtiva === 'cards-gerais' && (
           <div className="novos-cards-grid">
-            <div className="novo-card-item"><h3>Novo Card 1</h3><p>Conteúdo original...</p></div>
-            <div className="novo-card-item"><h3>Novo Card 2</h3><p>Conteúdo original...</p></div>
-            <div className="novo-card-item"><h3>Novo Card 3</h3><p>Conteúdo original...</p></div>
-            <div className="novo-card-item"><h3>Novo Card 4</h3><p>Conteúdo original...</p></div>
-          </div>
+
+            {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
+            <div className="caixa-card-fatura-limpa">
+              <div className="card-linha-horizontal">
+                <h3>Fatura</h3>
+                <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar faturas →</button>
+              </div>
+              conteudo em contrução
+            </div>
+
+
+            {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
+            <div className="caixa-card-fatura-limpa">
+              <div className="card-linha-horizontal">
+                <h3>Ultimos pedidos</h3>
+                <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar pedidos →</button>
+              </div>
+              conteudo em contrução
+            </div>
+
+            {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
+            <div className="caixa-card-fatura-limpa">
+              <div className="card-linha-horizontal">
+                <h3>Veículos</h3>
+                <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Consultar veículos →</button>
+              </div>
+              conteudo em contrução
+            </div>
+
+            {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
+            <div className="caixa-card-fatura-limpa">
+              <div className="card-linha-horizontal">
+                <h3>Tag</h3>
+                <button className="link-fatura-direita" onClick={() => setAbaAtiva('historico-fatura')}>Ativar tags →</button>
+              </div>
+              conteudo em contrução
+            </div>
+
+           </div>
+
         )}
     
         {abaAtiva === 'detalhes-pedagio' && (

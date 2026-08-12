@@ -4,8 +4,22 @@
   width: 80% !important;
   height: 100% !important; /* Ocupa toda a altura injetada pelo App.tsx */
   overflow: hidden !important; /* Impede vazamentos */
+  margin-bottom: 100px;
 }
 
+.pagina-container-a h1 {
+padding-left: 200px !important;
+}
+
+/* O VERDADEIRO GERENCIADOR DE ROLAGEM INTERNA */
+.conteudo-principal-abaixo-a {
+  width: 100% !important;
+  flex: 1 !important;        /* Ocupa todo o espaço restante que sobrar abaixo do header */
+  overflow-y: auto !important; /* Cria a barra de rolagem apenas para as tabelas ou listas longas! */
+  padding-top: 90px !important;
+  padding-left: 200px !important;
+  box-sizing: border-box !important;
+}
 
 /* Força exatamente 2 colunas lado a lado */
 .novos-cards-grid {
@@ -78,4 +92,51 @@
   background-color: #222222 !important;
   color: #f1eaea !important;
   padding-left: 16px !important; /* Efeito sutil de deslocamento no hover */
+}
+
+
+/* Limpa qualquer herança antiga e cria um bloco zerado */
+.caixa-card-fatura-limpa {
+  background-color: #1a1a1a !important; /* Cor de fundo escura do seu painel */
+  border: 1px solid #2d2d2d !important;
+  border-radius: 8px !important;
+  padding: 16px 20px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+
+/* Cria o elástico horizontal perfeito */
+.caixa-card-fatura-limpa .card-linha-horizontal {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important; /* Texto na esquerda e Link na direita */
+  align-items: center !important;             /* Alinha ambos no centro vertical */
+  width: 100% !important;
+  gap: 15px !important;
+}
+
+/* Garante que o H3 do cartão não herde margens gigantes antigas */
+.caixa-card-fatura-limpa h3 {
+  margin: 0 !important;
+  font-size: 1.1rem !important;
+  color: #ffffff !important;
+  text-align: left !important;
+}
+
+/* Link minimalista na extrema direita */
+.caixa-card-fatura-limpa .link-fatura-direita {
+  background: transparent !important;
+  border: none !important;
+  color: #6366f1 !important; /* Roxo/azul moderno */
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+}
+
+.caixa-card-fatura-limpa .link-fatura-direita:hover {
+  color: #4f46e5 !important;
+  text-decoration: underline !important;
 }
