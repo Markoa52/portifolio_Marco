@@ -51,174 +51,126 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
     <div className="pagina-container">
         
       <header className="header-sistema-novo">
-        
-        <div className="layout-horizontal-container-novo"> 
-          
-           {/* BLOCO ÚNICO EM LINHA RETA: Menu, Contrato, Saldo e Gastos */}
-           <div className="bloco-valores-layout-painel">
-
-            {/* ==========================================
-            1. MENU HAMBÚRGUER (Agora colado na direita, abrindo a linha de valores)
-            ========================================== */}
-            <div className="central-menu-container">
-            <MenuHamburguer  setAbaAtiva={setAbaAtiva} setPaginaAtiva={setPaginaAtiva} />
-            </div>
-
-            {/* ITEM 1: INÍCIO */}
-            <div className="card" onClick={() => { setAbaAtiva('cards-gerais'); setMenuAberto(null); }} style={{ cursor: 'pointer' }}>
-              <img src={inicial} alt="Ícone" className="card-imagem"/>
-              <h2>Inicio</h2>
-            </div>
-
-            {/* ITEM 2: FROTA */}
-            <div className="card-com-submenu">
-              <div className="card" onClick={() => alternarSubmenu('frota')} style={{ cursor: 'pointer' }}>
-                <img src={frota} alt="Ícone" className="card-imagem"/>
-                <h2>Frota ▾</h2>
-              </div>
-              {menuAberto === 'frota' && (
-                <ul className="submenu-lista">
-                  {/* CORREÇÃO 2: Plugado o clique real para abrir a tela de Listar Frota */}
-                  <li onClick={() => {
-                    setAbaAtiva('listar-frota');
-                    setMenuAberto(null);
-                  }}>
-                    Listar Veículos
-                  </li>
-                  {/* <li onClick={() => console.log('Manutenção')}>Manutenção</li>
-                  <li onClick={() => console.log('Abastecimento')}>Abastecimento</li> */}
-                </ul>
-              )}
-            </div>
-            
-            {/* ITEM 3: FATURAS */}
-            <div className="card-com-submenu">
-              <div className="card" onClick={() => alternarSubmenu('faturas')} style={{ cursor: 'pointer' }}>
-                <img src={fatura} alt="Ícone" className="card-imagem"/>
-                <h2>Faturas ▾</h2>
-              </div>
-              {menuAberto === 'faturas' && (
-                <ul className="submenu-lista">
-                  <li onClick={() => {
-                    setAbaAtiva('faturas-abertas'); 
-                    setMenuAberto(null);
-                  }}>
-                    Faturas Abertas
-                  </li>
-                  <li onClick={() => {
-                    setAbaAtiva('historico-fatura'); 
-                    setMenuAberto(null);              
-                  }}>
-                    Histórico de Pagamentos
-                  </li>
-                </ul>
-              )}
-            </div>
-
-            {/* ITEM 4: RELATÓRIOS */}
-            <div className="card-com-submenu">
-              <div className="card" onClick={() => alternarSubmenu('relatorios')} style={{ cursor: 'pointer' }}>
-                <img src={relatorio} alt="Ícone" className="card-imagem"/>
-                <h2>Relatórios ▾</h2>
-              </div>
-              {menuAberto === 'relatorios' && (
-              <ul className="submenu-lista">
-                <li onClick={() => {
-                  setAbaAtiva('relatorio-passagem');
-                  setMenuAberto(null);
-                }}>
-                  Passagens
-                </li>
-                {/* SEGUNDO LINK ATUALIZADO */}
-                <li onClick={() => {
-                  setAbaAtiva('relatorio-extrato'); // <-- Abre a tela de extrato
-                  setMenuAberto(null);
-                }}>
-                  Extrato
-                </li>
-              </ul>
-            )}
-            </div>
-
-            {/* <div className="card-com-submenu">
-              <div className="card" style={{ cursor: 'pointer' }}>
-                <img src={Detalhes} alt="Ícone" className="card-imagem"/>
-                <h2>Detalhes</h2>
-              </div>
-            </div> */}
-
-            
-
-          </div>
-
-          {/* 1. BLOCO DE SALDO DO CONTRATO COM ESPAÇAMENTO */}
-          <div className="container-saldo-Vpr-novo" >
-            
-            {/* Linha superior: Informações do Contrato */}
-            <div style={{ display: 'flex', flexDirection: 'column'}}>
-              <span  className="legenda-mini-painel">CONTRATO:</span>
-              <span>1 Teste</span>
-            </div>
-          
-            {/* Linha inferior: Título do Saldo e Valor (Adicionado margin-top para dar o espaço) */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: '30px' }}>
-              <span className="legenda-mini-painel">SALDO VALE PEDÁGIO</span>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', height: '35px' }}>
-                <span>R$ 1.000,00</span>     
-                
-                <div 
-                  onClick={() => setAbaAtiva('detalhes-pedagio')} 
-                  className="botao-icone-vpr-click"
-                  title="Ver detalhes do saldo"
-                >
-                  <img src={DetalhesVpr} alt="Ver detalhes" className="card-imagem-vpr-nova" />
-                </div>
-              </div>
-            </div>  
-            
-          </div>
-
-
-          {/* Lado Direito: Bloco de Gastos Atuais com Barra de Progressão */}
-          {/* 2. GASTOS ATUAIS AUTOMÁTICO E DINÂMICO */}
-          <div className="container-gastos-painel" style={{ display: 'flex', flexDirection: 'column', gap: '4px', width: '160px' }}>
-          <div className="gastos-titulos-linha" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-          <span className="legenda-mini-painel">GASTOS ATUAIS</span>
+      <div className="layout-horizontal-container-novo"> 
     
-          {/* Exibe a porcentagem real arredondada */}
-          <span className="gastos-porcentagem-numero" style={{ fontSize: '0.75rem', color: porcentagemConsumida >= 90 ? '#ef4444' : '#6366f1', fontWeight: 700 }}>
+    {/*UNIFICADO: Agora TODOS os blocos (Menu, Contrato, Saldo e Gastos) estão no mesmo contêiner de linha */}
+    <div className="bloco-valores-layout-painel">
+
+      {/* ==========================================
+      1. MENU HAMBÚRGUER (Aparece no PC, some no Celular)
+      ========================================== */}
+      <div className="central-menu-container">
+        <MenuHamburguer setAbaAtiva={setAbaAtiva} setPaginaAtiva={setPaginaAtiva} />
+      </div>
+
+      {/* ITEM 1: INÍCIO */}
+      <div className="card" onClick={() => { setAbaAtiva('cards-gerais'); setMenuAberto(null); }} style={{ cursor: 'pointer' }}>
+        <img src={inicial} alt="Ícone" className="card-imagem"/>
+        <h2>Inicio</h2>
+      </div>
+
+      {/* ITEM 2: FROTA */}
+      <div className="card-com-submenu">
+        <div className="card" onClick={() => alternarSubmenu('frota')} style={{ cursor: 'pointer' }}>
+          <img src={frota} alt="Ícone" className="card-imagem"/>
+          <h2>Frota ▾</h2>
+        </div>
+        {menuAberto === 'frota' && (
+          <ul className="submenu-lista">
+            <li onClick={() => { setAbaAtiva('listar-frota'); setMenuAberto(null); }}>
+              Listar Veículos
+            </li>
+          </ul>
+        )}
+      </div>
+      
+      {/* ITEM 3: FATURAS */}
+      <div className="card-com-submenu">
+        <div className="card" onClick={() => alternarSubmenu('faturas')} style={{ cursor: 'pointer' }}>
+          <img src={fatura} alt="Ícone" className="card-imagem"/>
+          <h2>Faturas ▾</h2>
+        </div>
+        {menuAberto === 'faturas' && (
+          <ul className="submenu-lista">
+            <li onClick={() => { setAbaAtiva('faturas-abertas'); setMenuAberto(null); }}>
+              Faturas Abertas
+            </li>
+            <li onClick={() => { setAbaAtiva('historico-fatura'); setMenuAberto(null); }}>
+              Histórico de Pagamentos
+            </li>
+          </ul>
+        )}
+      </div>
+
+      {/* ITEM 4: RELATÓRIOS */}
+      <div className="card-com-submenu">
+        <div className="card" onClick={() => alternarSubmenu('relatorios')} style={{ cursor: 'pointer' }}>
+          <img src={relatorio} alt="Ícone" className="card-imagem"/>
+          <h2>Relatórios ▾</h2>
+        </div>
+        {menuAberto === 'relatorios' && (
+          <ul className="submenu-lista">
+            <li onClick={() => { setAbaAtiva('relatorio-passagem'); setMenuAberto(null); }}>
+              Passagens
+            </li>
+            <li onClick={() => { setAbaAtiva('relatorio-extrato'); setMenuAberto(null); }}>
+              Extrato
+            </li>
+          </ul>
+        )}
+      </div>
+
+      {/* ==========================================
+       2. BLOCO DO CONTRATO CORRIGIDO
+       ========================================== */}
+      <div className="coluna-financeira-contrato" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <span className="legenda-mini-painel">CONTRATO</span>
+        <span className="valor-num-painel-texto" style={{ fontSize: '0.8rem', color: '#ffffff', fontWeight: 600, marginTop: '2px' }}>1 Teste</span>
+      </div>
+      
+      {/* ==========================================
+          3. BLOCO DO SALDO VALE PEDÁGIO CORRIGIDO
+          ========================================== */}
+      <div className="container-saldo-Vpr-novo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <span className="legenda-mini-painel">SALDO PEDÁGIO</span>
+        <div className="valor-com-icone-linha" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+          <span className="valor-num-painel" style={{ fontSize: '0.8rem', fontWeight: 700 }}>R$ 1.000,00</span>     
+          <div onClick={() => setAbaAtiva('detalhes-pedagio')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+            <img src={DetalhesVpr} alt="Ver detalhes" className="card-imagem-vpr-nova" style={{ width: '10px', height: '10px' }} />
+          </div>
+        </div>
+      </div>  
+      
+      {/* ==========================================
+          4. BLOCO DE GASTOS ATUAIS CORRIGIDO
+          ========================================== */}
+      <div className="container-gastos-painel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <div className="gastos-titulos-linha" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+          <span className="legenda-mini-painel">GASTOS ATUAIS</span>
+          <span className="gastos-porcentagem-numero" style={{ fontSize: '0.6rem', color: '#6366f1', fontWeight: 700 }}>
             {Math.round(porcentagemConsumida)}%
           </span>
-          </div>
-  
-          {/* Exibe o valor gasto formatado automaticamente */}
-          <span className="valor-num-painel">{formatarMoeda(valorGasto)}</span>
-  
-          {/* A BARRA DE PROGRESSÃO: O preenchimento muda de cor se passar de 90% */}
-          <div style={{ width: '100%', height: '6px', backgroundColor: '#222222', borderRadius: '10px', overflow: 'hidden', display: 'block', marginTop: '6px' }}>
+        </div>
+      
+        <span className="valor-num-painel" style={{ fontSize: '0.8rem', fontWeight: 700, marginTop: '2px' }}>{formatarMoeda(valorGasto)}</span>
+      
+        <div className="barra-progresso-painel-fundo" style={{ width: '100%', height: '3px', backgroundColor: '#222222', borderRadius: '10px', overflow: 'hidden', marginTop: '4px' }}>
           <div 
-          style={{ 
-          width: `${porcentagemConsumida}%`, // <-- A MÁGICA: A largura agora é dinâmica!
-          height: '100%', 
-          background: porcentagemConsumida >= 90 
-          ? 'linear-gradient(90deg, #ef4444, #b91c1c)' // Vermelho de alerta se estourar 90%
-          : 'linear-gradient(90deg, #4f46e5, #6366f1)', // Roxo padrão do sistema
-          borderRadius: '10px', 
-          display: 'block',
-          transition: 'width 0.5s ease-in-out' // Cria um efeito suave de deslize quando o valor muda
-          }}
-          
-          
-        ></div>
-        
+            style={{ 
+              width: `${porcentagemConsumida}%`, 
+              height: '100%', 
+              background: porcentagemConsumida >= 90 ? 'linear-gradient(90deg, #ef4444, #b91c1c)' : 'linear-gradient(90deg, #4f46e5, #6366f1)', 
+              borderRadius: '10px'
+            }}
+          ></div>
         </div>
-        <span>Limite: {formatarMoeda(valorMeta)} </span>
-        
+              <span className="legenda-limite-texto">Limite: {formatarMoeda(valorMeta)}</span>
+            </div>
+      
+          </div>
         </div>
-        </div>
-        
       </header>
+
 
       {/* CONTEÚDO PRINCIPAL (Muda dinamicamente conforme a aba) */}
       <main className="conteudo-principal-abaixo">

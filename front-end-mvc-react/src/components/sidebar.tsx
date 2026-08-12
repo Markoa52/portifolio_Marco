@@ -1,6 +1,7 @@
 import React from 'react';
 // 1. IMPORTA O LOGO COMO UMA VARIÁVEL NO TOPO DO ARQUIVO
 import logoEmpresa from '../assets/logo.png'; 
+import './sideBar.css'
 
 interface ISidebarProps {
   paginaAtiva: 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato' | 'atendimento';
@@ -22,7 +23,7 @@ export const Sidebar: React.FC<ISidebarProps> = ({ paginaAtiva, setPaginaAtiva }
           className={`nav-btn ${paginaAtiva === 'visao-geral' ? 'active' : ''}`}
           onClick={() => setPaginaAtiva('visao-geral')}
         >
-          📊 Visão Geral
+        Visão Geral
         </button>
 
         {/* Botão Gerenciador */}
@@ -30,7 +31,7 @@ export const Sidebar: React.FC<ISidebarProps> = ({ paginaAtiva, setPaginaAtiva }
           className={`nav-btn ${paginaAtiva === 'gerenciador' ? 'active' : ''}`}
           onClick={() => setPaginaAtiva('gerenciador')}
         >
-          ⚙️ Gerenciador
+        Gerenciador
         </button>
 
         {/* Botão Dashboard */}
@@ -38,7 +39,7 @@ export const Sidebar: React.FC<ISidebarProps> = ({ paginaAtiva, setPaginaAtiva }
           className={`nav-btn ${paginaAtiva === 'dashboard' ? 'active' : ''}`}
           onClick={() => setPaginaAtiva('dashboard')}
         >
-          📈 Dashboard GLPI
+        Dash GLPI
         </button>
 
         {/* Botão ConsumoAPI */}
@@ -46,7 +47,7 @@ export const Sidebar: React.FC<ISidebarProps> = ({ paginaAtiva, setPaginaAtiva }
           className={`nav-btn ${paginaAtiva === 'consumoAPI' ? 'active' : ''}`}
           onClick={() => setPaginaAtiva('consumoAPI')}
         >
-         📍 API externa CEP
+        API CEP
         </button>
 
         {/* Botão ConsumoAPI */}

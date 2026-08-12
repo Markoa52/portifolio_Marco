@@ -1,91 +1,11 @@
 /* ==========================================================================
    1. RESET UNIVERSAL, FONTES E CORES BASE IMONITORE (ATUALIZADO)
    ========================================================================== */
-html {
-  /* 🌟 O SEGREDO: Tranca o espaço da barra de rolagem em todas as abas,
-     impedindo que o layout mude de tamanho ou dê saltos ao trocar de tela! */
-  scrollbar-gutter: stable !important;
-}
-
-* {
-  box-sizing: border-box !important;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   font-family: 'Segoe UI', Arial, sans-serif !important;
   background-color: #121212 !important;
   color: #fff !important;
   font-size: 0.9rem !important;
-}
-/* ... restante do arquivo index.css continua igual abaixo ... */
-
-
-/* ── SIDEBAR FIXA NO PC ── */
-.sidebar {
-  width: 230px;
-  background-color: #1e1e1e;
-  border-right: 1px solid #2d2d2d;
-  display: flex;
-  flex-direction: column;
-  padding: 15px;
-}
-
-.sidebar .brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #2d2d2d;
-}
-
-.sidebar .company-logo {
-  max-height: 45px;
-  width: auto;
-}
-
-.sidebar .brand h2 {
-  font-size: 0.82rem !important;
-  color: #888 !important;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.nav-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #2d2d2d;
-  color: #fff;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 0.88rem !important;
-  font-weight: 600 !important;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
-  width: 100%;
-}
-
-.nav-btn:hover {
-  background-color: #3d3d3d;
-  transform: translateX(4px);
-}
-
-.nav-btn.active {
-  background-color: #3399ff;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(51, 153, 255, 0.25);
 }
 
 /* ==========================================================================
@@ -308,7 +228,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
 
 .main-content button[style*="background-color: #e63946"], .main-content .nav-btn[style*="background-color: #e63946"] { width: auto !important; padding: 8px 14px !important; font-size: 0.85rem !important; border-radius: 4px !important; display: inline-flex !important; }
 .mensagem-status { 
-  margin: 0 0 15px 0 !important; /* 🔥 CORREÇÃO: Zerada a margem do topo (primeiro zero) para eliminar a linha fantasma! */
+  margin: 0 0 15px 0 !important; /* CORREÇÃO: Zerada a margem do topo (primeiro zero) para eliminar a linha fantasma! */
   padding: 10px; 
   border-radius: 6px; 
   font-size: 0.88rem; 
@@ -329,7 +249,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     border-right: none !important; 
     border-bottom: 1px solid #2d2d2d !important; 
     padding: 12px !important; 
-    display: flex !important; /* 🌟 REPOSTO: Ativa o alinhamento flexível móvel */
+    display: flex !important; /* REPOSTO: Ativa o alinhamento flexível móvel */
     flex-direction: column !important;
     gap: 10px !important;
     box-sizing: border-box !important;
@@ -347,7 +267,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
   }
 
   .nav-menu { 
-    display: flex !important; /* 🌟 REPOSTO: Força os botões a ficarem lado a lado no celular */
+    display: flex !important; /* REPOSTO: Força os botões a ficarem lado a lado no celular */
     flex-direction: row !important; 
     gap: 8px !important; 
     overflow-x: auto !important; /* Ativa o deslizar de dedo se a tela for muito estreita */
@@ -431,118 +351,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
 }
 
 /* ==========================================================================
-   25. CONTROLO DE ALINHAMENTO GEOMÉTRICO (PRODUÇÃO)
-   ========================================================================== */
-
-/* ── ALINHAMENTO PARA COMPUTADOR (MONITORES) ── */
-@media (min-width: 1025px) {
-  .tabela-sistema th,
-  .tabela-sistema td {
-    text-align: left !important; /* Textos e cabeçalhos alinhados à esquerda para leitura limpa */
-    padding: 10px 15px !important;
-  }
-  
-  /* Força a centralização apenas na coluna dos botões operacionais */
-  .tabela-sistema th.col-operacoes,
-  .tabela-sistema td.coluna-acoes-botoes {
-    text-align: center !important;
-    justify-content: center !important;
-  }
-}
-
-/* ── ALINHAMENTO PARA SMARTPHONE (MOBILE) ── */
-@media (max-width: 1024px) {
-  .tabela-sistema th,
-  .tabela-sistema td {
-    text-align: center !important; /* No telemóvel tudo se centraliza automaticamente */
-    padding: 10px 6px !important;
-  }
-}
-/* ==========================================================================
-   26. AJUSTE DE SIMETRIA DOS BOTÕES DO TOPO E FIX DO DASHBOARD
-   ========================================================================== */
-
-/* ── MONITORES GRANDES (COMPUTADOR) ── */
-@media (min-width: 1025px) {
-  /* Alinha perfeitamente o texto "Gerenciador de Automações" à esquerda e os botões à direita */
-  .header-container-sistema {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important; /* Título numa ponta, botões na outra */
-    align-items: center !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-bottom: 25px !important;
-    gap: 20px !important;
-  }
-
-  /* Garante que o título fica retilíneo à esquerda */
-  .header-container-sistema .titulo-com-linha {
-    margin: 0 !important;
-    text-align: left !important;
-    border-bottom: none !important; /* Remove a linha do H1 para usar o padrão limpo */
-    padding-bottom: 0 !important;
-    width: auto !important;
-  }
-
-  /* Força os botões Incluir e Salvar a ficarem lado a lado alinhados de forma simétrica */
-  .botoes-topo-gerenciador {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 12px !important; /* Afastamento elegante entre os dois botões */
-    align-items: center !important;
-    justify-content: flex-end !important;
-    flex: none !important;
-  }
-}
-
-/* ── SMARTPHONES E TABLETS (MOBILE) ── */
-@media (max-width: 1024px) {
-  /* Centraliza o título e joga os botões para baixo de forma simétrica no celular */
-  .header-container-sistema {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    gap: 15px !important;
-    width: 100% !important;
-  }
-
-  .header-container-sistema .titulo-com-linha {
-    text-align: center !important;
-    width: 100% !important;
-  }
-
-  .botoes-topo-gerenciador {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: center !important; /* Centralização milimétrica no smartphone */
-    gap: 10px !important;
-    width: 100% !important;
-    flex-wrap: nowrap !important; /* Impede os botões de quebrarem linha */
-  }
-
-  /* 🌟 CORREÇÃO DA ROLAGEM HORIZONTAL DO DASHBOARD: Destrói qualquer vazamento de pixel no menu 🌟 */
-  html, body, #root, .main-content, .sidebar {
-    max-width: 100vw !important;
-    overflow-x: hidden !important; /* Proíbe terminantemente o surgimento da barra de rolagem horizontal */
-  }
-
-  /* Força o contêiner de gráficos do Dashboard a respeitar as bordas da tela móvel */
-  .chart-container, 
-  .grid, 
-  .card,
-  div[style*="width: 100%"] {
-    max-width: 100% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-}
-/* ==========================================================================
-   27. BLOQUEIO DE DESLOCAMENTO (ANTI-BUG DE ROLAGEM NO CLICK MOBILE)
+   6. BLOQUEIO DE DESLOCAMENTO (ANTI-BUG DE ROLAGEM NO CLICK MOBILE)
    ========================================================================== */
 @media (max-width: 1024px) {
-  /* 🌟 O TRUQUE DE OURO: Proíbe terminantemente o botão de andar para o lado no telemóvel */
+  /* O TRUQUE DE OURO: Proíbe terminantemente o botão de andar para o lado no telemóvel */
   .nav-btn:hover,
   .nav-btn:active,
   .nav-btn.active {
@@ -560,8 +372,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     box-sizing: border-box !important;
   }
 }
+
 /* ==========================================================================
-   29. RESET DE REDIMENSIONAMENTO ELÁSTICO AUTOMÁTICO (MÓVEL)
+   7. RESET DE REDIMENSIONAMENTO ELÁSTICO AUTOMÁTICO (MÓVEL)
    ========================================================================== */
 @media (max-width: 1024px) {
   /* 1. Força a moldura a libertar a tabela de qualquer trava de pixel anterior */
@@ -622,11 +435,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     flex: none !important;
   }
 }
+
 /* ==========================================================================
-   34. FLUIDIFICAÇÃO TIPOGRÁFICA PARA TEXTOS H2 (DESIGN PREMIUM MOBILE)
+   8. FLUIDIFICAÇÃO TIPOGRÁFICA PARA TEXTOS H2 (DESIGN PREMIUM MOBILE)
    ========================================================================== */
 
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
+/* ── NOS COMPUTADORES (MONITORES GRANDES) ── */
 @media (min-width: 1025px) {
   .ferramentas-tabela h2,
   .chart-container h3,
@@ -637,7 +451,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
   }
 }
 
-/* ── 📱 NOS SMARTPHONES (ESCALA ELÁSTICA AUTOMÁTICA POR HARDWARE) ── */
+/* ── NOS SMARTPHONES (ESCALA ELÁSTICA AUTOMÁTICA POR HARDWARE) ── */
 @media (max-width: 1024px) {
   .ferramentas-tabela h2,
   .main-content h2,
@@ -659,11 +473,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     width: 100% !important;
   }
 }
+
 /* ==========================================================================
-   35. ALINHAMENTO IMPERIAL À ESQUERDA UNIVERSAL (PC & SMARTPHONE)
+   9. ALINHAMENTO IMPERIAL À ESQUERDA UNIVERSAL (PC & SMARTPHONE)
    ========================================================================== */
 
-/* ── 💻 NO COMPUTADOR E 📱 NO SMARTPHONE (MANDATO GERAL) ── */
+/* ── NO COMPUTADOR E 📱 NO SMARTPHONE (MANDATO GERAL) ── */
 .titulo-com-linha,
 .header-container-sistema h1,
 .main-content h1,
@@ -686,7 +501,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
   padding-left: 12px !important; /* Recuo de segurança para o texto não colar na borda */
 }
 
-/* ── 🔒 EXCEÇÃO DE SIMETRIA: Apenas os botões operacionais mantêm o centro ── */
+/* ── EXCEÇÃO DE SIMETRIA: Apenas os botões operacionais mantêm o centro ── */
 .tabela-sistema th.col-operacoes,
 .tabela-sistema th.col-acoes,
 .tabela-sistema td.coluna-acoes-botoes,
@@ -705,7 +520,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
 }
 
 /* ==========================================================================
-   41. BLINDAGEM DE CABEÇALHO EM LINHA ÚNICA HORIZONTAL (ANTI-QUEBRA MÓVEL)
+   10. BLINDAGEM DE CABEÇALHO EM LINHA ÚNICA HORIZONTAL (ANTI-QUEBRA MÓVEL)
    ========================================================================== */
 
 /* ── COMPORTAMENTO UNIVERSAL (COMPUTADOR E TELEMÓVEL) ── */
@@ -769,411 +584,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     display: inline-flex !important;
   }
 }
-/* ==========================================================================
-   42. REDIMENSIONAMENTO ELÁSTICO DE BOTÕES PRINCIPAIS POR HARDWARE
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  .botoes-topo-gerenciador-horizontal .btn-crud,
-  .btn-crud {
-    font-size: 0.85rem !important; /* Tamanho de texto padrão corporativo */
-    padding: 8px 16px !important;  /* Espaçamento interno confortável para PC */
-    min-width: 130px !important;
-  }
-}
-
-/* ── 📱 NOS SMARTPHONES (MÁXIMA COMPRESSÃO DINÂMICA) ── */
-@media (max-width: 1024px) {
-  .botoes-topo-gerenciador-horizontal .btn-crud,
-  .btn-crud {
-    flex: none !important;
-    width: auto !important; /* Desliga larguras forçadas antigas */
-    max-width: fit-content !important;
-    
-    /* 🌟 O SEGREDO: O texto do botão diminui dinamicamente com base na tela (vw) */
-    font-size: clamp(0.7rem, 2.6vw, 0.8rem) !important; 
-    
-    /* 🌟 O SEGREDO: O preenchimento interno encolhe de forma reativa para o botão ficar curto */
-    padding: clamp(5px, 1.8vw, 7px) clamp(8px, 2.5vw, 12px) !important;
-    
-    border-radius: 4px !important;
-    white-space: nowrap !important; /* Impede o texto de quebrar dentro do botão */
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: auto !important;
-  }
-}
-/* ==========================================================================
-   45. REPOSIÇÃO DE LINHA DECORATIVA E ESPAÇAMENTO DE SEGURANÇA (TOPO MÓVEL)
-   ========================================================================== */
-
-/* ── COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  .header-container-sistema-bloco {
-    margin-bottom: 25px !important;
-  }
-}
-
-/* ── SMARTPHONES E TABLETS (MOBILE) ── */
-@media (max-width: 1024px) {
-  /* 1. Força o bloco inteiro do cabeçalho a afastar-se da barra de pesquisa abaixo */
-  .header-container-sistema-bloco {
-    margin-bottom: 20px !important; /* 🔥 Afasta o bloco completo da pesquisa abaixo */
-    width: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 15px !important; /* Espaço simétrico entre o texto e a linha de botões */
-  }
-
-  /* 2. REPOSTO: Adiciona a linha cinzenta decorativa abaixo do título */
-  .titulo-gerenciador-fluxos {
-    border-bottom: 2px solid #2d2d2d !important; /* 🔥 Reposta a linha cinzenta de TI */
-    padding-bottom: 12px !important; /* Espaço confortável entre as letras e a linha */
-    width: 100% !important; /* Obriga a linha a esticar de ponta a ponta na tela */
-    display: block !important;
-  }
-
-  /* 3. Desgruda os dois botões, adicionando uma margem de respiração entre eles */
-  .botoes-topo-gerenciador-esquerda {
-    gap: 12px !important; /* 🔥 MUDANÇA: Afasta os botões Incluir e Salvar entre si */
-    padding-top: 5px !important; /* Espaço de segurança em relação à linha cinzenta acima */
-    width: 100% !important;
-    display: flex !important;
-    justify-content: flex-start !important;
-  }
-
-  /* Ajusta a margem superior do painel cinzento de pesquisa para garantir o distanciamento */
-  .painel-operacional {
-    margin-top: 10px !important; /* Evita que o painel cole na barra de botões */
-  }
-}
 
 /* ==========================================================================
-   47. AJUSTE DE APROXIMAÇÃO DE BOTÕES (PC / MONITOR GRANDE)
+   11. AJUSTE CIRÚRGICO DE DISTANCIAMENTO DE FERRAMENTAS (DESGRUDA BOTÕES)
    ========================================================================== */
 
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* Altera para flex-start para que os botões nasçam logo após o fim do título */
-  .header-container-sistema-bloco {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: flex-start !important; /* 🔥 MUDANÇA: Traz os botões para perto do texto */
-    align-items: flex-end !important; /* Alinha a base dos botões com a base do título */
-    width: 100% !important;
-    gap: 30px !important; /* 🔥 Espaçamento elegante de aproximação entre o H1 e os botões */
-    margin-bottom: 25px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Faz com que o título ocupe apenas a largura real das suas palavras, sem empurrar os botões */
-  .titulo-gerenciador-fluxos {
-    width: auto !important; /* 🔥 Liberta o H1 para não ocupar 100% e deixar os botões encostarem */
-    display: inline-block !important;
-    margin: 0 !important;
-    border-bottom: 2px solid #2d2d2d !important; /* Mantém a linha cinzenta premium */
-    padding-bottom: 8px !important;
-  }
-
-  .botoes-topo-gerenciador-esquerda {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 12px !important; /* Distanciamento simétrico entre os dois botões */
-    align-items: center !important;
-    justify-content: flex-start !important;
-    flex: none !important;
-    padding-bottom: 4px !important; /* Ajuste milimétrico de altura em relação à linha cinzenta */
-  }
-}
-/* ==========================================================================
-   48. LINHA PREMIUM EXTENSA DE PONTA A PONTA COM BOTÕES NO FINAL (PC)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* 1. Transforma o contêiner mãe em uma barra elástica de largura total */
-  .header-container-sistema-bloco {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important; /* Título no início à esquerda, botões no final absoluto à direita */
-    align-items: flex-end !important; /* Alinha a base do texto e botões milimetricamente sobre a linha */
-    width: 100% !important;
-    max-width: 100% !important;
-    /* 🌟 O SEGREDO 1: A linha decorativa cinza é aplicada aqui na div mãe para esticar na tela toda! */
-    border-bottom: 2px solid #2d2d2d !important; 
-    padding-bottom: 12px !important; /* Espaço confortável de respiração até à linha */
-    margin-bottom: 25px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 2. Liberta o H1 de ter linhas isoladas individuais abaixo dele */
-  .titulo-gerenciador-fluxos {
-    font-size: 1.5rem !important;
-    font-weight: 700 !important;
-    color: #fff !important;
-    margin: 0 !important;
-    text-align: left !important;
-    width: auto !important; /* Ocupa apenas o tamanho do texto */
-    border-bottom: none !important; /* Remove a linha antiga curta */
-    padding-bottom: 0 !important;
-    display: inline-block !important;
-  }
-
-  /* 3. Crava os botões no final absoluto da tela à direita com afastamento elegante entre eles */
-  .botoes-topo-gerenciador-esquerda {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 12px !important; /* Espaçamento cirúrgico entre os botões Incluir e Salvar */
-    align-items: center !important;
-    justify-content: flex-end !important; /* Empurra e alinha tudo no final da linha */
-    flex: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-}
-/* ==========================================================================
-   49. NIVELAMENTO VERTICAL ABSOLUTO (ANTI-LINHA FANTASMA NO TOPO)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* Força rigorosamente o mesmo recuo inferior nos dois cabeçalhos no PC */
-  .header-container-sistema,
-  .header-container-sistema-bloco {
-    margin-bottom: 20px !important; /* Espaço exato idêntico para as duas telas */
-    padding-bottom: 12px !important;
-  }
-
-  /* Garante que o painel operacional de ambas as telas nasce no mesmo pixel do monitor */
-  .visao-geral .painel-operacional,
-  .gerenciador .painel-operacional,
-  .main-content .painel-operacional {
-    margin-top: 0 !important; /* Reseta qualquer empurrão que desalinhava o topo */
-  }
-}
-
-/* ── 📱 NOS SMARTPHONES (AMBIENTE MÓVEL RESPONSIVO) ── */
-@media (max-width: 1024px) {
-  /* Unifica o comportamento de afastamento no telemóvel */
-  .header-container-sistema,
-  .header-container-sistema-bloco {
-    margin-bottom: 15px !important;
-    gap: 12px !important;
-  }
-  
-  .painel-operacional {
-    margin-top: 0 !important;
-  }
-}
-/* ==========================================================================
-   50. TRAVA DE ALTURA DE CABEÇALHO (ANTI-DESALINHAMENTO POR BOTÕES NO PC)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* 🌟 O SEGREDO SUPREMO: Crava rigorosamente a mesma altura física de 50px 
-     nos dois cabeçalhos, impedindo que os botões do Gerenciador empurrem o layout para baixo! */
-  .header-container-sistema,
-  .header-container-sistema-bloco {
-    height: 50px !important; /* Fixa um teto de altura idêntico para as duas telas */
-    min-height: 50px !important;
-    max-height: 50px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important; /* Alinha o título e os botões de forma centralizada por dentro */
-    margin-bottom: 25px !important; /* Recuo fixo padrão para as duas telas */
-    padding-bottom: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Garante que o H1 do Gerenciador e dos Detalhes não quebra e mantém a simetria */
-  .titulo-gerenciador-fluxos {
-    line-height: 50px !important; /* Centraliza o texto verticalmente dentro da trava de 50px */
-    border-bottom: none !important; /* A linha decorativa global cuida do fecho */
-  }
-
-  /* Ajusta a linha decorativa cinzenta unificada para nascer no mesmo pixel nas duas telas */
-  .header-container-sistema-bloco {
-    border-bottom: 2px solid #2d2d2d !important;
-    padding-bottom: 5px !important;
-  }
-}
-
-/* ── 📱 NOS SMARTPHONES (MANTÉM O SEU MOBILE PROTEGIDO E INTACTO) ── */
-@media (max-width: 1024px) {
-  /* No telemóvel, deixa a altura livre (auto) para os botões quebrarem para baixo organizados */
-  .header-container-sistema,
-  .header-container-sistema-bloco {
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-  }
-}
-/* ==========================================================================
-   53. NIVELAMENTO DE ALTURA DE LINHAS (SIMETRIA MILIMÉTRICA ENTRE TABELAS)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* 1. Trava uma altura de linha e altura total idêntica para todas as linhas das duas tabelas */
-  .tabela-sistema tr {
-    height: 42px !important;    /* 🔥 O SEGREDO 1: Crava 42 pixels fixos de altura para todas as linhas */
-    max-height: 42px !important;
-    min-height: 42px !important;
-  }
-
-  /* 2. Equaliza o preenchimento e a altura interna de todas as células de dados */
-  .tabela-sistema td {
-    height: 42px !important;
-    padding: 0px 15px !important; /* 🔥 O SEGREDO 2: Zera o padding do topo/base e controla o respiro pelas laterais */
-    line-height: 42px !important; /* Centraliza o texto verticalmente de forma matemática no meio da linha */
-    vertical-align: middle !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 3. Garante que os cabeçalhos das duas tabelas também mantêm a mesma altura rígida */
-  .tabela-sistema th {
-    height: 45px !important;
-    max-height: 45px !important;
-    padding: 0px 15px !important;
-    line-height: 45px !important;
-    vertical-align: middle !important;
-  }
-
-  /* 4. Ajuste milimétrico para que os botões (Ver, Editar, Excluir) não estourem a nova altura fina de 42px */
-  .btn-ver, 
-  .btn-acao-tabela,
-  #paginacaoContainer button {
-    height: 28px !important; /* Tranca os botões num tamanho compacto elegante */
-    line-height: 28px !important;
-    padding: 0 12px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    vertical-align: middle !important;
-  }
-}
-/* ==========================================================================
-   55. COMPRESSÃO GEOMÉTRICA DE LINHAS (ANTI-SALTO VERTICAL EM MONITORES)
-   ========================================================================== */
-
-/* ── 🖥️ AÇÃO IMPERIAL APENAS EM RESOLUÇÕES ACIMA DE 1025PX (PC / DESKTOP) ── */
-@media (min-width: 1025px) {
-  /* 1. Proíbe as tabelas de assumirem alturas automáticas ou expandirem por Flexbox */
-  .tabela-sistema {
-    table-layout: fixed !important;
-    height: auto !important;
-    max-height: none !important;
-  }
-
-  /* 2. Crava rigorosamente a mesma altura e impede as células de esticarem no PC */
-  .tabela-sistema tr,
-  .tabela-sistema tr td,
-  .tabela-sistema tr th,
-  .tabela-sistema td,
-  .tabela-sistema th {
-    height: 40px !important;     /* 🔥 ALTURA RIGIDAMENTE IGUAL: Tranca em 40 píxeis em ambas as tabelas */
-    min-height: 40px !important;
-    max-height: 40px !important;
-    line-height: 40px !important; /* Centraliza o texto milimetricamente no meio da linha */
-    padding-top: 0 !important;    /* Destrói qualquer padding fantasma que alargava a Visão Geral */
-    padding-bottom: 0 !important;
-    vertical-align: middle !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Devolve o recuo interno lateral original apenas para leitura à esquerda */
-  .tabela-sistema td, 
-  .tabela-sistema th {
-    padding-left: 15px !important;
-    padding-right: 15px !important;
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-  }
-
-  /* Mantém apenas a coluna final de botões centralizada por igual */
-  .tabela-sistema th.col-operacoes, 
-  .tabela-sistema th.col-acoes, 
-  .tabela-sistema td.coluna-acoes-botoes, 
-  .tabela-sistema td:last-child {
-    text-align: center !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    overflow: visible !important; /* Permite ver os botões inteiros */
-  }
-
-  /* 3. Garante que os botões pequenos (Ver, Editar, Apagar) encaixam na nova calha de 40px */
-  .btn-ver, 
-  .btn-acao-tabela,
-  #paginacaoContainer button {
-    height: 26px !important; /* Reduz ligeiramente para não estourar a borda da linha */
-    line-height: 26px !important;
-    padding: 0 10px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin-top: 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  /* 4. Imobiliza os painéis operacionais cinzentos das duas telas para nascerem no mesmo pixel do monitor */
-  .main-content,
-  .painel-operacional,
-  .main-content-wrapper {
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    height: auto !important;
-  }
-}
-/* ==========================================================================
-   56. RECORTE DE ALTURA FORÇADO PARA O GERENCIADOR (NIVELAMENTO ABSOLUTO)
-   ========================================================================== */
-
-/* ── 🖥️ EXCLUSIVO PARA RESOLUÇÕES ACIMA DE 1025PX (PC / MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* Força a div mãe do Gerenciador a libertar a altura de linhas automáticas */
-  .tabela-scroll-container,
-  #containerTabelaCrud {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important; /* Desliga travas de bloco no computador */
-  }
-
-  /* 🌟 O SEGREDO: Entra explicitamente dentro do contêiner do Gerenciador 
-     e crava os mesmos 40 píxeis que a Visão Geral adotou! */
-  .tabela-scroll-container .tabela-sistema,
-  .tabela-scroll-container .tabela-sistema tr,
-  .tabela-scroll-container .tabela-sistema td,
-  .tabela-scroll-container .tabela-sistema th {
-    height: 40px !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
-    line-height: 40px !important; /* Centraliza o texto verticalmente na calha de 40px */
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Garante que os botões internos do Gerenciador (Editar/Excluir) também encolhem para 26px */
-  .tabela-scroll-container .btn-acao-tabela {
-    height: 26px !important;
-    line-height: 26px !important;
-    padding: 0 10px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-}
-/* ==========================================================================
-   57. AJUSTE CIRÚRGICO DE DISTANCIAMENTO DE FERRAMENTAS (DESGRUDA BOTÕES)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
+/* ── NOS COMPUTADORES (MONITORES GRANDES) ── */
 @media (min-width: 1025px) {
   /* Alinha os botões com um recuo de segurança em relação ao campo de pesquisa */
   .grupo-operacional-pesquisa .btn-crud {
@@ -1193,7 +609,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
   }
 }
 
-/* ── 📱 NOS SMARTPHONES (MANTÉM O MOBILE ADAPTADO E LIVRE DE CONFLITOS) ── */
+/* ── NOS SMARTPHONES (MANTÉM O MOBILE ADAPTADO E LIVRE DE CONFLITOS) ── */
 @media (max-width: 1024px) {
   /* No telemóvel, como estão empilhados na vertical, remove o recuo lateral para não entortar */
   .grupo-operacional-pesquisa .btn-crud,
@@ -1202,8 +618,9 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     margin-top: 5px !important; /* Garante o respiro vertical ordenado entre os blocos empilhados */
   }
 }
+
 /* ==========================================================================
-   58. DISTANCIAMENTO VERTICAL MÓVEL (DESGRUDA BUSCA E BOTÕES NO SMARTPHONE)
+   12. DISTANCIAMENTO VERTICAL MÓVEL (DESGRUDA BUSCA E BOTÕES NO SMARTPHONE)
    ========================================================================== */
 
 @media (max-width: 1024px) {
@@ -1232,105 +649,12 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     box-sizing: border-box !important;
   }
 }
+
 /* ==========================================================================
-   59. BARRA DE FERRAMENTAS EM LINHA HORIZONTAL ÚNICA (SMARTPHONE)
+   13. COMPRESSÃO MÁXIMA RESPONSIVA DE BOTÕES (APARÊNCIA MINI MOBILE)
    ========================================================================== */
 
-@media (max-width: 1024px) {
-  /* 1. Transforma o painel de ferramentas numa calha horizontal de topo */
-  .ferramentas-tabela {
-    display: flex !important;
-    flex-direction: column !important; /* Mantém o título no topo e a barra abaixo */
-    align-items: flex-start !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-
-  /* 2. 🌟 O SEGREDO SUPREMO: Força a pesquisa e os botões a ficarem na mesma linha horizontal */
-  .grupo-operacional-pesquisa {
-    display: flex !important;
-    flex-direction: row !important; /* Obriga a ficar um ao lado do outro */
-    justify-content: flex-start !important;
-    align-items: center !important;
-    gap: 10px !important; /* 🔥 Desgruda os elementos, abrindo 10px de espaço entre eles */
-    width: 100% !important;
-    max-width: 100% !important;
-    
-    overflow-x: auto !important; /* 🌟 Ativa a rolagem por polegar horizontal se o ecrã for curto */
-    flex-wrap: nowrap !important; /* 🌟 MANDATO SUPREMO: Proíbe terminantemente de irem para baixo! */
-    padding-bottom: 6px !important; /* Margem de respiro para a calha de toque */
-    -webkit-overflow-scrolling: touch !important; /* Deslizar ultra-suave em iPhones/Android */
-    box-sizing: border-box !important;
-  }
-
-  /* Remove as barras de rolagem cinzentas nativas para o design ficar limpo e estético */
-  .grupo-operacional-pesquisa::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  /* 3. Trava o tamanho compacto da caixa de pesquisa no telemóvel */
-  #inputPesquisa {
-    width: 180px !important; /* Tamanho mini fixo para não engolir o ecrã todo */
-    min-width: 180px !important;
-    max-width: 180px !important;
-    margin: 0 !important; /* Remove centralizações antigas */
-    padding: 8px 12px !important;
-    font-size: 0.82rem !important;
-  }
-
-  /* 4. Encolhe e padroniza o tamanho mini elástico dos dois botões operacionais */
-  .grupo-operacional-pesquisa .btn-crud {
-    flex: none !important;
-    width: max-content !important; /* O botão assume apenas o tamanho do texto */
-    max-width: fit-content !important;
-    padding: 8px 12px !important; /* Preenchimento curto e elegante */
-    font-size: 0.8rem !important; /* Letra menor para encaixar perfeitamente */
-    white-space: nowrap !important; /* Proíbe o texto de quebrar dentro do botão */
-    margin: 0 !important; /* Limpa margens concorrentes antigas */
-    display: inline-flex !important;
-  }
-}
-/* ==========================================================================
-   60. BLINDAGEM ANTI-CORTE: BOTÕES INTEIROS NA LINHA HORIZONTAL MÓVEL
-   ========================================================================== */
-
-@media (max-width: 1024px) {
-  /* Garante que o contêiner de rolagem permite ver o transbordo dos botões ao deslizar */
-  .grupo-operacional-pesquisa {
-    overflow-x: auto !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-  }
-
-  /* 🌟 O SEGREDO SUPREMO: Desliga o esmagamento do navegador móvel nas ferramentas */
-  .grupo-operacional-pesquisa .btn-crud {
-    flex: none !important;
-    flex-shrink: 0 !important; /* 🔥 MANDATO INTERNO: Proíbe o telemóvel de encolher ou cortar as laterais do botão! */
-    width: max-content !important; /* O botão assume o tamanho total exato das letras, ficando sempre inteiro */
-    max-width: none !important;
-    
-    /* Calibração de tamanho elegante e tátil */
-    padding: 8px 14px !important; /* Devolve um espaçamento lateral seguro e confortável para carregar com o polegar */
-    font-size: 0.8rem !important;
-    white-space: nowrap !important; /* Tranca as palavras na horizontal dentro do botão */
-    display: inline-flex !important;
-    margin: 0 !important;
-  }
-
-  /* Garante que a caixa de pesquisa também não sofre esmagamentos na linha */
-  #inputPesquisa {
-    flex-shrink: 0 !important;
-    width: 170px !important;
-    min-width: 170px !important;
-    max-width: 170px !important;
-  }
-}
-/* ==========================================================================
-   61. COMPRESSÃO MÁXIMA RESPONSIVA DE BOTÕES (APARÊNCIA MINI MOBILE)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
+/* ── NOS COMPUTADORES (MONITORES GRANDES) ── */
 @media (min-width: 1025px) {
   .txt-btn-desktop {
     display: inline !important; /* Exibe a frase corporativa completa no PC */
@@ -1343,10 +667,10 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
 /* ── 📱 NOS SMARTPHONES (MÁXIMA ADAPTABILIDADE EM LINHA ÚNICA) ── */
 @media (max-width: 1024px) {
   .txt-btn-desktop {
-    display: none !important; /* 🔥 MANDATO 1: Oculta as frases longas no telemóvel para sumir com o volume excessivo */
+    display: none !important; /* MANDATO 1: Oculta as frases longas no telemóvel para sumir com o volume excessivo */
   }
   .txt-btn-mobile-curto {
-    display: inline !important; /* 🔥 MANDATO 2: Exibe apenas a palavra curta ("Incluir" e "Salvar") */
+    display: inline !important; /* MANDATO 2: Exibe apenas a palavra curta ("Incluir" e "Salvar") */
   }
 
   /* Força a caixa operacional a deslizar em linha reta perfeitamente */
@@ -1370,7 +694,7 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     font-size: 0.8rem !important;
   }
 
-  /* 🌟 APARÊNCIA ULTRA COMPACTA: Transforma os botões em formatos curtos e elegantes */
+  /* APARÊNCIA ULTRA COMPACTA: Transforma os botões em formatos curtos e elegantes */
   .grupo-operacional-pesquisa .btn-crud {
     flex: none !important;
     flex-shrink: 0 !important; /* Proíbe o navegador de esmagar o texto encurtado */
@@ -1385,145 +709,3 @@ button:disabled { opacity: 0.4; cursor: not-allowed; background-color: #22252a !
     margin: 0 !important;
   }
 }
-/* ==========================================================================
-   62. EQUALIZAÇÃO DE DISTRIBUIÇÃO HORIZONTAL (ANTI-SALTO DE PESQUISA PC)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES (MONITORES GRANDES) ── */
-@media (min-width: 1025px) {
-  /* Garante que o painel de ferramentas distribui o espaço de forma idêntica nas duas abas */
-  .visao-geral .ferramentas-tabela,
-  .gerenciador .ferramentas-tabela,
-  .main-content .ferramentas-tabela {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important; /* Título numa ponta, grupo de busca na outra */
-    align-items: center !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Tranca a base dos grupos operacionais para nascerem alinhados no mesmo pixel */
-  .grupo-operacional-pesquisa {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: flex-end !important; /* Alinha o conteúdo à direita dentro da calha */
-    flex: none !important;
-  }
-
-  /* Garante que a caixa de busca mantém rigorosamente os 320px fixos em qualquer ecrã */
-  #inputPesquisa {
-    width: 320px !important;
-    min-width: 320px !important;
-    max-width: 320px !important;
-  }
-}
-/* ==========================================================================
-   64. ALINHAMENTO À ESQUERDA IMPERIAL UNIFICADO (AS 3 ABAS OPERACIONAIS)
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES E 📱 NOS SMARTPHONES (DIRETRIZ GLOBAL) ── */
-.visao-geral .ferramentas-tabela,
-.gerenciador .ferramentas-tabela,
-.dashboard .ferramentas-tabela,
-.main-content .ferramentas-tabela,
-.ferramentas-tabela {
-  display: flex !important;
-  justify-content: space-between !important; /* Mantém os títulos na esquerda e buscas na direita no PC */
-  align-items: center !important;
-  width: 100% !important;
-  text-align: left !important; /* 🌟 CRAVADO À ESQUERDA: Garante a leitura retilínea natural */
-}
-
-/* Força todos os subtítulos h2 do painel cinzento a encostarem na margem esquerda */
-.ferramentas-tabela h2,
-.main-content h2,
-.painel-operacional h2,
-.dashboard h2 {
-  text-align: left !important; /* 🌟 SUBTÍTULOS À ESQUERDA */
-  margin-left: 0 !important;
-  margin-right: auto !important; /* Empurra qualquer folga para a direita */
-  width: auto !important;
-}
-
-/* ── 📱 EXCLUSIVO PARA SMARTPHONE (AMBIENTE RESPONSIVO TRAVADO) ── */
-@media (max-width: 1024px) {
-  /* No telemóvel, empilha os blocos verticalmente, mas nascendo sempre da esquerda */
-  .ferramentas-tabela {
-    flex-direction: column !important;
-    align-items: flex-start !important; /* 🌟 ALINHA O BLOCO INTEIRO À ESQUERDA NO CELULAR */
-    gap: 12px !important;
-  }
-
-  .grupo-operacional-pesquisa {
-    justify-content: flex-start !important; /* 🌟 BARRA DE BUSCA E BOTÕES MÓVEIS NASCEM À ESQUERDA */
-    align-items: center !important;
-    width: 100% !important;
-  }
-}
-/* ==========================================================================
-   65. ALINHAMENTO IMPERIAL À ESQUERDA E TRAVA DE LINHA ÚNICA NOS CARDS
-   ========================================================================== */
-
-/* ── 💻 NOS COMPUTADORES E 📱 NOS SMARTPHONES (MANDATO ABSOLUTO) ── */
-
-/* 1. Força o desalinhamento do centro e joga TODOS os títulos H2 do painel cinzento para a esquerda */
-.ferramentas-tabela h2,
-.main-content h2,
-.painel-operacional h2,
-.dashboard h2,
-.ferramentas-tabela {
-  text-align: left !important; /* 🌟 CRAVADO À ESQUERDA: Anula qualquer center !important anterior */
-  margin-left: 0 !important;
-  margin-right: auto !important;
-  justify-content: flex-start !important;
-}
-
-/* 2. 📈 BLINDAGEM DO DASHBOARD: Força os textos de dentro dos cards a ficarem em LINHA ÚNICA */
-.card h2 {
-  white-space: nowrap !important; /* 🌟 LINHA ÚNICA SUPREMA: Proíbe o texto de saltar para baixo no celular! */
-  text-overflow: ellipsis !important; /* Adiciona os ... se a ecrã for excessivamente estreita */
-  overflow: hidden !important;
-  text-align: left !important; /* Mantém o alinhamento à esquerda profissional */
-  
-  /* 🌟 O SEGREDO: A letra diminui e encolhe de forma automática com base na largura da ecrã (vw) */
-  font-size: clamp(0.72rem, 2.8vw, 0.95rem) !important; 
-  width: 100% !important;
-  padding: 0 4px !important;
-  box-sizing: border-box !important;
-}
-
-/* Garante que os números grandes do Dashboard também ficam bem acomodados à esquerda */
-.card p {
-  text-align: left !important;
-  padding-left: 4px !important;
-  font-size: clamp(1.6rem, 5vw, 2.2rem) !important; /* O número também encolhe elasticamente no telemóvel */
-  margin: 6px 0 0 0 !important;
-}
-
-/* ── 📱 EXCLUSIVO PARA SMARTPHONE (AMBIENTE RESPONSIVO MÓVEL BRANCO) ── */
-@media (max-width: 1024px) {
-  /* Alinha a estrutura Tools inteira à margem esquerda no telemóvel */
-  .ferramentas-tabela {
-    flex-direction: column !important;
-    align-items: flex-start !important; /* Cabeçalho móvel nasce na esquerda */
-    gap: 12px !important;
-    text-align: left !important;
-  }
-  
-  /* Ajusta os cards empilhados do Dashboard móvel para nascerem alinhados de forma retilínea */
-  .grid {
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-  
-  .card {
-    width: 100% !important;
-    text-align: left !important;
-    box-sizing: border-box !important;
-    padding: 12px !important;
-  }
-}
-

@@ -48,9 +48,6 @@
   text-decoration: underline !important;
 }
 
-
-
-
 /* Animação suave de entrada para novos componentes */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -435,17 +432,6 @@
 .topo-mobile-controle {
   display: none !important;
 }
-
-/* Container do Header Principal */
-.header-sistema-novo {
-  width: 100% !important;
-  background-color: #121212 !important;
-  padding: 10px 0 20px 0 !important;
-  border-bottom: 1px solid #222 !important;
-  box-sizing: border-box !important;
-}
-
-
 
 /* Alinha os dois blocos em uma linha horizontal única e reta */
 .bloco-valores-layout-painel {
@@ -839,13 +825,133 @@
   box-sizing: border-box !important;
 }
 
+/* Container do Header Principal */
+.header-sistema-novo {
+  width: 100% !important;
+  background-color: #121212 !important; /* Cor de fundo escura */
+  padding: 15px 24px !important;
+  border-bottom: 1px solid #222222 !important;
+  box-sizing: border-box !important;
+}
+
 /* Garante o alinhamento horizontal perfeito na mesma linha */
 .layout-horizontal-container-novo {
   display: flex !important;
-  flex-direction: row !important;
+  flex-direction: row !important; /* Linha reta no PC */
   justify-content: space-between !important; /* Menu na esquerda, valores na direita */
   align-items: center !important;
   width: 100% !important;
+  gap: 20px !important;
+}
+
+/* ==========================================================================
+   MANDATO ABSOLUTO CELULAR: LINHA ÚNICA FINANCEIRA + CARDS VERTICAIS
+   ========================================================================== */
+@media (max-width: 1024px) {
+
+  /* 1. OCULTAÇÃO ABSOLUTA DOS MENUS DO TOPO E BOTÃO HAMBÚRGUER */
+  .header-sistema-novo .card,
+  .header-sistema-novo .card-com-submenu,
+  .header-sistema-novo .grid-cards-esquerda,
+  .central-menu-container,
+  .btn-menu-hamburguer-premium,
+  header > div:first-child:not(.layout-horizontal-container-novo),
+  nav, 
+  .menu-superior {
+    display: none !important; /* Limpa o topo do celular por completo */
+  }
+
+  /* 2. HEADER E CONTAINER PRINCIPAL EM LINHA HORIZONTAL ÚNICA */
+  .header-sistema-novo {
+    padding: 10px 12px !important;
+    border-bottom: 1px solid #222222 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .layout-horizontal-container-novo {
+    display: flex !important;
+    flex-direction: row !important; /* Força a continuar lado a lado */
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  /* 3. AS TRÊS INFORMAÇÕES EXCLUSIVAMENTE NA MESMA LINHA */
+  .bloco-valores-layout-painel {
+    display: flex !important;
+    flex-direction: row !important; /* Garante os 3 blocos lado a lado */
+    flex-wrap: nowrap !important;   /* IMPEDE TERMINANTEMENTE de quebrar linha */
+    justify-content: space-between !important;
+    align-items: flex-start !important; /* Alinha o topo das legendas */
+    width: 100% !important;
+    gap: 12px !important;           /* Espaçamento compacto para caber na tela do celular */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ajuste de proporção para cada uma das 3 colunas horizontais */
+  .container-saldo-Vpr-novo,
+  .container-gastos-painel {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    flex: 1 !important;            /* Divide o espaço horizontal igualmente */
+    min-width: 0 !important;       /* Permite o encolhimento seguro sem quebrar layout */
+  }
+
+  /* 4. CALIBRAGEM PREMIUM DE FONTES MINI PARA CELULAR */
+  .legenda-mini-painel {
+    font-size: 0.6rem !important;  /* Texto da legenda bem pequeno */
+    letter-spacing: 0.3px !important;
+    white-space: nowrap !important;
+    color: #71717a !important;
+  }
+
+  .valor-num-painel {
+    font-size: 0.95rem !important; /* Valor numérico compacto para não estourar a linha */
+    white-space: nowrap !important;
+    font-weight: 700 !important;
+  }
+
+  /* Deixa o texto do contrato combinando em tamanho com os valores */
+  .bloco-valores-layout-painel span[style*="font-size"] {
+    font-size: 0.95rem !important;
+    white-space: nowrap !important;
+  }
+
+  /* Ajuste cirúrgico do tamanho da barra de gastos e do ícone */
+  .container-gastos-painel div[style*="height: '5px'"],
+  .container-gastos-painel div[style*="height: 5px"] {
+    height: 3px !important;       /* Barra de progresso ultra fininha e delicada */
+    margin-top: 4px !important;
+  }
+
+  .card-imagem-vpr-nova {
+    width: 12px !important;        /* Reduz o ícone de detalhes para caber na linha */
+    height: 12px !important;
+  }
+
+  /* 5. TRAVA DOS CARDS BRANCOS ABAIXO (UM ABAIXO DO OUTRO) */
+  .conteudo-principal-abaixo,
+  main {
+    display: flex !important;
+    flex-direction: column !important; /* Fatura em cima, Pedidos embaixo... */
+    width: 100% !important;
+    gap: 16px !important;
+    padding: 15px 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .caixa-card-fatura-limpa,
+  .novo-card-item,
+  .conteudo-principal-abaixo div[class*="card"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    display: block !important;
+    box-sizing: border-box !important;
+  }
 }
 
 /* 1. O BOTÃO DE MENU HAMBÚRGUER MINIMALISTA */
@@ -1062,7 +1168,3 @@
   flex-direction: column !important;
   flex: 1 !important;
 }
-
-
-
-
