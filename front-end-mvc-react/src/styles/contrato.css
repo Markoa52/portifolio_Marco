@@ -136,6 +136,31 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
+/* ==========================================================================
+   ✨ ANIMAÇÃO DE ENTRADA SUAVE (FADE IN) PARA AS TELAS DO PAINEL
+   ========================================================================== */
+
+/* Aplica o efeito diretamente nas tags que mudam no seu <main> */
+.conteudo-principal-abaixo,
+.main-content-wrapper,
+.novos-cards-grid,
+main > div {
+  animation: entradaSuavePainel 0.3s ease-in-out !important;
+}
+
+/* Define os passos da animação: começa invisível e um pouco mais abaixo, depois sobe e clareia */
+@keyframes entradaSuavePainel {
+  from {
+    opacity: 0;
+    transform: translateY(6px); /* Dá um micro-impulso de baixo para cima muito elegante */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 .faturas-header-acoes {
   display: flex !important;
   align-items: center !important;
@@ -481,7 +506,7 @@
 }
 
 /* ==========================================================================
-   66. CARROSSEL DE CARDS: LINHA HORIZONTAL ÚNICA NO DASHBOARD (MÓVEL)
+   8. CARROSSEL DE CARDS: LINHA HORIZONTAL ÚNICA NO DASHBOARD (MÓVEL)
    ========================================================================== */
 
 @media (max-width: 1024px) {
@@ -533,18 +558,16 @@
   }
 }
 
+/* ==========================================================================
+   9. FLUIDIFICAÇÃO CARDS
+   ========================================================================== */
 
-
-
-
-
-
-
-
-
-
-
-
+/* ── MÁTRICA DOS CARDS DO GLPI ── */
+.grid { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+.card { background-color: #1e1e1e; padding: 15px; border-radius: 8px; flex: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.5); text-align: center; }
+.card.critico { border-left: 6px solid #ff4d4d; }
+.card h2 { margin: 0; font-size: 0.95rem; color: #aaa; }
+.card p { font-size: 2.2rem; font-weight: bold; margin: 8px 0 0 0; }
 
 /* Container dos botões dentro da célula da tabela */
 .tabela-grupo-botoes {
@@ -826,23 +849,23 @@
 }
 
 /* Container do Header Principal */
-.header-sistema-novo {
-  width: 100% !important;
-  background-color: #121212 !important; /* Cor de fundo escura */
-  padding: 15px 24px !important;
-  border-bottom: 1px solid #222222 !important;
-  box-sizing: border-box !important;
-}
+  .header-sistema-novo {
+    width: 100% !important;
+    background-color: #121212 !important;
+    padding: 12px 20px !important;
+    border-bottom: 1px solid #222222 !important;
+    box-sizing: border-box !important;
+  }
 
 /* Garante o alinhamento horizontal perfeito na mesma linha */
-.layout-horizontal-container-novo {
-  display: flex !important;
-  flex-direction: row !important; /* Linha reta no PC */
-  justify-content: space-between !important; /* Menu na esquerda, valores na direita */
-  align-items: center !important;
-  width: 100% !important;
-  gap: 20px !important;
-}
+  /* 1. O contêiner de fora fixa rigidamente o início na margem esquerda, eliminando o elástico */
+  .layout-horizontal-container-novo {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important; /* 🌟 MÁGICA 1: Traz a linha inteira para a esquerda */
+    align-items: center !important;
+    width: 100% !important;
+  }
 
 /* ==========================================================================
    MANDATO ABSOLUTO CELULAR: LINHA ÚNICA FINANCEIRA + CARDS VERTICAIS
@@ -863,31 +886,28 @@
 
   /* 2. HEADER E CONTAINER PRINCIPAL EM LINHA HORIZONTAL ÚNICA */
   .header-sistema-novo {
-    padding: 10px 12px !important;
-    border-bottom: 1px solid #222222 !important;
     width: 100% !important;
+    background-color: #121212 !important;
+    padding: 12px 20px !important;
+    border-bottom: 1px solid #222222 !important;
     box-sizing: border-box !important;
   }
 
-  .layout-horizontal-container-novo {
-    display: flex !important;
-    flex-direction: row !important; /* Força a continuar lado a lado */
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100% !important;
-  }
 
   /* 3. AS TRÊS INFORMAÇÕES EXCLUSIVAMENTE NA MESMA LINHA */
   .bloco-valores-layout-painel {
     display: flex !important;
-    flex-direction: row !important; /* Garante os 3 blocos lado a lado */
-    flex-wrap: nowrap !important;   /* IMPEDE TERMINANTEMENTE de quebrar linha */
-    justify-content: space-between !important;
-    align-items: flex-start !important; /* Alinha o topo das legendas */
+    flex-direction: row !important; /* Mantém todos os botões e valores lado a lado */
+    align-items: center !important;
+    justify-content: flex-start !important; /* 🌟 MÁGICA 2: Cola o painel de valores logo após o menu */
     width: 100% !important;
-    gap: 12px !important;           /* Espaçamento compacto para caber na tela do celular */
+    
+    /* CONTROLADOR DE PROXIMIDADE: Diminua esse gap abaixo se quiser colar ainda mais os valores nos botões */
+    gap: 16px !important; 
+    
     margin: 0 !important;
     padding: 0 !important;
+    box-sizing: border-box !important;
   }
 
   /* Ajuste de proporção para cada uma das 3 colunas horizontais */
@@ -1336,4 +1356,153 @@
     margin: 0 4px !important;
   }
 }
+
+/* ==========================================================================
+   🖥️ 1. MUNDO DESKTOP: RE-ALINHAMENTO EM LINHA CONTÍNUA À ESQUERDA (PC > 1024px)
+   ========================================================================== */
+@media (min-width: 1025px) {
+  
+  .header-sistema-novo {
+    width: 100% !important;
+    background-color: #121212 !important;
+    padding: 15px 24px !important;
+    border-bottom: 1px solid #222222 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 🌟 O GRANDE TRUQUE DE APROXIMAÇÃO: Traz o painel financeiro para perto do menu */
+  .coluna-financeira-contrato {
+    margin-left: 250px !important; /* Empurra o bloco financeiro mantendo-o perto na esquerda */
+    flex-shrink: 0 !important;
+  }
+
+  /* Espaçamento confortável e fixo entre as 3 colunas de dados */
+  .container-saldo-Vpr-novo,
+  .container-gastos-painel {
+    margin-left: 24px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Esconde o menu exclusivo do celular no computador */
+  .container-menu-hamburguer-mobile-exclusivo {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   📱 2. MUNDO MOBILE: ATIVAÇÃO SUPREMA DO HAMBÚRGUER + LINHA FINANCEIRA RETILÍNEA (≤ 1024px)
+   ========================================================================== */
+@media (max-width: 1024px) {
+
+  /* 🌟 BLINDAGEM MÓVEL: Esconde rigidamente os cartões grandes pretos no celular */
+  .bloco-valores-layout-painel > .card,
+  .bloco-valores-layout-painel > .card-com-submenu,
+  .bloco-valores-layout-painel img.card-imagem,
+  .bloco-valores-layout-painel h2,
+  .legenda-limite-texto {
+    display: none !important; /* Sumirá com os botões gigantes preservando o hambúrguer */
+  }
+
+  /* Força a ativação do seu novo componente MenuMobileModulos no celular */
+  .container-menu-hamburguer-mobile-exclusivo {
+    display: inline-block !important;
+    visibility: visible !important;
+    flex-shrink: 0 !important;
+  }
+
+  .header-sistema-novo {
+    padding: 12px 10px !important;
+    border-bottom: 1px solid #222222 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .layout-horizontal-container-novo {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  /* GRADE HORIZONTAL INDESTRUTÍVEL NO CELULAR: Alinha o botão ☰ e as 3 colunas financeiras lado a lado */
+  .bloco-valores-layout-painel {
+    display: grid !important;
+    grid-template-columns: auto 0.7fr 1.2fr 1.2fr !important; /* Divide a largura milimetricamente */
+    align-items: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Zera os empurrões de margem do PC para não quebrar a grade de colunas do celular */
+  .coluna-financeira-contrato,
+  .container-saldo-Vpr-novo,
+  .container-gastos-painel {
+    display: flex !important;
+    flex-direction: column !important; /* Número/valor embaixo da legenda cinza */
+    align-items: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important; /* Reseta o margin do desktop */
+  }
+
+  /* FONTES REDUZIDAS CORPORATIVAS MINI PARA NÃO ESTOURAR AS MARGENS */
+  .legenda-mini-painel {
+    font-size: 0.58rem !important;
+    color: #71717a !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2px !important;
+    white-space: nowrap !important;
+  }
+
+  .valor-num-painel,
+  .valor-num-painel-texto {
+    font-size: 0.78rem !important; /* Tamanho mini e legível */
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+    margin-top: 2px !important;
+  }
+
+  .valor-num-painel-texto {
+    font-weight: 600 !important;
+  }
+
+  .valor-com-icone-linha {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+    width: 100% !important;
+  }
+
+  .card-imagem-vpr-nova {
+    width: 11px !important;
+    height: 11px !important;
+    object-fit: contain !important;
+  }
+
+  .gastos-titulos-linha {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    align-items: center !important;
+  }
+
+  .gastos-porcentagem-numero {
+    font-size: 0.62rem !important;
+  }
+
+  /* Barra de carregamento fina */
+  .barra-progresso-painel-fundo {
+    width: 100% !important;
+    height: 3px !important;
+    background-color: #222222 !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    margin-top: 5px !important;
+  }
+}
+
 

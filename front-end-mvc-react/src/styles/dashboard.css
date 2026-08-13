@@ -1,0 +1,17 @@
+/* ── MÁTRICA DOS CARDS DO GLPI ── */
+.grid { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+.card { background-color: #1e1e1e; padding: 15px; border-radius: 8px; flex: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.5); text-align: center; }
+.card.critico { border-left: 6px solid #ff4d4d; }
+.card h2 { margin: 0; font-size: 0.95rem; color: #aaa; }
+.card p { font-size: 2.2rem; font-weight: bold; margin: 8px 0 0 0; }
+
+.chart-container { background: #1e1e1e; padding: 20px; border-radius: 8px; text-align: left; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+.chart-container h3 { margin-top: 0; color: #aaa; font-size: 1.1rem; }
+.bar-group { margin-bottom: 12px; }
+.bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-weight: bold; font-size: 0.88rem; }
+.bar-bg { background-color: #333; width: 100%; height: 16px; border-radius: 8px; overflow: hidden; }
+.bar-fill { height: 100%; width: 0%; transition: width 0.5s ease; border-radius: 8px; }
+#bar-nao-atendidos { background-color: #ff4d4d !important; }
+#bar-atendidos { background-color: #3399ff !important; }
+#bar-pendentes { background-color: #ffcc00 !important; }
+#bar-fechados { background-color: #2ec4b6 !important; }

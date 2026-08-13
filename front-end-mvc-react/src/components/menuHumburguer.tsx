@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './contrato.css'; // Carrega os estilos unificados
+import '../styles/contrato.css'; // Carrega os estilos unificados
 
 // Definimos estritamente os tipos de abas válidos para o sistema
 export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato';

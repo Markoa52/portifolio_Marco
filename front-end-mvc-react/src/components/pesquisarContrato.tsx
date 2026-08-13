@@ -1,4 +1,5 @@
 import React, { useState} from 'react';
+import '../styles/pesquisaContrato.css'
 
 export const PesquisarContrato: React.FC = () => {
     

@@ -1,4 +1,4 @@
-import './atendimento.css'; 
+import '../styles/atendimento.css'; 
 
 import React, { useState } from 'react';
 import { PesquisarContrato } from './pesquisarContrato';

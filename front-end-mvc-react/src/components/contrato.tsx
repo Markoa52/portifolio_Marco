@@ -1,4 +1,4 @@
-import './contrato.css'; // Toda a estilização do header e abas fica presa aqui!
+import '../styles/contrato.css'; // Toda a estilização do header e abas fica presa aqui!
 
 import React, { useState } from 'react';
 
@@ -16,6 +16,8 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
+
+import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
@@ -48,6 +50,7 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
     setMenuAberto(menuAberto === menuName ? null : menuName);
   };
 
+  
   return (
     <div className="pagina-container">
         
@@ -56,6 +59,8 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
     
     {/*UNIFICADO: Agora TODOS os blocos (Menu, Contrato, Saldo e Gastos) estão no mesmo contêiner de linha */}
     <div className="bloco-valores-layout-painel">
+
+      <MenuMobileModulos setAbaAtiva={setAbaAtiva} />
 
       {/* ==========================================
       1. MENU HAMBÚRGUER (Aparece no PC, some no Celular)
@@ -171,7 +176,6 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
           </div>
         </div>
       </header>
-
 
       {/* CONTEÚDO PRINCIPAL (Muda dinamicamente conforme a aba) */}
       <main className="conteudo-principal-abaixo">

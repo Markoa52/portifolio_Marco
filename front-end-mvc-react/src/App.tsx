@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Sidebar } from './components/sidebar.tsx';
-import { VisaoGeral } from './components/visaoGeral.tsx';
-import { Gerenciador } from './components/gerenciador.tsx';
-import { Dashboard } from './components/dashboard.tsx';
-import { ConsumoAPI } from './components/consumoAPI.tsx';
 import { Contrato } from './components/contrato.tsx';
 import { Atendimento } from './components/atendimento.tsx';
 
-import type { IEmailRegistro } from './types/index.ts';
+//import type { IEmailRegistro } from './types/index.ts';
 
 type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato' | 'atendimento';
 
 function App() {
-  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('atendimento');
-  const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
+  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('contrato');
   const [carregando, setCarregando] = useState<boolean>(true);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -32,16 +26,16 @@ function App() {
         const resposta = await fetch('/api/dados');
 
         if (!resposta.ok) throw new Error(`Erro no servidor: Status ${resposta.status}`);
-        const resultado = await resposta.json();
+        //const resultado = await resposta.json();
 
         //Nesse ponto popula a interface com os dados que retornaram da rota da API(back-end)
-        const dadosNormalizados: IEmailRegistro[] = resultado.map((item: any) => ({
-          data: item.Data || item.data || '-',
-          assunto: item.Assunto || item.assunto || '-',
-          email: item.Email || item.email || '-',
-          acoes: item.Acoes || item.acoes || '-'
-        }));
-        setDadosSharePoint(dadosNormalizados);
+        // const dadosNormalizados: IEmailRegistro[] = resultado.map((item: any) => ({
+          // data: item.Data || item.data || '-',
+          // assunto: item.Assunto || item.assunto || '-',
+          // email: item.Email || item.email || '-',
+          // acoes: item.Acoes || item.acoes || '-'
+        // }));
+        // setDadosSharePoint(dadosNormalizados);
       } catch (err: any) {
         console.error(err);
         setErro(err.message || "Falha na conexão.");
@@ -73,7 +67,7 @@ function App() {
       }}
     >
       {/* Barra de Navegação Adaptativa (Fica travada na esquerda no PC) */}
-      <Sidebar paginaAtiva={paginaAtiva} setPaginaAtiva={setPaginaAtiva} />
+      {/* <Sidebar paginaAtiva={paginaAtiva} setPaginaAtiva={setPaginaAtiva} /> */}
 
       {/* Área do Conteúdo Principal Ajustada */}
       <div 
@@ -97,13 +91,10 @@ function App() {
           <>
             {carregando && <div style={{ textAlign: 'center', padding: '40px', color: '#888' }}><p>⏳ A carregar dados...</p></div>}
             {erro && <div style={{ textAlign: 'center', padding: '40px', color: '#e63946' }}><p>❌ Erro: {erro}</p></div>}
-            {!carregando && !erro && <VisaoGeral dados={dadosSharePoint} />}
+
           </>
         )}
 
-        {paginaAtiva === 'gerenciador' && <Gerenciador dadosIniciais={dadosSharePoint} />}
-        {paginaAtiva === 'dashboard' && <Dashboard />}
-        {paginaAtiva === 'consumoAPI' && <ConsumoAPI />}
         {paginaAtiva === 'contrato' && (
           <Contrato setPaginaAtiva={setPaginaAtiva} />
         )}

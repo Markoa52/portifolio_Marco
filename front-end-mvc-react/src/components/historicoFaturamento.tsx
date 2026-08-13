@@ -27,7 +27,7 @@ export const HistoricoFaturas: React.FC = () => {
       
       <div className="tabela-header-acoes">
 
-        <h2>Histórico de Movimentações</h2>
+        <h2>Histórico de Faturas</h2>
       </div>
 
       <div className="tabela-responsiva-wrapper">

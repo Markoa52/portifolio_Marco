@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { IDashboardMetricas } from '../types/index.ts';
+import '../styles/dashboard.css'
 
 export const Dashboard: React.FC = () => {
   // Estado inicial zerado seguindo a interface do TypeScript
