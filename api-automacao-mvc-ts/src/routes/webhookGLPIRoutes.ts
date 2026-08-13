@@ -1,6 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import { processarWebhook } from '../controllers/webhookGLPIController'; 
+
+import { webhookGLPIService } from '../services/webhookGLPIService';
+import { webhookGLPIController } from '../controllers/webhookGLPIController'; 
+
+const chamado = new webhookGLPIService();
+const webhook = new webhookGLPIController(chamado);
 
 /**
  * @openapi
@@ -34,6 +39,7 @@ import { processarWebhook } from '../controllers/webhookGLPIController';
  *       200:
  *         description: Notificacao recebida com sucesso.
  */
-router.post('/webhook', processarWebhook);
+router.post('/webhook', (req, res) => webhook.processarWebhook(req, res));
+
 
 export default router;

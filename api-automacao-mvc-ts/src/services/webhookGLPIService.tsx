@@ -4,16 +4,11 @@ import fs from 'fs';
 // No CommonJS da API Principal, imports locais não levam extensão no caminho
 import { CAMINHO_EXCELW, NOME_TABELA } from '../config/excelConfig';
 
-// Interface que define o retorno estruturado do método de leitura
-interface RetornoObterTodos {
-  workbook: ExcelJS.Workbook;
-  worksheet: ExcelJS.Worksheet;
-  linhas: any[][];
-}
+import {IRetornoObterTodos} from '../types/IRetornoObterTodos';
 
-export class ChamadoModel {
+export class webhookGLPIService {
     // 1. Tipagem do retorno do método de leitura envelopado em uma Promise
-    static async obterTodos(): Promise<RetornoObterTodos> {
+        async obterTodos(): Promise<IRetornoObterTodos> {
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(CAMINHO_EXCELW);
         
@@ -40,7 +35,7 @@ export class ChamadoModel {
     }
 
     // 2. Tipagem estrita dos parâmetros recebidos: instâncias legítimas do exceljs e matriz de linhas
-    static async salvarHistorico(workbook: ExcelJS.Workbook, todasAsLinhas: any[][]): Promise<void> {
+        async salvarHistorico(workbook: ExcelJS.Workbook, todasAsLinhas: any[][]): Promise<void> {
         const worksheet = workbook.worksheets[0];
         
         if (!worksheet) {

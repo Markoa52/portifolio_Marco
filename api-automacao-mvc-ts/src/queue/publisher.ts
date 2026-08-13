@@ -1,7 +1,9 @@
 import {connetRabbitMQ} from '../config/rabbitConfig';
 import {jobPayload} from '../types/Ipublusher';
 
-export async function publisherEvent(exchange:string, routingKey: string, payload: jobPayload):Promise<void> {
+export class RabbitMqPublisher {
+
+    async publishEvent(exchange:string, routingKey: string, payload: jobPayload):Promise<void> {
     try{
         const channel = await connetRabbitMQ();
 
@@ -18,4 +20,5 @@ export async function publisherEvent(exchange:string, routingKey: string, payloa
     }catch(error){
         console.error('[Sheduler] Falha ao publicar evento:', error)
     }
+}
 }

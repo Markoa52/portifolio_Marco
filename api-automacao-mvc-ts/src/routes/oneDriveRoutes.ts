@@ -1,7 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import { salvarDados } from '../controllers/oneDriveController';
-import { obterDados } from '../controllers/oneDriveController';
+
+import {oneDriveController} from '../controllers/oneDriveController';
+import {OneDriveService} from '../services/oneDriveService';
+
+const oneDS = new OneDriveService();
+const oneDrive = new oneDriveController(oneDS);
 
 /**
  * @openapi
@@ -15,7 +19,7 @@ import { obterDados } from '../controllers/oneDriveController';
  *       200:
  *         description: Array contendo a lista de registros extraídos da planilha.
  */
-router.get('/dados', obterDados);
+router.post('/dados', (req, res) => oneDrive.obterDados(req, res));
 
 /**
  * @openapi
@@ -48,6 +52,6 @@ router.get('/dados', obterDados);
  *       500:
  *         description: Falha ao tentar manipular ou salvar o arquivo.
  */
-router.post('/salvar', salvarDados);
+router.post('/salvar', (req, res) => oneDrive.salvarDados(req, res));
 
 export default router;

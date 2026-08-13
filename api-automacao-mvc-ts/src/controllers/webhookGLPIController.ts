@@ -1,8 +1,11 @@
 import type { Request, Response } from 'express';
-import { ChamadoModel } from '../models/chamadoModel';
+import { webhookGLPIService } from '../services/webhookGLPIService';
 
-// CORREÇÃO: Altere para export const e tipa os parâmetros do Express
-export const processarWebhook = async (req: Request, res: Response): Promise<Response | void> => {
+export class webhookGLPIController{
+     constructor(private webHook: webhookGLPIService){}
+
+    // CORREÇÃO: Altere para export const e tipa os parâmetros do Express
+    async processarWebhook (req: Request, res: Response): Promise<Response | void>{
     const payload = req.body;
     
     // Resposta rápida recomendada para webhooks, use return por segurança
@@ -22,7 +25,10 @@ export const processarWebhook = async (req: Request, res: Response): Promise<Res
     if (statusGLPI === 5 || statusGLPI === 6) statusTexto = 'Resolvido / Fechado';
 
     try {
-        const { workbook, linhas } = await ChamadoModel.obterTodos();
+
+        //Chama service para obter os dados
+        const { workbook, linhas } = await this.webHook.obterTodos();
+
         const todasAsLinhasNovas: any[][] = []; // Matriz tipada explicitamente
         let chamadoJaExiste = false;
 
@@ -53,10 +59,14 @@ export const processarWebhook = async (req: Request, res: Response): Promise<Res
             ]);
         }
 
-        await ChamadoModel.salvarHistorico(workbook, todasAsLinhasNovas);
+        await this.webHook.salvarHistorico(workbook, todasAsLinhasNovas);
         console.log(`MVC: Chamado #${idChamado} processado.`);
 
     } catch (erro: any) {
         console.error("Erro no WebhookController:", erro.message);
     }
 };
+
+}
+
+

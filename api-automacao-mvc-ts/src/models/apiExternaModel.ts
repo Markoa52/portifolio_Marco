@@ -1,26 +1,14 @@
-import { RespostaViaCep } from '../types/viaCep'; // Importando do arquivo separadoS
-
-export class ApiExternaModel {
-    // 1. Tipagem do parâmetro 'cep' como string e retorno definido como uma Promise com a interface
-    static async obterDadosApi(cep: string): Promise<RespostaViaCep> {
-        try {
-            const url = `https://viacep.com.br/ws/${cep}/json/`;
-
-            // Utiliza o Fetch nativo (Disponível a partir do Node 18+)
-            const retornoAPI = await fetch(url);
-
-            if (!retornoAPI.ok) {
-                throw new Error(`Erro na Brasil API: Status ${retornoAPI.status}`);
-            }
-
-            // O método .json() agora assume o formato da nossa interface estruturada
-            const dados = await retornoAPI.json() as RespostaViaCep;
-
-            return dados;
-
-        } catch (erro: any) {
-            console.error("Erro ao conectar na Brasil API dentro da Model:", erro.message);
-            throw erro;
-        }
-    }
+// Interface para mapear a resposta que o ViaCEP devolve
+export interface RespostaViaCep {
+  cep: string;
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  ibge: string;
+  gia: string;
+  ddd: string;
+  siafi: string;
+  erro?: boolean; // Opcional, pois o ViaCEP envia quando o CEP não existe
 }

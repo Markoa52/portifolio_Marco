@@ -1,6 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import { obterDadosAPIExterna } from '../controllers/apiExternaController';
+
+import {ApiExternaServices} from '../services/apiExternaServices'
+import { ApiExternaController } from '../controllers/apiExternaController';
+
+const dadosApi = new ApiExternaServices();
+const api = new ApiExternaController(dadosApi)
 
 /**
  * @openapi
@@ -8,22 +13,21 @@ import { obterDadosAPIExterna } from '../controllers/apiExternaController';
  *   get:
  *     tags:
  *       - API Externa
- *     summary: Retorna um usuário pelo ID
- *     description: Recebe o ID de um usuário na URL e retorna seus dados da Model.
+ *     summary: Consulta dados de endereço por CEP
+ *     description: Envia o CEP na URL para buscar as informações detalhadas de endereço.
  *     parameters:
  *       - in: path
- *         name: marcaVeiculo
+ *         name: cep   # CORREÇÃO: Precisa ser exatamente "cep" para o Swagger injetar o valor correto!
  *         required: true
- *         description: ID único do usuário
+ *         description: CEP com 8 dígitos digitado pelo usuário
  *         schema:
  *           type: string
  *     responses:
  *       200:
- *         description: Usuário encontrado com sucesso.
- *       404:
- *         description: Usuário não encontrado.
+ *         description: Endereço retornado com sucesso.
+ *       400:
+ *         description: CEP inválido ou erro na requisição.
  */
-
-router.get('/externa/:cep', obterDadosAPIExterna);
+router.get('/externa/:cep', (req, res) => api.obterDadosAPIExterna(req, res));
 
 export default router;
