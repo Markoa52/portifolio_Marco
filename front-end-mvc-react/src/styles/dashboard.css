@@ -15,3 +15,12 @@
 #bar-atendidos { background-color: #3399ff !important; }
 #bar-pendentes { background-color: #ffcc00 !important; }
 #bar-fechados { background-color: #2ec4b6 !important; }
+
+/* Ajuste dos cards do Dashboard GLPI no celular (opcional, para leitura em bloco) */
+@media (max-width: 1024px) {
+  .card h2, 
+  .card p {
+    text-align: left !important;
+    padding-left: 10px !important;
+  }
+}

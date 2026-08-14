@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../styles/contrato.css'; // Carrega os estilos unificados
 
 // Definimos estritamente os tipos de abas válidos para o sistema
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' |'editar-usuario' |'usuario';
 
 interface IMenuProps {
   setAbaAtiva: (aba: any) => void;
@@ -32,7 +32,7 @@ export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAti
           <div className="menu-dropdown-secao-grupo">
             <p className="menu-dropdown-secao-titulo">🛞 Usuários</p>
             <ul>
-              <li onClick={() => { setAbaAtiva('listar-frota'); setMenuGeralAberto(false); }}>
+              <li onClick={() => { setAbaAtiva('editar-usuario'); setMenuGeralAberto(false); }}>
                 Gestão de Usuários
               </li>
             </ul>

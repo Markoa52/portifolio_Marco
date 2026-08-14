@@ -6,9 +6,7 @@ import inicial from '../assets/inicial.png';
 import frota from '../assets/frota.png'; 
 import fatura from '../assets/fatura.png'; 
 import relatorio from '../assets/relatorio.png'; 
-//import Detalhes from '../assets/detalhes.jpg'; 
 import DetalhesVpr from '../assets/detalhesvpr.png';
-//import Pagar from '../assets/pagar.png'
 
 import { DetalhesPedagio } from './saldoVpr'; 
 import { HistoricoFaturas } from './historicoFaturamento'; 
@@ -16,23 +14,27 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
-
+import { EditarUsuario } from './editarUsuario';
+import { Usuario } from './usuario';
 import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
+import type { IEmailRegistro } from '../types';
 
-type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato';
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario';
 
-export type PaginaTipo = 'visao-geral' | 'gerenciador' | 'dashboard' | 'consumoAPI' | 'contrato';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' | 'editar-usuario' | 'usuario'
+ |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento';
 
-interface ISidebarProps {
-  setPaginaAtiva: (pagina: PaginaTipo) => void;
+interface IContratoProps {
+  setPaginaAtiva: (pagina: any) => void;
+  paginaAtiva: string;
+  dadosOneDrive: IEmailRegistro[]; // 🌟 Recebe os dados normalizados vindos do App.tsx
 }
 
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
-export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
-
+export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva }) => {
   const valorGasto  = 4700;
   const valorMeta  = 5000;
      // O React calcula a porcentagem exata automaticamente
@@ -50,7 +52,6 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
     setMenuAberto(menuAberto === menuName ? null : menuName);
   };
 
-  
   return (
     <div className="pagina-container">
         
@@ -203,7 +204,6 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
               </div>
             </div>
 
-
         <div className="caixa-card-fatura-limpa">
          {/* Cabeçalho do Card */}
           <div className="card-linha-horizontal">
@@ -255,8 +255,6 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
            </div>
            </div>
 
-
-
             {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
             <div className="caixa-card-fatura-limpa">
               <div className="card-linha-horizontal">
@@ -275,7 +273,6 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
                 </div>
 
               </div>
-              
             </div>
 
             {/* Usamos um nome de classe inédito para ignorar as 2600 linhas antigas */}
@@ -314,6 +311,18 @@ export const Contrato: React.FC<ISidebarProps> = ({ setPaginaAtiva }) => {
           <RelatorioExtrato />
         )}
 
+      {/* AQUI ESTÁ O AJUSTE: Passamos os dados que vieram do App direto para o Gerenciador */}
+      {abaAtiva === 'editar-usuario' && (
+        <EditarUsuario 
+          setPaginaAtiva={setPaginaAtiva} 
+          setAbaAtiva={setAbaAtiva} 
+        />
+      )}
+
+      {(abaAtiva === 'usuario' || paginaAtiva === 'usuario') && (
+        <Usuario setPaginaAtiva={setPaginaAtiva} />
+      )}
+  
       </main>
 
     </div>

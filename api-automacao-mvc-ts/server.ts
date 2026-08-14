@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+
 //import { connectRabbit } from './src/config/rabbitConfig';
 
 // 1. Primeiramente, importe as rotas novas
@@ -77,18 +78,19 @@ app.use('/api', dashboardRoutes);
 app.use('/api', apiExternaRoutes);  
 app.use('/api', gerarArquivoRoutes);  
 app.use('/api', gerarArquivoFilaRoutes); 
+app.use('/api', checarArquivoRoutes); // 🌟 Colocado junto com as outras usando
 
-// 2. REGISTRE AS ROTAS DE API AQUI (No topo, antes de tudo!)
-app.use(checarArquivoRoutes); 
+app.use(cors()); // 🌟 2. Ative o CORS antes de qualquer rota!
+app.use(express.json());
 
 // ==========================================================================
 // 4. ARQUIVOS ESTÁTICOS DO FRONTEND (REACT / DIST)
 // ==========================================================================
-app.use(express.static(path.join(__dirname, 'automacao-react', 'dist')));
+// app.use(express.static(path.join(__dirname, 'automacao-react', 'dist')));
 
-app.get('/*any', (req, res) => {
-  res.sendFile(path.join(__dirname, 'automacao-react', 'dist', 'index.html'));
-});
+// app.get('/*any', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'automacao-react', 'dist', 'index.html'));
+// });
 
 // ==========================================================================
 // 5. INICIALIZAÇÃO DO SERVIDOR

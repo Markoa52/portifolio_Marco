@@ -1,16 +1,79 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { IEmailRegistro } from '../types/index.ts';
+import '../styles/editarUsuario.css';
+import type { PaginaTipo, AbaInferior } from './contrato.tsx'; 
 
 interface IGerenciadorProps {
-  dadosIniciais: IEmailRegistro[];
+  dadosIniciais?: IEmailRegistro[];
+  setPaginaAtiva?: (pagina: PaginaTipo) => void;
+  setAbaAtiva?: (aba: AbaInferior) => void;
 }
 
-export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
-  const [dadosLocais, setDadosLocais] = useState<IEmailRegistro[]>([]);
+export const EditarUsuario: React.FC<IGerenciadorProps> = ({ setAbaAtiva, dadosIniciais }) => {
+
+// 2. A função que o seu botão "Listar usuários" vai disparar
+const listarUsuarios = () => {
+  console.log("Navegando para a aba de listagem...");
+  
+  // O TypeScript agora aceita perfeitamente porque 'usuario' faz parte do tipo oficial AbaInferior!
+  setAbaAtiva && setAbaAtiva('usuario');  
+};
+  const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
+  const [, setCarregando] = useState<boolean>(true);
+  const [, setErro] = useState<string | null>(null);
+// MONITOR DE ÁREA ÚTIL: O React descobre o tamanho real do ecrã a cada milissegundo!
+
+  const [larguraJanela, setLarguraJanela] = useState<number>(window.innerWidth);
+
+  useEffect(() => {
+    const tratarRedimensionamento = () => setLarguraJanela(window.innerWidth);
+    window.addEventListener('resize', tratarRedimensionamento);
+    
+    async function puxarDadosDoExpress() {
+      try {
+        setCarregando(true);
+
+        //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
+        const resposta = await fetch('http://localhost:3000/api/dados', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+        });
+
+        if (!resposta.ok) throw new Error(`Erro no servidor: Status ${resposta.status}`);
+        const resultado = await resposta.json();
+
+        //Nesse ponto popula a interface com os dados que retornaram da rota da API(back-end)
+        const dadosNormalizados: IEmailRegistro[] = resultado.map((item: any) => ({
+          data: item.Data || item.data || '-',
+          assunto: item.Assunto || item.assunto || '-',
+          email: item.Email || item.email || '-',
+          acoes: item.Acoes || item.acoes || '-'
+        }));
+        setDadosSharePoint(dadosNormalizados);
+      } catch (err: any) {
+        console.error(err);
+        setErro(err.message || "Falha na conexão.");
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    puxarDadosDoExpress();
+
+    return () => window.removeEventListener('resize', tratarRedimensionamento);
+  }, []);
+
+    //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
+   const isMobile = larguraJanela <= 1024;
+
+  const [dadosLocais, setDadosLocais] = useState<IEmailRegistro[]>(dadosIniciais ?? []);
   const [pesquisa, setPesquisa] = useState<string>('');
   const [modalAberto, setModalFormulario] = useState<boolean>(false);
   const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
-
+  const [registroSelecionado, setRegistroSelecionado] = useState<IEmailRegistro | null>(null);
+  
   const [indexEdicao, setIndexEdicao] = useState<number>(-1);
   const [inputData, setInputData] = useState<string>('');
   const [inputAssunto, setInputAssunto] = useState<string>('');
@@ -21,7 +84,7 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
   const [paginaAtualCRUD, setPaginaAtualCRUD] = useState<number>(1);
   const registrosPorPaginaCRUD = 5;
 
-  useEffect(() => { setDadosLocais(dadosIniciais); }, [dadosIniciais]);
+  useEffect(() => { setDadosLocais(dadosIniciais ?? []); }, [dadosIniciais]);
   useEffect(() => { setPaginaAtualCRUD(1); }, [pesquisa]);
 
   useEffect(() => {
@@ -31,13 +94,15 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
     }
   }, [mensagem]);
 
-  const dadosFiltrados = useMemo(() => {
-    const termo = pesquisa.toLowerCase().trim();
-    if (!termo) return dadosLocais;
-    return dadosLocais.filter(item =>
-      item.assunto.toLowerCase().includes(termo) || item.email.toLowerCase().includes(termo)
-    );
-  }, [pesquisa, dadosLocais]);
+ const dadosFiltrados = useMemo(() => {
+    // Se você salvou em dadosSharePoint, ele deve filtrar em cima de dadosSharePoint!
+    return dadosSharePoint.filter((item) => {
+      return (
+        item.assunto?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+        item.email?.toLowerCase().includes(pesquisa.toLowerCase())
+      );
+    });
+  }, [dadosSharePoint, pesquisa]);
 
   const totalPaginasCRUD = Math.ceil(dadosFiltrados.length / registrosPorPaginaCRUD);
   const indiceInicialCRUD = (paginaAtualCRUD - 1) * registrosPorPaginaCRUD;
@@ -92,9 +157,65 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
     } finally { setSalvando(false); }
   };
 
+  // SE O USUÁRIO CLICAR EM "VER DETALHES"
+  if (registroSelecionado) {
+    return (
+      <div className="main-content-wrapper">      
+        <div className="header-container-sistema-bloco">
+          <h2 className="titulo-gerenciador-fluxos">🔍 Visualizar Detalhes do Registro</h2>
+          
+          <div className="botoes-topo-gerenciador-esquerda">
+            <button 
+              className="btn-crud" 
+              style={{ backgroundColor: '#e63946', color: '#fff' }} 
+              onClick={() => setRegistroSelecionado(null)} 
+            >
+              ⬅️ Voltar para a Listagem
+            </button>
+          </div>
+        </div>
+        <div style={{ padding: '20px', background: '#2d2d2d', borderRadius: '8px', border: '1px solid #3d3d3d' }}>
+          <h3 style={{ color: '#3399ff', marginTop: 0 }}>Informações Estruturadas</h3>
+          <p style={{ color: '#fff' }}><strong>Assunto:</strong> {registroSelecionado.assunto}</p>
+          <p style={{ color: '#aaa' }}><strong>Remetente:</strong> {registroSelecionado.email}</p>
+          <p style={{ color: '#aaa' }}><strong>Data de Processamento:</strong> {registroSelecionado.data}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
+    <div 
+      style={{ 
+        display: 'flex', 
+        flexDirection: isMobile ? 'column' : 'row', 
+        width: '100%',            
+        height: '100vh',          /* FORÇA a altura estrita do monitor para prender o layout */
+        backgroundColor: '#121212',
+        margin: 0,
+        padding: 0,
+        boxSizing: 'border-box',
+        overflow: 'hidden'        /* PROÍBE a página global de rolar e mexer o Sidebar */
+      }}
+    >
+      <div 
+        className="main-content"
+        style={{ 
+          flex: 1, 
+          minWidth: 0,
+          width: '100%',
+          maxWidth: '100%',
+          height: '100%',         /* Ocupa a altura total disponível ao lado do sidebar */
+          padding: isMobile ? '12px' : '20px 25px', 
+          overflowY: 'auto',      /* MÁGICA: A rolagem vertical acontece EXCLUSIVAMENTE aqui dentro */
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: isMobile ? 'center' : 'flex-start'
+        }}
+      >
  <div className="main-content-wrapper">   
- <h2 className="titulo-com-linha">⚙️ Gerenciador de Automações e Fluxos</h2>   
+ <h2>⚙️ Gerenciar Usuários</h2>   
 
   <div className="painel-operacional">
   {/* Envelopa o seu input de pesquisa existente junto com os dois botões */}
@@ -115,6 +236,11 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
     <button className="btn-crud btn-salvar-lote" onClick={enviarDadosParaServidor} disabled={salvando}>
       {salvando ? "⏳ Sincronizando..." : "💾 Salvar Registro"}
     </button>
+
+        <button className="btn-crud btn-adicionar" onClick={listarUsuarios}>
+        Listar usuários
+    </button>
+
   </div>
   </div>
 
@@ -131,7 +257,6 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
     {mensagem.texto}
   </div>
 )}
-  
         <div id="containerTabelaCrud">
           {dadosFiltrados.length === 0 ? (
             <p style={{ color: '#aaa', textAlign: 'center', padding: '15px 0' }}>Nenhum registro encontrado.</p>
@@ -150,8 +275,8 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {itensDaPaginaCRUD.map((item) => {
-                      const indiceRealAbsoluto = dadosLocais.indexOf(item);
+                    {itensDaPaginaCRUD.map((item, index) => {
+                      const indiceRealAbsoluto = dadosLocais.indexOf(item) !== -1 ? dadosLocais.indexOf(item) : index;
                       return (
                         <tr key={indiceRealAbsoluto}>
                           <td className="celula-data">{item.data}</td>
@@ -159,6 +284,7 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
                           <td className="celula-email">{item.email}</td>
                           <td className="celula-acoes-texto">{item.acoes}</td>
                           <td className="coluna-acoes-botoes">
+                            <button className="btn-ver" onClick={() => setRegistroSelecionado(item)}>🔍</button>
                             <button className="btn-acao-tabela btn-edit" onClick={() => abrirEdicao(indiceRealAbsoluto)}>✏️</button>
                             <button className="btn-acao-tabela btn-del" onClick={() => removerLinha(indiceRealAbsoluto)}>🗑️</button>
                           </td>
@@ -182,7 +308,6 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
           )}
         </div>
       </div>
-
       {modalAberto && (
         <div className="modal-formulario">
           <div className="modal-conteudo">
@@ -198,6 +323,9 @@ export const Gerenciador: React.FC<IGerenciadorProps> = ({ dadosIniciais }) => {
           </div>
         </div>
       )}
+      
+    </div>
+          </div>
     </div>
   );
 };

@@ -19,7 +19,7 @@ const oneDrive = new oneDriveController(oneDS);
  *       200:
  *         description: Array contendo a lista de registros extraídos da planilha.
  */
-router.post('/dados', (req, res) => oneDrive.obterDados(req, res));
+router.get('/dados', (req, res) => oneDrive.obterDados(req, res));
 
 /**
  * @openapi

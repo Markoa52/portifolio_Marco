@@ -1,6 +1,11 @@
 import express from 'express';
 const router = express.Router();
-import { obterDadosAPI } from '../controllers/dashboardController';
+
+import { webhookGLPIService } from '../services/webhookGLPIService';
+import { dashboardController } from '../controllers/dashboardController';
+
+const glpiService = new webhookGLPIService();
+const dashboard = new dashboardController(glpiService);
 
 /**
  * @openapi
@@ -29,7 +34,8 @@ import { obterDadosAPI } from '../controllers/dashboardController';
  *                 tempoMedio:
  *                   type: integer
  */
-router.get('/dadosChamados', obterDadosAPI);
+
+router.get('/dadosChamados', (req, res) => dashboard.obterDadosAPI(req, res));
 
 export default router;
 
