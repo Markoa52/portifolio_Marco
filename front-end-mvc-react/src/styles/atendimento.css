@@ -1,142 +1,25 @@
-.pagina-container-a {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 80% !important;
-  height: 100% !important; /* Ocupa toda a altura injetada pelo App.tsx */
-  overflow: hidden !important; /* Impede vazamentos */
-  margin-bottom: 100px;
+/* Mãozinha para cliques */
+/* 1. ISOLAMENTO COMPLETO DA ÁREA DA PESQUISA */
+/* Aplica aceleração gráfica e isolamento de renderização para impedir tremores de cursor */
+.row.g-3.align-items-center,
+.row.align-items-center {
+  contain: layout style !important; /* Blinda o elemento contra recálculos do navegador */
+  transform: translate3d(0, 0, 0) !important; /* Força o uso da GPU, eliminando tremores de frações de pixel */
+  backface-visibility: hidden !important;
+  perspective: 1000px !important;
+  will-change: transform !important;
 }
 
-.pagina-container-a h1 {
-padding-left: 200px !important;
+/* 2. TRAVA DA LINHA DE BASE DA FONTE DO INPUT */
+/* Força o navegador a usar uma linha de base de texto rígida, impedindo saltos ao alternar o cursor do mouse */
+.form-control {
+  line-height: 1.5 !important;
+  display: inline-block !important;
+  vertical-align: top !important;
 }
 
-/* O VERDADEIRO GERENCIADOR DE ROLAGEM INTERNA */
-.conteudo-principal-abaixo-a {
-  width: 100% !important;
-  flex: 1 !important;        /* Ocupa todo o espaço restante que sobrar abaixo do header */
-  overflow-y: auto !important; /* Cria a barra de rolagem apenas para as tabelas ou listas longas! */
-  padding-top: 90px !important;
-  padding-left: 200px !important;
-  box-sizing: border-box !important;
+/* 3. ANULA O TREMOR DO COMPORTAMENTO DE SELEÇÃO DO CURSOR */
+input[type="text"] {
+  cursor: text !important;
 }
 
-/* Força exatamente 2 colunas lado a lado */
-.novos-cards-grid {
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important; /* Cria 2 colunas com tamanhos iguais (50% cada) */
-  gap: 20px !important; /* Espaçamento de 20px entre os cards (tanto do lado quanto abaixo) */
-  width: 100% !important;
-}
-
-/* Estilização padrão dos novos cards */
-.novo-card-item {
-  background-color: #efecec !important;
-  border: 1px solid #efecec !important;
-  padding: 25px !important;
-  border-radius: 8px !important;
-  box-sizing: border-box !important;
-  text-align: left !important;
-  text-transform: uppercase !important;
-}
-
-/* Estilo específico para o H3 (Título) dentro do novo card */
-.novo-card-item h3 {
-  color: #2d2d2d !important;        /* Substitua pela cor de texto que você deseja */
-  text-align: left !important;
-  margin-bottom: 100px !important;    /* Espaço sutil entre o título e o parágrafo */
-}
-
-/* Estilo específico para o P (Texto/Parágrafo) dentro do novo card */
-.novo-card-item p {
-  color:#2d2d2d !important;        /* Substitua pela cor de texto que você deseja */
-  text-align: left !important;
-  margin: 0 !important;
-}
-
-/* Grupos de Submenus do Dropdown */
-.menu-dropdown-secao-grupo-a {
-  background-color: #efecec !important;
-  border: 1px solid #efecec !important;
-  padding: 25px !important;
-  border-radius: 8px !important;
-  box-sizing: border-box !important;
-  text-align: left !important;
-}
-
-.menu-dropdown-secao-grupo-a p {
-  color: #2d2d2d !important;        /* Substitua pela cor de texto que você deseja */
-  text-align: left !important;
-}
-
-.menu-dropdown-secao-titulo-a {
-  color: #111111 !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-}
-
-.menu-dropdown-secao-grupo-a ul {
-  padding: 10px !important;
-  margin: 0 !important;
-}
-
-.menu-dropdown-secao-grupo-a li {
-  color: #240ab9 !important;
-  font-size: 0.88rem !important;
-  cursor: pointer !important;
-  border-radius: 5px !important;
-  transition: all 0.15s ease !important;
-}
-
-.menu-dropdown-secao-grupo li:hover {
-  background-color: #222222 !important;
-  color: #f1eaea !important;
-  padding-left: 16px !important; /* Efeito sutil de deslocamento no hover */
-}
-
-
-/* Limpa qualquer herança antiga e cria um bloco zerado */
-.caixa-card-fatura-limpa {
-  background-color: #1a1a1a !important; /* Cor de fundo escura do seu painel */
-  border: 1px solid #2d2d2d !important;
-  border-radius: 8px !important;
-  padding: 16px 20px !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  display: block !important;
-}
-
-/* Cria o elástico horizontal perfeito */
-.caixa-card-fatura-limpa .card-linha-horizontal {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: space-between !important; /* Texto na esquerda e Link na direita */
-  align-items: center !important;             /* Alinha ambos no centro vertical */
-  width: 100% !important;
-  gap: 15px !important;
-}
-
-/* Garante que o H3 do cartão não herde margens gigantes antigas */
-.caixa-card-fatura-limpa h3 {
-  margin: 0 !important;
-  font-size: 1.1rem !important;
-  color: #ffffff !important;
-  text-align: left !important;
-}
-
-/* Link minimalista na extrema direita */
-.caixa-card-fatura-limpa .link-fatura-direita {
-  background: transparent !important;
-  border: none !important;
-  color: #6366f1 !important; /* Roxo/azul moderno */
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  padding: 0 !important;
-  white-space: nowrap !important;
-}
-
-.caixa-card-fatura-limpa .link-fatura-direita:hover {
-  color: #4f46e5 !important;
-  text-decoration: underline !important;
-}

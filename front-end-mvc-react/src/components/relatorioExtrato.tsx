@@ -22,7 +22,7 @@ const EXTRATO_MOCK: IExtrato[] = [
 export const RelatorioExtrato: React.FC= () => {
   return (
     <div className="tabela-pagina-container">
-      
+      <h2>Extrato</h2>
       {/* Barra de Ferramentas Superior do Extrato */}
       <div className="frota-acoes-topo" style={{ marginBottom: '20px' }}>
         <button 

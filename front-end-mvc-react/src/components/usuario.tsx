@@ -164,128 +164,117 @@ useEffect(() => {
   };
 
   return (
-    <div 
-      style={{ 
-        display: 'flex', 
-        flexDirection: isMobile ? 'column' : 'row', 
-        width: '100%',            
-        height: '100vh',          /* FORÇA a altura estrita do monitor para prender o layout */
-        backgroundColor: '#121212',
-        margin: 0,
-        padding: 0,
-        boxSizing: 'border-box',
-        overflow: 'hidden'        /* PROÍBE a página global de rolar e mexer o Sidebar */
-      }}
-      >
-      <div 
-        className="main-content"
-        style={{ 
-          flex: 1, 
-          minWidth: 0,
-          width: '100%',
-          maxWidth: '100%',
-          height: '100%',         /* Ocupa a altura total disponível ao lado do sidebar */
-          padding: isMobile ? '12px' : '20px 25px', 
-          overflowY: 'auto',      /* MÁGICA: A rolagem vertical acontece EXCLUSIVAMENTE aqui dentro */
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: isMobile ? 'center' : 'flex-start'
-        }}
-      ></div>
-
-    <div className="main-content-wrapper">  
-      <h2>📋 Usuários</h2>  
+  // Limpa o visual escuro antigo e trava na largura padrão de 1200px alinhada ao Header
+  <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    
+    {/* CABEÇALHO DA TELA */}
+    <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+      <h2 className="fs-4 fw-bold text-dark m-0">📋 Usuários</h2>  
+    </div>
        
-      <div className="painel-operacional">
-        <div className="ferramentas-tabela" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          
-          {/* ENVELOPE DO SUCESSO: Barra de pesquisa à esquerda */}
-          <div className="grupo-operacional-pesquisa" style={{ flex: 1 }}>
-            <input 
-              type="text" 
-              id="inputPesquisa" 
-              placeholder="🔍 Pesquisar por assunto ou e-mail..." 
-              value={pesquisa} 
-              onChange={(e) => setPesquisa(e.target.value)} 
-            />
-          </div>
-
-          {/* ADIÇÃO DOS BOTÕES DE EXPORTAÇÃO (Alinhados à direita) */}
-          <div style={{ display: 'flex', gap: '10px', marginLeft: '20px' }}>
-            <button 
-              className="btn-ver" 
-              style={{ backgroundColor: '#2ec4b6', color: '#fff', opacity: carregando ? 0.6 : 1 }}
-              disabled={carregando || dadosFiltrados.length === 0}
-              onClick={() => handleExportarArquivo('excel')}
-            >
-              {carregando ? '⏳ Aguarde...' : '📥 Baixar Excel'}
-            </button>
-            <button 
-              className="btn-ver" 
-              style={{ backgroundColor: '#ff9f1c', color: '#fff', opacity: carregando ? 0.6 : 1 }}
-              disabled={carregando || dadosFiltrados.length === 0}
-              onClick={() => handleExportarArquivo('pdf')}
-            >
-              {carregando ? '⏳ Aguarde...' : '📄 Baixar PDF'}
-            </button>
-          </div>
+    {/* PAINEL OPERACIONAL (Card Branco Limpo) */}
+    <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 mx-0 w-100 mb-4">
+      
+      {/* BARRA DE FERRAMENTAS: Pesquisa na esquerda e Exportações na direita */}
+      <div className="row g-3 align-items-center mb-3">
+        
+        {/* Barra de Pesquisa */}
+        <div className="col-md-6">
+          <input 
+            type="text" 
+            className="form-control" 
+            placeholder="🔍 Pesquisar por assunto ou e-mail..." 
+            style={{ padding: '0.45rem 0.75rem', fontSize: '0.875rem' }}
+            value={pesquisa} 
+            onChange={(e) => setPesquisa(e.target.value)} 
+          />
         </div>
 
-        {carregando  ? (
-          <p style={{ color: '#aaa', textAlign: 'center', padding: '20px 0' }}>Carregando .</p>
-        ) : (
-          <>
-            <div className="tabela-scroll-container">
-              <table className="tabela-sistema">
-                <thead>
-                  <tr>
-                    <th className="col-data">Data</th>
-                    <th className="col-assunto">Assunto</th>
-                    <th className="col-email">Email</th>
-                    {/* <th className="col-acoes" style={{ textAlign: 'center' }}>Ações</th> */}
-                  </tr>
-                </thead>
-                <tbody>
-                  {itensDaPagina.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.data}</td>
-                      <td>{item.assunto}</td>
-                      <td>{item.email}</td>
-                      {/* <td style={{ textAlign: 'center' }}>
-                        <button className="btn-ver" onClick={() => setRegistroSelecionado(item)}>🔍 Ver</button> 
-                      </td> */}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        {/* Botões de Exportação alinhados à direita com cores corporativas sutis */}
+        <div className="col-md-6 d-flex justify-content-md-end gap-2">
+          <button 
+            className="btn btn-outline-dark btn-sm fw-semibold px-3 py-2" 
+            style={{ opacity: carregando ? 0.6 : 1 }}
+            disabled={carregando || dadosFiltrados.length === 0}
+            onClick={() => handleExportarArquivo('excel')}
+          >
+            {carregando ? '⏳ Aguarde...' : '📥 Baixar Excel'}
+          </button>
+          <button 
+            className="btn btn-dark btn-sm fw-semibold px-3 py-2" 
+            style={{ opacity: carregando ? 0.6 : 1 }}
+            disabled={carregando || dadosFiltrados.length === 0}
+            onClick={() => handleExportarArquivo('pdf')}
+          >
+            {carregando ? '⏳ Aguarde...' : '📄 Baixar PDF'}
+          </button>
+        </div>
 
-            <div id="paginacaoContainer">
-              <span style={{ color: '#aaa', fontSize: '0.9rem' }}>
-                A mostrar {indiceInicial + 1} a {Math.min(indiceInicial + registrosPorPagina, dadosFiltrados.length)} de {dadosFiltrados.length} registros (Página {paginaAtual}/{totalPaginas || 1})
-              </span>
-              <div className="botoes-paginacao">
-                <button 
-                  className="btn-ver" 
-                  disabled={paginaAtual === 1}
-                  onClick={() => setPaginaAtual(prev => prev - 1)}
-                >
-                  Anterior
-                </button>
-                <button 
-                  className="btn-ver" 
-                  disabled={paginaAtual === totalPaginas || totalPaginas === 0}
-                  onClick={() => setPaginaAtual(prev => prev + 1)}
-                >
-                  Próximo
-                </button>
-              </div>
-            </div>
-          </>
-        )}
       </div>
+
+      {/* FEEDBACK DE CARREGAMENTO */}
+      {carregando ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-secondary mb-2" role="status" style={{ width: '1.5rem', height: '1.5rem' }}></div>
+          <p className="text-muted small my-0">Carregando dados dos usuários...</p>
+        </div>
+      ) : (
+        <>
+          {/* TABELA DE CONSULTA RESTRUTURADA */}
+          <div className="table-responsive border rounded-3 bg-white mt-2">
+            <table className="table table-hover align-middle mb-0 text-start" style={{ fontSize: '0.875rem' }}>
+              <thead className="table-light text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                <tr>
+                  <th style={{ width: '20%' }}>Data</th>
+                  <th style={{ width: '45%' }}>Assunto</th>
+                  <th style={{ width: '35%' }}>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dadosFiltrados.length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="text-muted text-center py-4 small">Nenhum registro encontrado.</td>
+                  </tr>
+                ) : (
+                  itensDaPagina.map((item, index) => (
+                    <tr key={index}>
+                      <td className="text-dark fw-medium">{item.data}</td>
+                      <td className="text-secondary">{item.assunto}</td>
+                      <td className="text-secondary">{item.email}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* CONTROLES DE PAGINAÇÃO RESPONSIVOS */}
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-3 pt-2 border-top">
+            <span className="text-muted small">
+              Mostrando {indiceInicial + 1} a {Math.min(indiceInicial + registrosPorPagina, dadosFiltrados.length)} de {dadosFiltrados.length} registros (Página {paginaAtual}/{totalPaginas || 1})
+            </span>
+            <div className="btn-group">
+              <button 
+                className="btn btn-light btn-sm border fw-medium px-3" 
+                disabled={paginaAtual === 1}
+                onClick={() => setPaginaAtual(prev => prev - 1)}
+              >
+                Anterior
+              </button>
+              <button 
+                className="btn btn-light btn-sm border fw-medium px-3" 
+                disabled={paginaAtual === totalPaginas || totalPaginas === 0}
+                onClick={() => setPaginaAtual(prev => prev + 1)}
+              >
+                Próximo
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
     </div>
-    </div>
-  );
+  </div>
+);
+
 };

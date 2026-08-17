@@ -31,7 +31,7 @@ export const ListarFrota: React.FC = () => {
   if (subAba === 'lista') {
     return (
       <div className="frota-lista-container">
-        
+        <h2>Frota</h2>
         {/* Barra de Ações de Topo Atualizada */}
         <div className="frota-acoes-topo">
           {/* NOVO BOTÃO EXPORTAR (Alinhado à esquerda do grupo de cadastro) */}

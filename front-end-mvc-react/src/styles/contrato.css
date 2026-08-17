@@ -851,7 +851,7 @@ main > div {
 /* Container do Header Principal */
   .header-sistema-novo {
     width: 100% !important;
-    background-color: #121212 !important;
+    background-color: #f3f4f6 !important;
     padding: 12px 20px !important;
     border-bottom: 1px solid #222222 !important;
     box-sizing: border-box !important;
@@ -887,7 +887,7 @@ main > div {
   /* 2. HEADER E CONTAINER PRINCIPAL EM LINHA HORIZONTAL ÚNICA */
   .header-sistema-novo {
     width: 100% !important;
-    background-color: #121212 !important;
+    background-color: #f3f4f6 !important;
     padding: 12px 20px !important;
     border-bottom: 1px solid #222222 !important;
     box-sizing: border-box !important;
@@ -1364,7 +1364,7 @@ main > div {
   
   .header-sistema-novo {
     width: 100% !important;
-    background-color: #121212 !important;
+    background-color: #f3f4f6 !important;
     padding: 15px 24px !important;
     border-bottom: 1px solid #222222 !important;
     box-sizing: border-box !important;
@@ -1412,7 +1412,7 @@ main > div {
 
   .header-sistema-novo {
     padding: 12px 10px !important;
-    border-bottom: 1px solid #222222 !important;
+    border-bottom: 1px solid #f3f4f6 !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }

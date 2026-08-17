@@ -21,7 +21,7 @@ const PASSAGENS_MOCK: IPassagem[] = [
 export const RelatorioPassagens: React.FC = () => {
   return (
     <div className="tabela-pagina-container">
-      
+      <h2>Passagens</h2>
       {/* Barra de Ferramentas Superior do Relatório */}
       <div className="frota-acoes-topo" style={{ marginBottom: '20px' }}>
         <button 

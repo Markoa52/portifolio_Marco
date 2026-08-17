@@ -3,11 +3,13 @@ import { Contrato } from './components/contrato.tsx';
 import { Atendimento } from './components/atendimento.tsx';
 import { Dashboard } from './components/dashboard.tsx';
 import { ConsumoAPI } from './components/consumoAPI.tsx';
+import {CadastroContrato} from './components/cadastroContrato.tsx'
+import { Pedidos } from './components/pedidos.tsx'
 import type { PaginaTipo } from './components/contrato.tsx';
 
 function App() {
 
-  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('contrato');
+  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('atendimento');
 
       return (
     <div>
@@ -23,6 +25,14 @@ function App() {
 
          {paginaAtiva === 'atendimento' && (
           <Atendimento />
+        )}
+
+        {paginaAtiva === 'cadastro-Contrato' && (
+          <CadastroContrato />
+        )}
+
+          {paginaAtiva === 'pedidos' && (
+          <Pedidos />
         )}
 
       </div>

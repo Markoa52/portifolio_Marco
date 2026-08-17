@@ -3,7 +3,25 @@
    ========================================================================== */
 body {
   font-family: 'Segoe UI', Arial, sans-serif !important;
-  background-color: #121212 !important;
-  color: #fff !important;
+  background-color: #f3f4f6 !important;
+  color: #111111 !important;
   font-size: 0.9rem !important;
 }
+.cp { cursor: pointer; }
+
+/* REGRA 1: Força a barra de rolagem vertical a ficar SEMPRE visível */
+/* Isso impede o efeito de 'solavanco' para os lados quando você muda de aba */
+html {
+  overflow-y: scroll !important;
+}
+
+/* REGRA 2: Blinda o corpo do sistema contra vazamentos e rolagens horizontais */
+body {
+  overflow-x: hidden !important;
+  width: 100% !important;
+}
+
+
+
+
+

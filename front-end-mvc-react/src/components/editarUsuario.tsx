@@ -185,147 +185,162 @@ const listarUsuarios = () => {
   }
 
   return (
-    <div 
-      style={{ 
-        display: 'flex', 
-        flexDirection: isMobile ? 'column' : 'row', 
-        width: '100%',            
-        height: '100vh',          /* FORÇA a altura estrita do monitor para prender o layout */
-        backgroundColor: '#121212',
-        margin: 0,
-        padding: 0,
-        boxSizing: 'border-box',
-        overflow: 'hidden'        /* PROÍBE a página global de rolar e mexer o Sidebar */
-      }}
-    >
-      <div 
-        className="main-content"
-        style={{ 
-          flex: 1, 
-          minWidth: 0,
-          width: '100%',
-          maxWidth: '100%',
-          height: '100%',         /* Ocupa a altura total disponível ao lado do sidebar */
-          padding: isMobile ? '12px' : '20px 25px', 
-          overflowY: 'auto',      /* MÁGICA: A rolagem vertical acontece EXCLUSIVAMENTE aqui dentro */
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: isMobile ? 'center' : 'flex-start'
-        }}
-      >
- <div className="main-content-wrapper">   
- <h2>⚙️ Gerenciar Usuários</h2>   
-
-  <div className="painel-operacional">
-  {/* Envelopa o seu input de pesquisa existente junto com os dois botões */}
-  <div className="ferramentas-tabela">
-   <div className="grupo-operacional-pesquisa">
-    <input 
-      type="text" 
-      id="inputPesquisa" 
-      placeholder="🔍 Pesquisar por assunto ou e-mail..." 
-      value={pesquisa} 
-      onChange={(e) => setPesquisa(e.target.value)} 
-    />
+  // container-fluid limpa os styles inline pesados antigos e centraliza com a largura de 1200px
+  <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
-    <button className="btn-crud btn-adicionar" onClick={abrirInclusao}>
-      ➕ Incluir Registro
-    </button>
-    
-    <button className="btn-crud btn-salvar-lote" onClick={enviarDadosParaServidor} disabled={salvando}>
-      {salvando ? "⏳ Sincronizando..." : "💾 Salvar Registro"}
-    </button>
+    {/* CABEÇALHO DA TELA */}
+    <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+      <h2 className="fs-4 fw-bold text-dark m-0">⚙️ Gerenciar Usuários</h2>
+    </div>
 
-        <button className="btn-crud btn-adicionar" onClick={listarUsuarios}>
-        Listar usuários
-    </button>
+    {/* PAINEL OPERACIONAL (Fundo branco igual aos seus outros cards) */}
+    <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 mx-0 w-100 mb-4">
+      
+      {/* BARRA DE FERRAMENTAS: Pesquisa e Botões alinhados */}
+      <div className="row g-3 align-items-center mb-3">
+        {/* Input de Pesquisa ocupando 5 colunas */}
+        <div className="col-md-5">
+          <input 
+            type="text" 
+            className="form-control" 
+            placeholder="🔍 Pesquisar por assunto ou e-mail..." 
+            style={{ padding: '0.45rem 0.75rem', fontSize: '0.875rem' }}
+            value={pesquisa} 
+            onChange={(e) => setPesquisa(e.target.value)} 
+          />
+        </div>
 
-  </div>
-  </div>
-
-  {mensagem && (
-  <div 
-    className="mensagem-status" 
-    style={{ 
-      display: 'block', 
-      backgroundColor: mensagem.tipo === 'sucesso' ? 'rgba(46, 196, 182, 0.2)' : 'rgba(230, 57, 70, 0.2)', 
-      color: mensagem.tipo === 'sucesso' ? '#2ec4b6' : '#e63946', 
-      border: mensagem.tipo === 'sucesso' ? '1px solid #2ec4b6' : '1px solid #e63946' // 🌟 CORREÇÃO: Alterado de "message" para "mensagem"
-    }}
-  >
-    {mensagem.texto}
-  </div>
-)}
-        <div id="containerTabelaCrud">
-          {dadosFiltrados.length === 0 ? (
-            <p style={{ color: '#aaa', textAlign: 'center', padding: '15px 0' }}>Nenhum registro encontrado.</p>
-          ) : (
-            <>
-              {/* MOLDURA DE SEGURANÇA COM SCROLL ISOLADO MÓVEL ── */}
-              <div className="tabela-scroll-container">
-                <table className="tabela-sistema">
-                  <thead>
-                    <tr>
-                      <th className="col-data">Data</th>
-                      <th className="col-assunto">Assunto</th>
-                      <th className="col-email">Email</th>
-                      <th className="col-acoes-texto">Ação</th>
-                      <th className="col-operacoes">Operações</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {itensDaPaginaCRUD.map((item, index) => {
-                      const indiceRealAbsoluto = dadosLocais.indexOf(item) !== -1 ? dadosLocais.indexOf(item) : index;
-                      return (
-                        <tr key={indiceRealAbsoluto}>
-                          <td className="celula-data">{item.data}</td>
-                          <td className="celula-assunto">{item.assunto}</td>
-                          <td className="celula-email">{item.email}</td>
-                          <td className="celula-acoes-texto">{item.acoes}</td>
-                          <td className="coluna-acoes-botoes">
-                            <button className="btn-ver" onClick={() => setRegistroSelecionado(item)}>🔍</button>
-                            <button className="btn-acao-tabela btn-edit" onClick={() => abrirEdicao(indiceRealAbsoluto)}>✏️</button>
-                            <button className="btn-acao-tabela btn-del" onClick={() => removerLinha(indiceRealAbsoluto)}>🗑️</button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-
-              <div id="paginacaoContainer">
-                <span style={{ color: '#aaa', fontSize: '0.9rem' }}>
-                  A mostrar {indiceInicialCRUD + 1} a {Math.min(indiceInicialCRUD + registrosPorPaginaCRUD, dadosFiltrados.length)} de {dadosFiltrados.length} registros (Página {paginaAtualCRUD}/{totalPaginasCRUD || 1})
-                </span>
-                <div className="botoes-paginacao">
-                  <button className="btn-ver" disabled={paginaAtualCRUD === 1} onClick={() => setPaginaAtualCRUD(prev => prev - 1)}>Anterior</button>
-                  <button className="btn-ver" disabled={paginaAtualCRUD === totalPaginasCRUD || totalPaginasCRUD === 0} onClick={() => setPaginaAtualCRUD(prev => prev + 1)}>Próximo</button>
-                </div>
-              </div>
-            </>
-          )}
+        {/* Grupo de botões organizados e com as cores pretas/cinzas corporativas */}
+        <div className="col-md-7 d-flex justify-content-md-end gap-2 flex-wrap">
+          <button className="btn btn-outline-dark btn-sm fw-semibold px-3 py-2" onClick={listarUsuarios}>
+            📋 Listar usuários
+          </button>
+          <button className="btn btn-outline-dark btn-sm fw-semibold px-3 py-2" onClick={abrirInclusao}>
+            ➕ Incluir Registro
+          </button>
+          <button className="btn btn-dark btn-sm fw-semibold px-3 py-2" onClick={enviarDadosParaServidor} disabled={salvando}>
+            {salvando ? "⏳ Sincronizando..." : "💾 Salvar Registro"}
+          </button>
         </div>
       </div>
-      {modalAberto && (
-        <div className="modal-formulario">
-          <div className="modal-conteudo">
-            <h3 className="titulo-painel">{indexEdicao === -1 ? '📝 Incluir Registro' : '✏️ Editar Registro'}</h3>
-            <form onSubmit={confirmarAcaoFormulario}>
-              <div className="form-grupo"><label>Data:</label><input type="text" className="form-input" value={inputData} onChange={(e) => setInputData(e.target.value)} required /></div>
-              <div className="form-grupo"><label>Assunto:</label><input type="text" className="form-input" value={inputAssunto} onChange={(e) => setInputAssunto(e.target.value)} required /></div>
-              <div className="form-grupo"><label>E-mail:</label><input type="email" className="form-input" value={inputEmail} onChange={(e) => setInputEmail(e.target.value)} required /></div>
-              <div className="form-grupo"><label>Ações / Status:</label><input type="text" className="form-input" value={inputAcoes} onChange={(e) => setInputAcoes(e.target.value)} /></div>
-              <button type="submit" className="btn-crud btn-adicionar" style={{ width: '100%', marginBottom: '10px' }}>{indexEdicao === -1 ? 'Adicionar à Lista' : 'Atualizar Linha'}</button>
-              <button type="button" className="btn-crud" style={{ backgroundColor: '#444', color: '#fff', width: '100%' }} onClick={fecharFormulario}>Fechar</button>
-            </form>
-          </div>
+
+      {/* ALERTAS DE MENSAGEM DO BOOTSTRAP */}
+      {mensagem && (
+        <div className={`alert ${mensagem.tipo === 'sucesso' ? 'alert-success' : 'alert-danger'} py-2 px-3 small mb-3`} role="alert">
+          {mensagem.texto}
         </div>
       )}
-      
+
+      {/* ÁREA DA TABELA DE USUÁRIOS */}
+      <div id="containerTabelaCrud" className="mt-2">
+        {dadosFiltrados.length === 0 ? (
+          <p className="text-muted text-center py-4 my-0 small">Nenhum registro encontrado.</p>
+        ) : (
+          <>
+            {/* Tabela estilizada com as classes oficiais do Bootstrap */}
+            <div className="table-responsive border rounded-3 bg-white">
+              <table className="table table-hover align-middle mb-0 text-start" style={{ fontSize: '0.875rem' }}>
+                <thead className="table-light text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                  <tr>
+                    <th style={{ width: '15%' }}>Data</th>
+                    <th style={{ width: '30%' }}>Assunto</th>
+                    <th style={{ width: '25%' }}>Email</th>
+                    <th style={{ width: '15%' }}>Ação</th>
+                    <th className="text-center" style={{ width: '15%' }}>Operações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {itensDaPaginaCRUD.map((item, index) => {
+                    const indiceRealAbsoluto = dadosLocais.indexOf(item) !== -1 ? dadosLocais.indexOf(item) : index;
+                    return (
+                      <tr key={indiceRealAbsoluto}>
+                        <td className="text-dark fw-medium">{item.data}</td>
+                        <td className="text-secondary">{item.assunto}</td>
+                        <td className="text-secondary">{item.email}</td>
+                        <td>
+                          <span className="badge bg-light border text-dark fw-normal">{item.acoes}</span>
+                        </td>
+                        {/* Ações com botões de ícone limpos e sem cores pesadas */}
+                        <td className="text-center">
+                          <div className="d-flex justify-content-center gap-1">
+                            <button className="btn btn-light btn-sm border" title="Visualizar" onClick={() => setRegistroSelecionado(item)}>🔍</button>
+                            <button className="btn btn-light btn-sm border" title="Editar" onClick={() => abrirEdicao(indiceRealAbsoluto)}>✏️</button>
+                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => removerLinha(indiceRealAbsoluto)}>🗑️</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* CONTROLES DE PAGINAÇÃO RESPONSIVOS */}
+            <div className="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 mt-3 pt-2 border-top">
+              <span className="text-muted small">
+                Mostrando {indiceInicialCRUD + 1} a {Math.min(indiceInicialCRUD + registrosPorPaginaCRUD, dadosFiltrados.length)} de {dadosFiltrados.length} registros (Página {paginaAtualCRUD}/{totalPaginasCRUD || 1})
+              </span>
+              <div className="btn-group">
+                <button className="btn btn-light btn-sm border fw-medium px-3" disabled={paginaAtualCRUD === 1} onClick={() => setPaginaAtualCRUD(prev => prev - 1)}>
+                  Anterior
+                </button>
+                <button className="btn btn-light btn-sm border fw-medium px-3" disabled={paginaAtualCRUD === totalPaginasCRUD || totalPaginasCRUD === 0} onClick={() => setPaginaAtualCRUD(prev => prev + 1)}>
+                  Próximo
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
+
+    {/* MODAL FLUTUANTE DE INCLUSÃO/EDIÇÃO DO BOOTSTRAP */}
+    {modalAberto && (
+      // Classes 'modal d-block' e fundo escurecido 'rgba(0,0,0,0.5)' criam o efeito flutuante real nativo
+      <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1060 }}>
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content shadow border-0 p-2">
+            
+            <div className="modal-header border-0 pb-1">
+              <h5 className="modal-title fw-bold text-dark fs-5">
+                {indexEdicao === -1 ? '📝 Incluir Registro' : '✏️ Editar Registro'}
+              </h5>
+              <button type="button" className="btn-close" onClick={fecharFormulario}></button>
+            </div>
+            
+            <form onSubmit={confirmarAcaoFormulario} className="modal-body pt-2 text-start">
+              <div className="mb-2.5">
+                <label className="form-label small fw-bold text-secondary mb-1">Data:</label>
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputData} onChange={(e) => setInputData(e.target.value)} required />
+              </div>
+              <div className="mb-2.5">
+                <label className="form-label small fw-bold text-secondary mb-1">Assunto:</label>
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputAssunto} onChange={(e) => setInputAssunto(e.target.value)} required />
+              </div>
+              <div className="mb-2.5">
+                <label className="form-label small fw-bold text-secondary mb-1">E-mail:</label>
+                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputEmail} onChange={(e) => setInputEmail(e.target.value)} required />
+              </div>
+              <div className="mb-3">
+                <label className="form-label small fw-bold text-secondary mb-1">Ações / Status:</label>
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputAcoes} onChange={(e) => setInputAcoes(e.target.value)} />
+              </div>
+              
+              <div className="d-flex flex-column gap-2 border-top pt-3 mt-2">
+                <button type="submit" className="btn btn-dark fw-semibold py-2" style={{ fontSize: '0.9rem' }}>
+                  {indexEdicao === -1 ? 'Adicionar à Lista' : 'Atualizar Linha'}
+                </button>
+                <button type="button" className="btn btn-light border text-secondary fw-semibold py-2" style={{ fontSize: '0.9rem' }} onClick={fecharFormulario}>
+                  Cancelar e Fechar
+                </button>
+              </div>
+            </form>
+
           </div>
-    </div>
-  );
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 };
