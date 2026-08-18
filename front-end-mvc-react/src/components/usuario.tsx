@@ -3,6 +3,7 @@ import '../styles/usuario.css';
 import type { IEmailRegistro } from '../types/index.ts';
 import type { PaginaTipo } from './contrato.tsx';
 import axios from 'axios';
+import { Search } from 'lucide-react';
 
 // 1. Como a página busca os próprios dados, deixamos a prop 'dados' como opcional ou limpamos
 export interface IVisaoGeralProps {
@@ -79,7 +80,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({ }) => {
    const isMobile = larguraJanela <= 1024;
 
   // ==========================================================================
-  // 📊 3. FILTRAGEM DINÂMICA E LOGÍCA ABAIXO DO CICLO DE VIDA
+  // 3. FILTRAGEM DINÂMICA E LOGÍCA ABAIXO DO CICLO DE VIDA
   // ==========================================================================
   const dadosFiltrados = useMemo(() => {
     return dadosSharePoint.filter((item) => {
@@ -165,11 +166,11 @@ useEffect(() => {
 
   return (
   // Limpa o visual escuro antigo e trava na largura padrão de 1200px alinhada ao Header
-  <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
     <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
-      <h2 className="fs-4 fw-bold text-dark m-0">📋 Usuários</h2>  
+      <h2 className="fs-4 fw-bold text-dark m-0">Usuários</h2>  
     </div>
        
     {/* PAINEL OPERACIONAL (Card Branco Limpo) */}
@@ -180,20 +181,28 @@ useEffect(() => {
         
         {/* Barra de Pesquisa */}
         <div className="col-md-6">
+        <div className="input-group mb-3" style={{ maxWidth: '400px' }}>
+          {/* A moldura cinza claro que segura a lupa da Lucide */}
+          <span className="input-group-text bg-light border-end-0 text-secondary">
+            <Search size={18} />
+          </span>
+          
+          {/* O campo de digitação real com a borda esquerda zerada para colar no ícone */}
           <input 
             type="text" 
-            className="form-control" 
-            placeholder="🔍 Pesquisar por assunto ou e-mail..." 
-            style={{ padding: '0.45rem 0.75rem', fontSize: '0.875rem' }}
+            className="form-control border-start-0 ps-1" 
+            placeholder="Pesquisar registros..." 
+            style={{ fontSize: '0.875rem' }}
             value={pesquisa} 
             onChange={(e) => setPesquisa(e.target.value)} 
           />
+        </div>
         </div>
 
         {/* Botões de Exportação alinhados à direita com cores corporativas sutis */}
         <div className="col-md-6 d-flex justify-content-md-end gap-2">
           <button 
-            className="btn btn-outline-dark btn-sm fw-semibold px-3 py-2" 
+            className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0" 
             style={{ opacity: carregando ? 0.6 : 1 }}
             disabled={carregando || dadosFiltrados.length === 0}
             onClick={() => handleExportarArquivo('excel')}
@@ -201,7 +210,7 @@ useEffect(() => {
             {carregando ? '⏳ Aguarde...' : '📥 Baixar Excel'}
           </button>
           <button 
-            className="btn btn-dark btn-sm fw-semibold px-3 py-2" 
+            className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0" 
             style={{ opacity: carregando ? 0.6 : 1 }}
             disabled={carregando || dadosFiltrados.length === 0}
             onClick={() => handleExportarArquivo('pdf')}

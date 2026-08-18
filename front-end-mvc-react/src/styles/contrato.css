@@ -1,61 +1,5 @@
 /* ==========================================================================
-   1. REGRAS GLOBAIS E ALINHAMENTO IMPERIAL À ESQUERDA
-   ========================================================================== */
-/* Limpa qualquer herança antiga e cria um bloco zerado */
-/* Avisa o navegador: "Procure a div limpa estritamente dentro da pagina-container" */
-.pagina-container .caixa-card-fatura-limpa {
-  background-color: #ffffff !important;
-  color: #000000 !important;
-}
-
-/* Garante que o H3 interno também mude para preto para dar leitura */
-.pagina-container .caixa-card-fatura-limpa h3 {
-  color: #000000 !important;
-}
-
-/* Cria o elástico horizontal perfeito */
-.caixa-card-fatura-limpa .card-linha-horizontal {
-  display: flex !important;
-  flex-direction: row !important;
-  justify-content: space-between !important; /* Texto na esquerda e Link na direita */
-  align-items: center !important;             /* Alinha ambos no centro vertical */
-  width: 100% !important;
-  gap: 15px !important;
-}
-
-/* Garante que o H3 do cartão não herde margens gigantes antigas */
-.caixa-card-fatura-limpa h3 {
-  margin: 0 !important;
-  font-size: 1.1rem !important;
-  color: #ffffff !important;
-  text-align: left !important;
-}
-
-/* Link minimalista na extrema direita */
-.caixa-card-fatura-limpa .link-fatura-direita {
-  background: transparent !important;
-  border: none !important;
-  color: #6366f1 !important; /* Roxo/azul moderno */
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  padding: 0 !important;
-  white-space: nowrap !important;
-}
-
-.caixa-card-fatura-limpa .link-fatura-direita:hover {
-  color: #4f46e5 !important;
-  text-decoration: underline !important;
-}
-
-/* Animação suave de entrada para novos componentes */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==========================================================================
-   2. TABELA MODERNA E RESPONSIVA (Históricos, Listagem de Frota)
+   1. TABELA MODERNA E RESPONSIVA (Históricos, Listagem de Frota)
    ========================================================================== */
 .tabela-responsiva-wrapper {
   width: 100% !important;
@@ -129,148 +73,7 @@
 }
 
 /* ==========================================================================
-   3. VISUALIZAÇÃO EM CARD TRADICIONAL (Faturas em Aberto - Grid)
-   ========================================================================== */
-.faturas-pagina-container {
-  width: 100% !important;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* ==========================================================================
-   ✨ ANIMAÇÃO DE ENTRADA SUAVE (FADE IN) PARA AS TELAS DO PAINEL
-   ========================================================================== */
-
-/* Aplica o efeito diretamente nas tags que mudam no seu <main> */
-.conteudo-principal-abaixo,
-.main-content-wrapper,
-.novos-cards-grid,
-main > div {
-  animation: entradaSuavePainel 0.3s ease-in-out !important;
-}
-
-/* Define os passos da animação: começa invisível e um pouco mais abaixo, depois sobe e clareia */
-@keyframes entradaSuavePainel {
-  from {
-    opacity: 0;
-    transform: translateY(6px); /* Dá um micro-impulso de baixo para cima muito elegante */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-.faturas-header-acoes {
-  display: flex !important;
-  align-items: center !important;
-  gap: 20px !important;
-  margin-bottom: 25px !important;
-}
-
-.faturas-cards-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-  gap: 20px !important;
-  width: 100% !important;
-}
-
-.fatura-card-item {
-  background-color: #ffffff !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px !important;
-  padding: 20px !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
-}
-
-.fatura-card-item:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
-}
-
-.borda-urgente {
-  border-left: 4px solid #ef4444 !important;
-}
-
-.fatura-card-topo {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  margin-bottom: 15px !important;
-}
-
-.fatura-categoria {
-  background-color: #f1f5f9 !important;
-  color: #475569 !important;
-  padding: 4px 10px !important;
-  border-radius: 6px !important;
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
-}
-
-.fatura-id {
-  color: #94a3b8 !important;
-  font-size: 0.85rem !important;
-}
-
-.fatura-label-valor {
-  color: #64748b !important;
-  font-size: 0.85rem !important;
-  margin: 0 0 4px 0 !important;
-}
-
-.fatura-valor-destaque {
-  font-size: 1.8rem !important;
-  color: #0f172a !important;
-  font-weight: 700 !important;
-  margin: 0 0 15px 0 !important;
-}
-
-.fatura-detalhes-linha {
-  display: flex !important;
-  justify-content: space-between !important;
-  font-size: 0.9rem !important;
-  margin-bottom: 6px !important;
-  color: #334155 !important;
-}
-
-.texto-alerta {
-  color: #ef4444 !important;
-  font-weight: 700 !important;
-}
-
-.fatura-mes-referencia {
-  font-size: 0.8rem !important;
-  color: #94a3b8 !important;
-  margin: 0 !important;
-}
-
-.fatura-card-rodape {
-  margin-top: 20px !important;
-}
-
-.botao-pagar-pix {
-  width: 100% !important;
-  background-color: #2d2d2d !important;
-  color: #ffffff !important;
-  border: none !important;
-  padding: 10px !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
-  transition: background-color 0.2s ease !important;
-}
-
-.botao-pagar-pix:hover {
-  background-color: #000000 !important;
-}
-
-/* ==========================================================================
-   4. VISUALIZAÇÃO EM LISTA VERTICAL (Cards Horizontais Longos)
+   2. VISUALIZAÇÃO EM LISTA VERTICAL (Cards Horizontais Longos)
    ========================================================================== */
 .faturas-lista-vertical {
   display: flex !important;
@@ -297,31 +100,7 @@ main > div {
 }
 
 /* ==========================================================================
-   5. FILTRO DE RESPONSIVIDADE EXCLUSIVO PARA SMARTPHONES (≤ 1024px)
-   ========================================================================== */
-@media (max-width: 1024px) {
-  .ferramentas-tabela {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 12px !important;
-    text-align: left !important;
-  }
-  
-  .grid {
-    flex-direction: column !important;
-    gap: 12px !important;
-    width: 100% !important;
-  }
-  
-  .card {
-    width: 100% !important;
-    text-align: left !important;
-    box-sizing: border-box !important;
-    padding: 12px !important;
-  }
-}
-/* ==========================================================================
-   6. ESTILIZAÇÃO DOS 4 BOTÕES DAS FATURAS (Longo e Tabela)
+   3. ESTILIZAÇÃO DOS 4 BOTÕES DAS FATURAS (Longo e Tabela)
    ========================================================================== */
 
 /* Alinhamento dos botões no rodapé do card longo */
@@ -414,160 +193,9 @@ main > div {
   font-weight: 700 !important;
 }
 
-
 /* ==========================================================================
-   7. BARRA DE PROGRESSÃO DOS GASTOS ATUAIS (PC)
+   4. FLUIDIFICAÇÃO CARDS
    ========================================================================== */
-.container-gastos-direita-fixo {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-end !important;
-  width: 200px !important;
-  min-width: 200px !important;
-  max-width: 200px !important;
-  margin-left: 20px !important;
-  flex-shrink: 0 !important;
-}
-
-.gastos-porcentagem-numero {
-  font-size: 0.75rem !important;
-  color: #6366f1 !important;
-  font-weight: 700 !important;
-}
-
-/* O fundo escuro da barra */
-.barra-progresso-painel-fundo {
-  width: 100% !important;
-  height: 6px !important;
-  background-color: #222222 !important;
-  border-radius: 10px !important;
-  overflow: hidden !important;
-  margin-top: 6px !important;
-}
-
-/* O preenchimento colorido */
-.barra-progresso-painel-preenchimento {
-  height: 100% !important;
-  background: linear-gradient(90deg, #4f46e5, #6366f1) !important;
-  border-radius: 10px !important;
-}
-/* Força o sumiço do botão Menu Hambúrguer de texto no Computador */
-.botao-menu-hamburguer,
-.botao-menu-hamburguer-clean,
-.topo-mobile-controle {
-  display: none !important;
-}
-
-/* Alinha os dois blocos em uma linha horizontal única e reta */
-.bloco-valores-layout-painel {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: flex-start !important; /* Mantém o topo dos textos alinhados de forma idêntica */
-  gap: 50px !important;               /* Espaçamento confortável entre saldo e gastos */
-}
-
-/* Estilização das legendas superiores */
-.legenda-mini-painel {
-  font-size: 0.72rem !important;
-  color: #71717a !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.8px !important;
-  white-space: nowrap !important;
-  margin-bottom: 2px !important;
-}
-
-/* Valores monetários simétricos */
-.valor-num-painel {
-  font-size: 1.5rem !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  white-space: nowrap !important;
-}
-/* Container do botão de detalhes do VPR */
-.botao-icone-vpr-click {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  transition: transform 0.2s ease, opacity 0.2s ease !important;
-}
-
-/* Efeito Hover moderno (aumenta levemente de tamanho ao passar o mouse) */
-.botao-icone-vpr-click:hover {
-  transform: scale(1.1) !important;
-  opacity: 0.85 !important;
-}
-
-/* Garante o tamanho exato e impede distorção do ícone */
-.card-imagem-vpr-nova {
-  width: 23px !important;
-  height: 23px !important;
-  object-fit: contain !important;
-}
-
-/* ==========================================================================
-   8. CARROSSEL DE CARDS: LINHA HORIZONTAL ÚNICA NO DASHBOARD (MÓVEL)
-   ========================================================================== */
-
-@media (max-width: 1024px) {
-  /* 1. 🌟 O SEGREDO SUPREMO: Força os cartões do GLPI a ficarem lado a lado na horizontal */
-  .grid {
-    display: flex !important;
-    flex-direction: row !important; /* 🔥 OBRIGA A FICAR LADO A LADO: Desliga o column antigo! */
-    justify-content: flex-start !important;
-    align-items: stretch !important; /* Faz com que todos os cards tenham exatamente a mesma altura */
-    gap: 12px !important; /* Espaçamento cirúrgico de 12px entre os cartões */
-    
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: auto !important; /* 🌟 Ativa a rolagem por polegar horizontal para os lados */
-    flex-wrap: nowrap !important; /* 🌟 MANDATO SUPREMO: Proíbe terminantemente de irem para baixo! */
-    padding-bottom: 10px !important; /* Margem de respiro para a calha de toque horizontal */
-    -webkit-overflow-scrolling: touch !important; /* Deslizar ultra-suave e leve em smartphones */
-    box-sizing: border-box !important;
-  }
-
-  /* Remove as barras de rolagem cinzentas nativas do navegador para o design ficar limpo */
-  .grid::-webkit-scrollbar {
-    display: none !important;
-  }
-
-  /* 2. Fixa um tamanho mini elétrico e simétrico para cada cartão individual no celular */
-  .card {
-    flex: none !important;
-    flex-shrink: 0 !important; /* 🔥 BLINDAGEM: Proíbe o telemóvel de esmagar o cartão */
-    width: 140px !important; /* Largura compacta padrão para caber mais de um card visível no ecrã */
-    min-width: 140px !important;
-    max-width: 140px !important;
-    padding: 12px 10px !important; /* Compacta o preenchimento interno */
-    text-align: left !important; /* Mantém o alinhamento à esquerda que configurámos */
-    margin: 0 !important;
-  }
-
-  /* 3. Ajuste fino milimétrico do texto e dos números dentro do carrossel móvel */
-  .card h2 {
-    white-space: nowrap !important;
-    text-overflow: ellipsis !important;
-    overflow: hidden !important;
-    font-size: clamp(0.7rem, 2.8vw, 0.82rem) !important; /* Letra mini fluida de alta nitidez */
-  }
-
-  .card p {
-    font-size: clamp(1.4rem, 5vw, 1.8rem) !important; /* Número proporcional e compacto */
-    margin: 4px 0 0 0 !important;
-  }
-}
-
-/* ==========================================================================
-   9. FLUIDIFICAÇÃO CARDS
-   ========================================================================== */
-
-/* ── MÁTRICA DOS CARDS DO GLPI ── */
-.grid { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
-.card { background-color: #1e1e1e; padding: 15px; border-radius: 8px; flex: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.5); text-align: center; }
-.card.critico { border-left: 6px solid #ff4d4d; }
-.card h2 { margin: 0; font-size: 0.95rem; color: #aaa; }
-.card p { font-size: 2.2rem; font-weight: bold; margin: 8px 0 0 0; }
 
 /* Container dos botões dentro da célula da tabela */
 .tabela-grupo-botoes {
@@ -626,60 +254,9 @@ main > div {
 .texto-centralizado {
   text-align: center !important;
 }
-/* Container que envelopa a página Contrato por completo */
-.pagina-container {
-  display: flex !important;
-  flex-direction: column !important;
-  width: 100% !important;
-  height: 100% !important; /* Ocupa toda a altura injetada pelo App.tsx */
-  overflow: hidden !important; /* Impede vazamentos */
-}
 
-/* O Header do sistema agora fica travado no topo da área útil */
-.header-sistema {
-  width: 100% !important;
-  padding: 15px 0 !important;
-  border-bottom: 1px solid #e0e0e0 !important;
-  box-sizing: border-box !important;
-  flex-shrink: 0 !important; /* Impede o header de ser esmagado pelo conteúdo de baixo */
-}
-
-/* O VERDADEIRO GERENCIADOR DE ROLAGEM INTERNA */
-.conteudo-principal-abaixo {
-  width: 100% !important;
-  flex: 1 !important;        /* Ocupa todo o espaço restante que sobrar abaixo do header */
-  overflow-y: auto !important; /* Cria a barra de rolagem apenas para as tabelas ou listas longas! */
-  padding-top: 20px !important;
-  box-sizing: border-box !important;
-}
-/* 1. SELETORES PARA O CHROME, EDGE E SAFARI */
-.main-content::-webkit-scrollbar,
-.conteudo-principal-abaixo::-webkit-scrollbar {
-  width: 8px !important;               /* Deixa a barra vertical bem fina e discreta */
-  height: 8px !important;              /* Deixa a barra horizontal bem fina caso apareça */
-}
-
-/* O Fundo da barra (Track) - Deixamos totalmente transparente para sumir com o bloco cinza */
-.main-content::-webkit-scrollbar-track,
-.conteudo-principal-abaixo::-webkit-scrollbar-track {
-  background: transparent !important; 
-}
-
-/* O "Pino" de rolagem (Thumb) - Uma pílula escura sutil que combina com o seu fundo #121212 */
-.main-content::-webkit-scrollbar-thumb,
-.conteudo-principal-abaixo::-webkit-scrollbar-thumb {
-  background-color: #333333 !important; /* Cor cinza escura muito sutil */
-  border-radius: 20px !important;       /* Deixa as pontas arredondadas modernas */
-  border: 2px solid #121212 !important; /* Cria um espaçamento invisível ao redor do pino */
-}
-
-/* Efeito ao passar o mouse no pino de rolagem */
-.main-content::-webkit-scrollbar-thumb:hover,
-.conteudo-principal-abaixo::-webkit-scrollbar-thumb:hover {
-  background-color: #4f46e5 !important; /* Opcional: ganha a cor do seu sistema ao interagir */
-}
-
-/* 2. SUPORTE PARA O FIREFOX */
+/* 6. FROTA */
+/* SUPORTE PARA O FIREFOX */
 .main-content,
 .conteudo-principal-abaixo {
   scrollbar-width: thin !important;          /* Deixa fina no Firefox */
@@ -756,246 +333,29 @@ main > div {
   gap: 12px !important;                 /* Espaço entre os dois botões */
   width: 100% !important;
 }
-/* Container de Gastos na Direita */
-.container-gastos-direita {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-end !important; /* Mantém os textos na direita */
-  width: 220px !important;           /* Força a largura de 220px */
-  min-width: 220px !important;
-  gap: 4px !important;
-  flex-shrink: 0 !important;         /* Impede que o header esmague o bloco */
-}
-
-/* Alinha o título e a legenda da meta lado a lado */
-.gastos-valores-topo {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: flex-end !important;
-  width: 100% !important;
-  gap: 15px !important;
-}
-
-.container-gastos-direita h3 {
-  margin: 0 !important;
-  font-size: 1.1rem !important;
-  color: #ffffff !important;
-}
-
-.gastos-limite-legenda {
-  font-size: 0.75rem !important;
-  color: #94a3b8 !important; /* Cinza sutil */
-}
-
-/* Número do Gasto Principal */
-.gastos-valor-num {
-  font-size: 1.6rem !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  margin: 0 !important;
-}
-
-/* O Fundo da Barra de Progressão */
-.progresso-barra-container {
-  width: 100% !important;            /* Ocupa 100% dos 220px do container */
-  height: 10px !important;           /* Um pouquinho mais alta para melhor visibilidade */
-  background-color: #2d2d2d !important; 
-  border-radius: 10px !important;
-  overflow: hidden !important;       
-  margin-top: 6px !important;
-  display: block !important;         /* Garante que o navegador renderize como bloco */
-}
-
-/* O Preenchimento */
-.progresso-barra-preenchimento {
-  height: 100% !important;
-  background: linear-gradient(90deg, #4f46e5, #6366f1) !important; 
-  border-radius: 10px !important;
-  display: block !important;         /* Garante a renderização do bloco interno */
-}
-
-/* Texto de rodapé com a porcentagem */
-.gastos-porcentagem-texto {
-  font-size: 0.75rem !important;
-  color: #64748b !important;
-  margin-top: 2px !important;
-}
 
 /* Animação para a barra crescer da esquerda para a direita ao carregar */
 @keyframes carregarBarra {
   from { width: 0%; }
 }
 
-/* Nova Classe Isolada e Blindada */
-.container-gastos-direita-fixo {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-end !important;
-  width: 240px !important;           /* Largura ideal para a barra ficar visível */
-  min-width: 240px !important;
-  max-width: 240px !important;
-  flex-shrink: 0 !important;         /* Impede o flexbox pai de esmagar o bloco */
-  visibility: visible !important;    /* Força o navegador a renderizar */
-  opacity: 1 !important;             /* Garante que não esteja transparente */
-}
-
-/* Container Principal do Header */
-.header-sistema-premium {
-  width: 100% !important;
-  background-color: #121212 !important;
-  padding: 15px 0 !important;
-  border-bottom: 1px solid #222222 !important;
-  box-sizing: border-box !important;
-}
-
-/* Container do Header Principal */
-  .header-sistema-novo {
-    width: 100% !important;
-    background-color: #f3f4f6 !important;
-    padding: 12px 20px !important;
-    border-bottom: 1px solid #222222 !important;
-    box-sizing: border-box !important;
-  }
-
-/* Garante o alinhamento horizontal perfeito na mesma linha */
-  /* 1. O contêiner de fora fixa rigidamente o início na margem esquerda, eliminando o elástico */
-  .layout-horizontal-container-novo {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: flex-start !important; /* 🌟 MÁGICA 1: Traz a linha inteira para a esquerda */
-    align-items: center !important;
-    width: 100% !important;
-  }
-
 /* ==========================================================================
-   MANDATO ABSOLUTO CELULAR: LINHA ÚNICA FINANCEIRA + CARDS VERTICAIS
-   ========================================================================== */
-@media (max-width: 1024px) {
-
-  /* 1. OCULTAÇÃO ABSOLUTA DOS MENUS DO TOPO E BOTÃO HAMBÚRGUER */
-  .header-sistema-novo .card,
-  .header-sistema-novo .card-com-submenu,
-  .header-sistema-novo .grid-cards-esquerda,
-  .central-menu-container,
-  .btn-menu-hamburguer-premium,
-  header > div:first-child:not(.layout-horizontal-container-novo),
-  nav, 
-  .menu-superior {
-    display: none !important; /* Limpa o topo do celular por completo */
-  }
-
-  /* 2. HEADER E CONTAINER PRINCIPAL EM LINHA HORIZONTAL ÚNICA */
-  .header-sistema-novo {
-    width: 100% !important;
-    background-color: #f3f4f6 !important;
-    padding: 12px 20px !important;
-    border-bottom: 1px solid #222222 !important;
-    box-sizing: border-box !important;
-  }
-
-
-  /* 3. AS TRÊS INFORMAÇÕES EXCLUSIVAMENTE NA MESMA LINHA */
-  .bloco-valores-layout-painel {
-    display: flex !important;
-    flex-direction: row !important; /* Mantém todos os botões e valores lado a lado */
-    align-items: center !important;
-    justify-content: flex-start !important; /* 🌟 MÁGICA 2: Cola o painel de valores logo após o menu */
-    width: 100% !important;
-    
-    /* CONTROLADOR DE PROXIMIDADE: Diminua esse gap abaixo se quiser colar ainda mais os valores nos botões */
-    gap: 16px !important; 
-    
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Ajuste de proporção para cada uma das 3 colunas horizontais */
-  .container-saldo-Vpr-novo,
-  .container-gastos-painel {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    flex: 1 !important;            /* Divide o espaço horizontal igualmente */
-    min-width: 0 !important;       /* Permite o encolhimento seguro sem quebrar layout */
-  }
-
-  /* 4. CALIBRAGEM PREMIUM DE FONTES MINI PARA CELULAR */
-  .legenda-mini-painel {
-    font-size: 0.6rem !important;  /* Texto da legenda bem pequeno */
-    letter-spacing: 0.3px !important;
-    white-space: nowrap !important;
-    color: #71717a !important;
-  }
-
-  .valor-num-painel {
-    font-size: 0.95rem !important; /* Valor numérico compacto para não estourar a linha */
-    white-space: nowrap !important;
-    font-weight: 700 !important;
-  }
-
-  /* Deixa o texto do contrato combinando em tamanho com os valores */
-  .bloco-valores-layout-painel span[style*="font-size"] {
-    font-size: 0.95rem !important;
-    white-space: nowrap !important;
-  }
-
-  /* Ajuste cirúrgico do tamanho da barra de gastos e do ícone */
-  .container-gastos-painel div[style*="height: '5px'"],
-  .container-gastos-painel div[style*="height: 5px"] {
-    height: 3px !important;       /* Barra de progresso ultra fininha e delicada */
-    margin-top: 4px !important;
-  }
-
-  .card-imagem-vpr-nova {
-    width: 12px !important;        /* Reduz o ícone de detalhes para caber na linha */
-    height: 12px !important;
-  }
-
-  /* 5. TRAVA DOS CARDS BRANCOS ABAIXO (UM ABAIXO DO OUTRO) */
-  .conteudo-principal-abaixo,
-  main {
-    display: flex !important;
-    flex-direction: column !important; /* Fatura em cima, Pedidos embaixo... */
-    width: 100% !important;
-    gap: 16px !important;
-    padding: 15px 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  .caixa-card-fatura-limpa,
-  .novo-card-item,
-  .conteudo-principal-abaixo div[class*="card"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    display: block !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* 1. O BOTÃO DE MENU HAMBÚRGUER MINIMALISTA */
-.central-menu-container {
-  position: relative !important; /* Âncora para a caixinha flutuante */
-}
-
-/* ==========================================================================
-   TRAVA SUPREMA DO BOTÃO HAMBÚRGUER (Impede movimentação de layout)
+   7 - TRAVA SUPREMA DO BOTÃO HAMBÚRGUER (Impede movimentação de layout)
    ========================================================================== */
 .btn-menu-hamburguer-premium {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   
-  /* 🌟 O SEGREDO: Força um quadrado perfeito fixo */
+  /* O SEGREDO: Força um quadrado perfeito fixo */
   width: 38px !important;  
   height: 38px !important; 
   min-width: 38px !important;
   max-width: 38px !important;
   
-  background-color: #1e1e1e !important;
+  background-color: #a7a4a4 !important;
   color: #ffffff !important;
-  border: 1px solid #333333 !important;
+  border: 1px solid #a7a4a4 !important;
   border-radius: 6px !important;
   font-size: 1.1rem !important; /* Tamanho confortável para o ícone */
   cursor: pointer !important;
@@ -1004,18 +364,17 @@ main > div {
 }
 
 .btn-menu-hamburguer-premium:hover {
-  background-color: #2a2a2a !important;
-  border-color: #6366f1 !important; /* Borda acende em roxo moderno */
+  background-color: #d1c5c5 !important;
+  border-color: #d1c5c5 !important; /* Borda acende em roxo moderno */
 }
-
 
 /* 2. A CAIXA FLUTUANTE DO MENU (ESTILO DROPDOWN PREMIUM) */
 .menu-dropdown-caixa-flutuante {
   position: absolute !important;
   top: 120% !important; /* Desce colado logo abaixo do botão ☰ */
   left: 0 !important;
-  background-color: #161616 !important;
-  border: 1px solid #262626 !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ffffff!important;
   border-radius: 8px !important;
   width: 260px !important;
   padding: 10px !important;
@@ -1040,13 +399,13 @@ main > div {
 /* Grupos de Submenus do Dropdown */
 .menu-dropdown-secao-grupo {
   margin-top: 8px !important;
-  border-top: 1px solid #222222 !important;
+  border-top: 1px solid #d4c4c4 !important;
   padding-top: 8px !important;
 }
 
 .menu-dropdown-secao-titulo {
   font-size: 0.72rem !important;
-  color: #71717a !important;
+  color: #0c0c0c !important;
   font-weight: 700 !important;
   margin: 4px 0 6px 12px !important;
   text-transform: uppercase !important;
@@ -1060,7 +419,7 @@ main > div {
 
 .menu-dropdown-secao-grupo li {
   padding: 8px 12px !important;
-  color: #c8c8c8 !important;
+  color: #0f0f0f !important;
   font-size: 0.88rem !important;
   cursor: pointer !important;
   border-radius: 5px !important;
@@ -1068,441 +427,40 @@ main > div {
 }
 
 .menu-dropdown-secao-grupo li:hover {
-  background-color: #222222 !important;
-  color: #ffffff !important;
+  background-color: #f8f5f5 !important;
+  color: #141414 !important;
   padding-left: 16px !important; /* Efeito sutil de deslocamento no hover */
 }
 
-.container-saldo-Vpr-novo {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 2px !important;
+/* Animação suave de entrada para novos componentes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.container-gastos-painel {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 2px !important;
-  width: 150px !important;
-}
+/* ==========================================================================
+   TRAVA DO HEADER NO TOPO (STICKY / FIXED)
+   ========================================================================== */
 
-.gastos-titulos-linha {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  width: 100% !important;
-}
-
-.legenda-mini-painel {
-  font-size: 0.68rem !important;
-  color: #71717a !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.8px !important;
-}
-
-.valor-num-painel {
-  font-size: 1.35rem !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-}
-
-.gastos-porcentagem-numero {
-  font-size: 0.72rem !important;
-  color: #6366f1 !important;
-  font-weight: 700 !important;
-}
-
-.valor-com-icone-linha {
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-}
-
-.header-titulo-dinamico-linha {
-  width: 100% !important;
-  margin: 10px 0 15px 0 !important;
-}
-
-.tabela-header-acoes {
-  display: flex !important;
-  align-items: center !important;
-  gap: 20px !important;
-  margin-bottom: 25px !important;
-}
-
-/* Container que envolve o botão e a lista oculta */
-.card-com-submenu {
-  position: relative !important; /* Essencial para alinhar o submenu logo abaixo */
-  display: inline-block !important;
-}
-
-/* A lista suspensa flutuante */
-.submenu-lista {
-  position: absolute !important;
-  top: 105% !important; /* Coloca a lista colada logo abaixo do card */
+/* 1. Fixa o cabeçalho no topo da tela e garante que ele flutue por cima dos cards */
+header.navbar {
+  position: fixed !important;
+  top: 0 !important;
   left: 0 !important;
-  background-color: #ffffff !important;
-  border: 1px solid #ddd !important;
-  border-radius: 6px !important;
-  padding: 8px 0 !important;
-  margin: 0 !important;
-  list-style: none !important;
-  min-width: 160px !important; /* Largura mínima da caixinha */
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1) !important; /* Sombra sutil para dar efeito flutuante */
-  z-index: 999 !important; /* Garante que a lista fique POR CIMA dos cards de baixo */
+  right: 0 !important;
+  z-index: 1030 !important; /* Camada alta do Bootstrap para sobrepor as tabelas */
 }
 
-/* Cada item/linha da lista de submenu */
-.submenu-lista li {
-  padding: 10px 16px !important;
-  color: #333333 !important;
-  font-size: 0.9rem !important;
-  text-align: left !important;
-  cursor: pointer !important;
-  transition: background-color 0.2s ease !important;
+/* 2. Cria o recuo necessário no corpo do sistema para os cards não ficarem escondidos atrás do Header */
+/* Adiciona 170px de respiro no celular e 120px no computador, compensando a altura do menu */
+body, 
+.pagina-container {
+  padding-top: 110px !important;
 }
 
-/* Efeito ao passar o mouse nos itens do submenu */
-.submenu-lista li:hover {
-  background-color: #f5f5f5 !important;
-  color: #000000 !important;
-}
-
-/* Controla o tamanho e comportamento da imagem */
-.card-imagem {
-  width: 50px !important;          /* Tamanho ideal para ícones de painel */
-  height: 50px !important;         /* Mantém a proporção quadrada */
-  object-fit: contain !important;  /* Garante que a imagem não distorça */
-}
-
-.card-imagem-vpr {
-  width: 30px !important;          /* Tamanho ideal para ícones de painel */
-  height: 30px !important;         /* Mantém a proporção quadrada */
-  object-fit: contain !important;  /* Garante que a imagem não distorça */
-  margin-right: 10px;
-}
-
-/* Garante que o bloco de texto ocupe o restante do espaço */
-.card-texto-conteudo {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 !important;
-}
-
-/* ==========================================================================
-   📦 DESIGN DA TIMELINE HORIZONTAL PREMIUM
-   ========================================================================== */
-
-.pedido-timeline-horizontal-container {
-  display: flex !important;
-  flex-direction: row !important; /* Força os blocos a ficarem lado a lado */
-  justify-content: space-between !important;
-  width: 100% !important;
-  margin-top: 24px !important;
-  padding: 0 10px !important;
-  box-sizing: border-box !important;
-}
-
-/* Cada um dos 3 blocos da linha do tempo */
-.timeline-etapa-h {
-  display: flex !important;
-  flex-direction: column !important; /* Alinha o marcador em cima e o texto embaixo */
-  flex: 1 !important;                 /* Divide o espaço horizontal igualmente (33% cada) */
-  position: relative !important;
-  min-width: 0 !important;
-}
-
-/* Remove o espaço da linha elástica no último elemento para não vazar do card */
-.timeline-etapa-h:last-child {
-  flex: none !important;
-  width: auto !important;
-}
-
-/* Alinhamento do topo: Bolinha + Linha reta horizontal */
-.timeline-marcador-h {
-  display: flex !important;
-  flex-direction: row !important; /* Linha conectora sai da lateral da bolinha */
-  align-items: center !important;
-  width: 100% !important;
-  position: relative !important;
-  height: 20px !important;
-}
-
-/* O trilho horizontal que corre entre as bolinhas */
-.timeline-linha-conectora-h {
-  height: 2px !important;
-  background-color: #e4e4e7 !important; /* Cinza claro padrão */
-  flex-grow: 1 !important;             /* Faz a linha esticar até encostar no próximo bloco */
-  margin: 0 8px !important;
-}
-
-/* Estilo base da bolinha redonda */
-.timeline-marcador-bolinha-h {
-  width: 18px !important;
-  height: 18px !important;
-  border-radius: 50% !important;
-  background-color: #ffffff !important;
-  border: 2px solid #cbd5e1 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 0.65rem !important;
-  font-weight: 700 !important;
-  color: #94a3b8 !important;
-  box-sizing: border-box !important;
-  flex-shrink: 0 !important;
-}
-
-/* 🟢 LINKS VISUAIS: STATUS CONCLUÍDO */
-.timeline-etapa-h.concluida .timeline-marcador-bolinha-h {
-  background-color: #e6f7ed !important;
-  border-color: #2e7d32 !important;
-  color: #2e7d32 !important;
-}
-.timeline-etapa-h.concluida .timeline-linha-conectora-h {
-  background-color: #2e7d32 !important; /* A linha horizontal também acende em verde */
-}
-
-/* 🔵 LINKS VISUAIS: STATUS ATUAL */
-.timeline-etapa-h.atual .timeline-marcador-bolinha-h {
-  border-color: #6366f1 !important;
-  background: linear-gradient(135deg, #4f46e5, #6366f1) !important;
-  color: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
-}
-.timeline-etapa-h.atual .timeline-status-titulo-h {
-  color: #0f172a !important;
-  font-weight: 700 !important;
-}
-
-/* ⚪ LINKS VISUAIS: STATUS PENDENTE */
-.timeline-etapa-h.pendente .timeline-marcador-bolinha-h {
-  background-color: #f4f4f5 !important;
-  border-color: #e4e4e7 !important;
-}
-
-/* BLOCO DE TEXTOS (Fica logo abaixo de cada bolinha) */
-.timeline-conteudo-h {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 2px !important;
-  margin-top: 8px !important;
-  padding-right: 10px !important;
-}
-
-.timeline-status-titulo-h {
-  font-size: 0.82rem !important;
-  margin: 0 !important;
-  color: #475569 !important;
-  font-weight: 600 !important;
-  text-align: left !important;
-  white-space: nowrap !important;     /* Evita quebras feias de palavras */
-  text-overflow: ellipsis !important; /* Adiciona ... se o monitor encolher muito */
-  overflow: hidden !important;
-}
-
-.timeline-data-legenda-h {
-  font-size: 0.7rem !important;
-  color: #94a3b8 !important;
-  text-align: left !important;
-}
-
-/* ==========================================================================
-   📱 ADAPTAÇÃO AUTOMÁTICA PARA SMARTPHONE (Telas ≤ 1024px)
-   ========================================================================== */
-@media (max-width: 1024px) {
-  
-  /* Ajusta o contêiner para distribuir as 3 etapas sem precisar de carrossel se a tela permitir */
-  .pedido-timeline-horizontal-container {
-    overflow-x: hidden !important; /* Desativa qualquer rolagem lateral */
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    gap: 8px !important; /* Espaçamento compacto entre as 3 colunas */
-    padding: 0 !important;
-  }
-
-  /* Faz cada etapa ocupar sua fatia proporcional perfeitamente no celular */
-  .timeline-etapa-h {
-    flex: 1 !important;
-    min-width: 0 !important; /* Destrói a trava anterior que causava o estouro */
-    width: auto !important;
-  }
-
-  /* Ajusta o espaçamento do bloco de textos */
-  .timeline-conteudo-h {
-    margin-top: 6px !important;
-    padding-right: 0 !important;
-  }
-
-  /* 🌟 O SEGREDO: Permite que o título quebre linha e nasça embaixo se a palavra for grande */
-  .timeline-status-titulo-h {
-    font-size: 0.75rem !important; /* Fonte ligeiramente menor e delicada para celular */
-    white-space: normal !important;  /* 🛠️ PERMITE QUEBRA: O texto desce em vez de cortar! */
-    line-height: 1.1 !important;     /* Deixa as linhas do texto juntinhas e elegantes */
-    text-overflow: clip !important;
-    overflow: visible !important;
-    text-align: left !important;
-  }
-
-  /* Diminui a data e legenda para combinar com o novo texto */
-  .timeline-data-legenda-h {
-    font-size: 0.65rem !important;
-    margin-top: 2px !important;
-  }
-
-  /* Deixa a linha conectora horizontal um pouquinho menor no mobile */
-  .timeline-linha-conectora-h {
-    margin: 0 4px !important;
+@media (min-width: 768px) {
+  body, 
+  .pagina-container {
+    padding-top: 60px !important;
   }
 }
-
-/* ==========================================================================
-   🖥️ 1. MUNDO DESKTOP: RE-ALINHAMENTO EM LINHA CONTÍNUA À ESQUERDA (PC > 1024px)
-   ========================================================================== */
-@media (min-width: 1025px) {
-  
-  .header-sistema-novo {
-    width: 100% !important;
-    background-color: #f3f4f6 !important;
-    padding: 15px 24px !important;
-    border-bottom: 1px solid #222222 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* 🌟 O GRANDE TRUQUE DE APROXIMAÇÃO: Traz o painel financeiro para perto do menu */
-  .coluna-financeira-contrato {
-    margin-left: 250px !important; /* Empurra o bloco financeiro mantendo-o perto na esquerda */
-    flex-shrink: 0 !important;
-  }
-
-  /* Espaçamento confortável e fixo entre as 3 colunas de dados */
-  .container-saldo-Vpr-novo,
-  .container-gastos-painel {
-    margin-left: 24px !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* Esconde o menu exclusivo do celular no computador */
-  .container-menu-hamburguer-mobile-exclusivo {
-    display: none !important;
-  }
-}
-
-/* ==========================================================================
-   📱 2. MUNDO MOBILE: ATIVAÇÃO SUPREMA DO HAMBÚRGUER + LINHA FINANCEIRA RETILÍNEA (≤ 1024px)
-   ========================================================================== */
-@media (max-width: 1024px) {
-
-  /* 🌟 BLINDAGEM MÓVEL: Esconde rigidamente os cartões grandes pretos no celular */
-  .bloco-valores-layout-painel > .card,
-  .bloco-valores-layout-painel > .card-com-submenu,
-  .bloco-valores-layout-painel img.card-imagem,
-  .bloco-valores-layout-painel h2,
-  .legenda-limite-texto {
-    display: none !important; /* Sumirá com os botões gigantes preservando o hambúrguer */
-  }
-
-  /* Força a ativação do seu novo componente MenuMobileModulos no celular */
-  .container-menu-hamburguer-mobile-exclusivo {
-    display: inline-block !important;
-    visibility: visible !important;
-    flex-shrink: 0 !important;
-  }
-
-  .header-sistema-novo {
-    padding: 12px 10px !important;
-    border-bottom: 1px solid #f3f4f6 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  .layout-horizontal-container-novo {
-    display: block !important;
-    width: 100% !important;
-  }
-
-  /* GRADE HORIZONTAL INDESTRUTÍVEL NO CELULAR: Alinha o botão ☰ e as 3 colunas financeiras lado a lado */
-  .bloco-valores-layout-painel {
-    display: grid !important;
-    grid-template-columns: auto 0.7fr 1.2fr 1.2fr !important; /* Divide a largura milimetricamente */
-    align-items: flex-start !important;
-    gap: 10px !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Zera os empurrões de margem do PC para não quebrar a grade de colunas do celular */
-  .coluna-financeira-contrato,
-  .container-saldo-Vpr-novo,
-  .container-gastos-painel {
-    display: flex !important;
-    flex-direction: column !important; /* Número/valor embaixo da legenda cinza */
-    align-items: flex-start !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    margin-left: 0 !important; /* Reseta o margin do desktop */
-  }
-
-  /* FONTES REDUZIDAS CORPORATIVAS MINI PARA NÃO ESTOURAR AS MARGENS */
-  .legenda-mini-painel {
-    font-size: 0.58rem !important;
-    color: #71717a !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.2px !important;
-    white-space: nowrap !important;
-  }
-
-  .valor-num-painel,
-  .valor-num-painel-texto {
-    font-size: 0.78rem !important; /* Tamanho mini e legível */
-    font-weight: 700 !important;
-    color: #ffffff !important;
-    white-space: nowrap !important;
-    margin-top: 2px !important;
-  }
-
-  .valor-num-painel-texto {
-    font-weight: 600 !important;
-  }
-
-  .valor-com-icone-linha {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 4px !important;
-    width: 100% !important;
-  }
-
-  .card-imagem-vpr-nova {
-    width: 11px !important;
-    height: 11px !important;
-    object-fit: contain !important;
-  }
-
-  .gastos-titulos-linha {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    align-items: center !important;
-  }
-
-  .gastos-porcentagem-numero {
-    font-size: 0.62rem !important;
-  }
-
-  /* Barra de carregamento fina */
-  .barra-progresso-painel-fundo {
-    width: 100% !important;
-    height: 3px !important;
-    background-color: #222222 !important;
-    border-radius: 10px !important;
-    overflow: hidden !important;
-    margin-top: 5px !important;
-  }
-}
-
-

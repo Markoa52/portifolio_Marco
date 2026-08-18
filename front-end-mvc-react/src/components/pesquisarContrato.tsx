@@ -1,5 +1,6 @@
 import React, { useState} from 'react';
 import '../styles/pesquisaContrato.css'
+import { Search } from 'lucide-react';
 
 export const PesquisarContrato: React.FC = () => {
     
@@ -35,19 +36,27 @@ export const PesquisarContrato: React.FC = () => {
         <div className="col-md-6 p-0">
           <div className="input-group">
             {/* O campo de texto ganha um visual limpo e moderno */}
-            <input 
-              type="text" 
-              className="form-control" 
-              placeholder="🔍 Número do contrato..." 
-              style={{ padding: '0.55rem 0.75rem', fontSize: '0.875rem' }}
-              value={pesquisa} 
-              onChange={(e) => setPesquisa(e.target.value)} 
-            />
+            <div className="input-group mb-3" style={{ maxWidth: '400px' }}>
+              {/* A moldura cinza claro que segura a lupa da Lucide */}
+              <span className="input-group-text bg-light border-end-0 text-secondary">
+                <Search size={18} />
+              </span>
+              
+              {/* O campo de digitação real com a borda esquerda zerada para colar no ícone */}
+              <input 
+                type="text" 
+                className="form-control border-start-0 ps-1" 
+                placeholder="Pesquisar registros..." 
+                style={{ fontSize: '0.875rem', height:"50px" }}
+                value={pesquisa} 
+                onChange={(e) => setPesquisa(e.target.value)} 
+              />
+            </div>
             {/* O botão 'btn-dark' fica acoplado direto no input, criando uma barra de busca elegante */}
             <button 
-              className="btn btn-dark fw-semibold px-4" 
+              className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0" 
               type="button"
-              style={{ fontSize: '0.875rem' }}
+              style={{ fontSize: '0.875rem', height:"50px" }}
               onClick={() => buscarContractPorId(pesquisa)}
             >
               Buscar

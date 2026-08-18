@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { IEmailRegistro } from '../types/index.ts';
 import '../styles/editarUsuario.css';
 import type { PaginaTipo, AbaInferior } from './contrato.tsx'; 
+import { ArrowLeft, Eye, Info, Pencil, Search, Trash2 } from 'lucide-react';
 
 interface IGerenciadorProps {
   dadosIniciais?: IEmailRegistro[];
@@ -159,38 +160,80 @@ const listarUsuarios = () => {
 
   // SE O USUÁRIO CLICAR EM "VER DETALHES"
   if (registroSelecionado) {
-    return (
-      <div className="main-content-wrapper">      
-        <div className="header-container-sistema-bloco">
-          <h2 className="titulo-gerenciador-fluxos">🔍 Visualizar Detalhes do Registro</h2>
-          
-          <div className="botoes-topo-gerenciador-esquerda">
-            <button 
-              className="btn-crud" 
-              style={{ backgroundColor: '#e63946', color: '#fff' }} 
-              onClick={() => setRegistroSelecionado(null)} 
-            >
-              ⬅️ Voltar para a Listagem
-            </button>
-          </div>
+  return (
+  /* container limita a largura em 1200px e px-3 sincroniza milimetricamente com a reta do seu Header */
+  <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    
+    {/* 1. CABEÇALHO DO TÍTULO (LIMPO E SEM BOTÃO DO LADO) */}
+    <div className="border-bottom pb-3 mb-3">
+      <h2 className="fs-4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+        <Search size={22} className="text-dark" /> Visualizar Detalhes do Registro
+      </h2>
+    </div>
+
+    {/* 2. NOVO BOTÃO DE VOLTAR: BOLINHA COM SETA (POSICIONADO ABAIXO DA LINHA) */}
+    <div className="mb-4">
+      <button 
+        className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center border shadow-xs" 
+        onClick={() => setRegistroSelecionado(null)} 
+        title="Voltar para a Listagem"
+        style={{ width: '40px', height: '40px', transition: 'background-color 0.2s' }}
+      >
+        <ArrowLeft size={18} className="text-secondary" />
+      </button>
+    </div>
+
+    {/* PAINEL DE INFORMAÇÕES (Card Branco Premium Alinhado) */}
+    <div className="card p-3 p-md-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100"  >
+      
+      {/* Título de seção azul real corporativo */}
+      <h3 className="fs-5 fw-bold text-primary mb-3 d-flex align-items-center gap-2">
+        <Info size={18} className="text-primary" /> Informações Estruturadas
+      </h3>
+      
+            {/* LISTA CHAVE-VALOR: TODOS OS TEXTOS ALINHADOS À ESQUERDA */}
+      <div className="w-100 d-flex flex-column gap-2" style={{ maxWidth: "1200px" }}>
+        
+        {/* Bloco 1: Assunto */}
+        {/* MUDANÇA: 'text-start' remove o flex horizontal e joga todas as tags para o canto esquerdo da caixa */}
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+          {/* MUDANÇA: 'd-block mb-1' faz a etiqueta ficar no topo, alinhada à esquerda */}
+          <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+            Assunto:
+          </strong>
+          {/* O dado real nasce colado na borda esquerda logo abaixo */}
+          <span className="text-dark fw-bold fs-6 d-block">{registroSelecionado.assunto}</span>
         </div>
-        <div style={{ padding: '20px', background: '#2d2d2d', borderRadius: '8px', border: '1px solid #3d3d3d' }}>
-          <h3 style={{ color: '#3399ff', marginTop: 0 }}>Informações Estruturadas</h3>
-          <p style={{ color: '#fff' }}><strong>Assunto:</strong> {registroSelecionado.assunto}</p>
-          <p style={{ color: '#aaa' }}><strong>Remetente:</strong> {registroSelecionado.email}</p>
-          <p style={{ color: '#aaa' }}><strong>Data de Processamento:</strong> {registroSelecionado.data}</p>
+
+        {/* Bloco 2: Remetente */}
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+          <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+            Remetente:
+          </strong>
+          <span className="text-dark fw-medium fs-6 d-block text-break">{registroSelecionado.email}</span>
         </div>
+
+        {/* Bloco 3: Data de Processamento */}
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+          <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+            Data de Processamento:
+          </strong>
+          <span className="text-secondary fs-6 d-block">{registroSelecionado.data}</span>
+        </div>
+
       </div>
-    );
+    </div>
+  </div>
+);
   }
 
   return (
   // container-fluid limpa os styles inline pesados antigos e centraliza com a largura de 1200px
-  <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
     <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
-      <h2 className="fs-4 fw-bold text-dark m-0">⚙️ Gerenciar Usuários</h2>
+      <h2 className="fs-4 fw-bold text-dark m-0">Gerenciar Usuários</h2>
     </div>
 
     {/* PAINEL OPERACIONAL (Fundo branco igual aos seus outros cards) */}
@@ -200,25 +243,34 @@ const listarUsuarios = () => {
       <div className="row g-3 align-items-center mb-3">
         {/* Input de Pesquisa ocupando 5 colunas */}
         <div className="col-md-5">
+
+        <div className="input-group mb-3" style={{ maxWidth: '400px' }}>
+          {/* A moldura cinza claro que segura a lupa da Lucide */}
+          <span className="input-group-text bg-light border-end-0 text-secondary">
+            <Search size={18} />
+          </span>
+          
+          {/* O campo de digitação real com a borda esquerda zerada para colar no ícone */}
           <input 
             type="text" 
-            className="form-control" 
-            placeholder="🔍 Pesquisar por assunto ou e-mail..." 
-            style={{ padding: '0.45rem 0.75rem', fontSize: '0.875rem' }}
+            className="form-control border-start-0 ps-1" 
+            placeholder="Pesquisar registros..." 
+            style={{ fontSize: '0.875rem' }}
             value={pesquisa} 
             onChange={(e) => setPesquisa(e.target.value)} 
           />
         </div>
+        </div>
 
         {/* Grupo de botões organizados e com as cores pretas/cinzas corporativas */}
         <div className="col-md-7 d-flex justify-content-md-end gap-2 flex-wrap">
-          <button className="btn btn-outline-dark btn-sm fw-semibold px-3 py-2" onClick={listarUsuarios}>
+          <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0"  onClick={listarUsuarios}>
             📋 Listar usuários
           </button>
-          <button className="btn btn-outline-dark btn-sm fw-semibold px-3 py-2" onClick={abrirInclusao}>
+          <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0"  onClick={abrirInclusao}>
             ➕ Incluir Registro
           </button>
-          <button className="btn btn-dark btn-sm fw-semibold px-3 py-2" onClick={enviarDadosParaServidor} disabled={salvando}>
+          <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0"  onClick={enviarDadosParaServidor} disabled={salvando}>
             {salvando ? "⏳ Sincronizando..." : "💾 Salvar Registro"}
           </button>
         </div>
@@ -263,9 +315,9 @@ const listarUsuarios = () => {
                         {/* Ações com botões de ícone limpos e sem cores pesadas */}
                         <td className="text-center">
                           <div className="d-flex justify-content-center gap-1">
-                            <button className="btn btn-light btn-sm border" title="Visualizar" onClick={() => setRegistroSelecionado(item)}>🔍</button>
-                            <button className="btn btn-light btn-sm border" title="Editar" onClick={() => abrirEdicao(indiceRealAbsoluto)}>✏️</button>
-                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => removerLinha(indiceRealAbsoluto)}>🗑️</button>
+                            <button className="btn btn-light btn-sm border" title="Visualizar" onClick={() => setRegistroSelecionado(item)}><Eye size={22} className="text-primary" /></button>
+                            <button className="btn btn-light btn-sm border" title="Editar" onClick={() => abrirEdicao(indiceRealAbsoluto)}><Pencil size={22} className="text-primary" /></button>
+                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => removerLinha(indiceRealAbsoluto)}><Trash2 size={22} className="text-primary" /></button>
                           </div>
                         </td>
                       </tr>

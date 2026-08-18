@@ -24,7 +24,7 @@ export const DetalhesPedagio: React.FC<IDetalhesProps> = ({ onVoltar }) => {
             <ArrowLeft size={16} className="text-dark" />
           </button>
           <h2 className="fs-4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
-            <Landmark size={22} className="text-primary" /> Detalhamento do Vale Pedágio
+            <Landmark size={22} className="text-primary" />Detalhamento do Vale Pedágio
           </h2>
         </div>
 

@@ -40,7 +40,7 @@ export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAti
 
           {/* Seção Faturamento / Contrato */}
           <div className="menu-dropdown-secao-grupo">
-            <p className="menu-dropdown-secao-titulo">📄 Contrato</p>
+            <p className="menu-dropdown-secao-titulo">🛞 Contrato</p>
             <ul>
               <li onClick={() => { setAbaAtiva('faturas-abertas'); setMenuGeralAberto(false); }}>
                 Detalhes do Contrato
@@ -50,7 +50,7 @@ export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAti
 
           {/* Seção Faturamento / Contrato */}
           <div className="menu-dropdown-secao-grupo">
-            <p className="menu-dropdown-secao-titulo">📄 Trocar contrato</p>
+            <p className="menu-dropdown-secao-titulo">🛞 Trocar contrato</p>
             <ul>
               <li onClick={() => { setPaginaAtiva('pesquisarContrato'); setMenuGeralAberto(false); }}>
                 Atendimento
