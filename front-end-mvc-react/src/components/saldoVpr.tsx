@@ -7,11 +7,7 @@ interface IDetalhesProps {
 }
 
 export const DetalhesPedagio: React.FC<IDetalhesProps> = ({ onVoltar }) => {
-<<<<<<< HEAD
-  return (
-=======
  return (
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
     // container limita a largura em 1200px, mantendo a simetria exata com o seu Header branco
     <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       

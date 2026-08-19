@@ -18,11 +18,7 @@ const FATURAS_EM_ABERTO = [
 
 export const FaturasAbertas: React.FC = () => {
 
-<<<<<<< HEAD
-const obterClasseCorValor = (status: string) => {
-=======
   const obterClasseCorValor = (status: string) => {
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
   switch (status?.toLowerCase()) {
     case 'aberto':
     case 'em aberto':
@@ -156,8 +152,4 @@ const alterarTexto = (status: string) => {
 
   </div>
 );
-<<<<<<< HEAD
-
-=======
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 };

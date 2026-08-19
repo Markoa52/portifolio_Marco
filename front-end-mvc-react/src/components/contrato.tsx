@@ -1,11 +1,6 @@
 import '../styles/contrato.css'; // Toda a estilização do header e abas fica presa aqui!
 import { Home, Truck, FileText, BarChart3, Info } from "lucide-react";
-<<<<<<< HEAD
-
-import React, { useState } from 'react';
-=======
 import React, { useEffect, useState } from 'react';
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
 import { DetalhesPedagio } from './saldoVpr'; 
 import { HistoricoFaturas } from './historicoFaturamento'; 
@@ -13,30 +8,16 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
-<<<<<<< HEAD
-import { EditarUsuario } from './editarUsuario';
-import { Usuario } from './usuario';
-import { MenuMobileModulos } from './menuHumbugerMobile';
-//import { Pedidos} from './pedidos';
-=======
 import { CadastroContrato } from './cadastroContrato';
 
 //import { MenuMobileModulos } from './menuHumbugerMobile';
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
 
-<<<<<<< HEAD
-export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'cadastro-Contrato' | 'pedidos';
-
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' | 'editar-usuario' | 'usuario' | 'pedidos'
- |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento' | 'cadastro-Contrato';
-=======
 export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisarContrato' | 'cadastro-contrato';
 
 export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato';
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
 import type { IContratoProps } from '../types/IContratoProps';
 import type { IDetalhesContrato } from '../types/IDetalhesContrato';
@@ -146,27 +127,6 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-1 gap-md-2 flex-wrap" style={{ marginTop: '-20px' }}>
           
           {/* MENU HAMBÚRGUER MOBILE */}
-<<<<<<< HEAD
-          <div className="d-block d-md-none me-2 text-dark" style={{ marginTop: '-37px' }} >
-            <MenuMobileModulos setAbaAtiva={setAbaAtiva} />
-          </div>
-
-          {/* MENU HAMBÚRGUER DESKTOP */}
-          <div className="d-none d-md-block mx-2 mx-md-3">
-            <MenuHamburguer setAbaAtiva={setAbaAtiva} setPaginaAtiva={setPaginaAtiva} />
-          </div>
-
-          {/* ITEM 1: INÍCIO */}
-          <div 
-            className="btn btn-menu-limpo d-flex flex-column align-items-center p-2 text-decoration-none text-dark border-0" 
-            onClick={() => { setAbaAtiva('cards-gerais'); setMenuAberto(null); }}
-            style={{ minWidth: '90px', transition: 'background-color 0.2s' }}
-          >
-            <Home size={26} color="#475569" strokeWidth={2} className="mb-2" />
-            <span className="fs-5 fw-bold">Início</span>
-          </div>
-
-=======
           {/* <div className="d-block d-md-none me-2 text-dark" style={{ marginTop: '-37px' }} >
             <MenuMobileModulos setAbaAtiva={setAbaAtiva} />
           </div> */}
@@ -186,7 +146,6 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
             <span className="fs-5 fw-bold">Início</span>
           </div>
 
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
           {/* ITEM 2: FROTA */}
           <div className="dropdown">
             <button 
@@ -259,11 +218,7 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           {/* MUDANÇA: Forçado margin-right de 24px para afastar do Saldo Pedágio */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
             <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>CONTRATO</span>
-<<<<<<< HEAD
-            <span className="fs-5 fw-bold text-dark mt-1">1 Teste</span>
-=======
             <span className="fs-5 fw-bold text-dark mt-1">{idContratoDoc}</span>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
           </div>
           
           {/* SALDO VALE PEDÁGIO CORRIGIDO */}
@@ -420,47 +375,6 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
 
       </div>
     )}
-<<<<<<< HEAD
-
-    {/* ==========================================================================
-        RESTAURAÇÃO DAS OUTRAS ABAS DO SEU SISTEMA
-        ========================================================================== */}
-    <div className="w-100 m-0 p-0">
-      {abaAtiva === 'detalhes-pedagio' && (
-        <DetalhesPedagio onVoltar={() => setAbaAtiva('cards-gerais')} />
-      )}
-    
-      {abaAtiva === 'historico-fatura' && (
-        <HistoricoFaturas />
-      )}
-    
-      {abaAtiva === 'faturas-abertas' && (
-        <FaturasAbertas />
-      )}
-    
-      {abaAtiva === 'listar-frota' && (
-        <ListarFrota />
-      )}
-    
-      {abaAtiva === 'relatorio-passagem' && (
-        <RelatorioPassagens />
-      )}
-      
-      {abaAtiva === 'relatorio-extrato' && (
-        <RelatorioExtrato />
-      )}
-    
-      {abaAtiva === 'editar-usuario' && (
-        <EditarUsuario 
-          setPaginaAtiva={setPaginaAtiva} 
-          setAbaAtiva={setAbaAtiva} 
-        />
-      )}
-    
-      {(abaAtiva === 'usuario' || paginaAtiva === 'usuario') && (
-        <Usuario setPaginaAtiva={setPaginaAtiva} />
-      )}
-=======
   {/* ==========================================
       RESTAURAÇÃO DAS OUTRAS ABAS DO SEU SISTEMA
       ========================================== */}
@@ -512,17 +426,10 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         />
       )}
 
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
     </div>
   
-  </main>
-
-</div>
   );
 };
-<<<<<<< HEAD
-
-=======
 // Componente auxiliar local para exibir os dados textuais do contrato sem loop de importação
 const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = ({ dados }) => {
   if (!dados) return <p>Nenhum dado de contrato carregado.</p>;
@@ -610,4 +517,3 @@ const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = (
 
 
 };
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)

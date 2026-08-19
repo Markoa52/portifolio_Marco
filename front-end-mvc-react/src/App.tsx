@@ -4,22 +4,17 @@ import { Atendimento } from './components/atendimento.tsx';
 import { Dashboard } from './components/dashboard.tsx';
 import { ConsumoAPI } from './components/consumoAPI.tsx';
 import {CadastroContrato} from './components/cadastroContrato.tsx'
-import { Pedidos } from './components/pedidos.tsx'
 import type { PaginaTipo } from './components/contrato.tsx';
 import { PesquisarContrato } from './components/pesquisarContrato.tsx';
 
 function App() {
 
-<<<<<<< HEAD
-  const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('atendimento');
-=======
   const [payloadGlobal, setPayloadGlobal] = useState<any>(null);
 
   const [paginaAtiva, setPaginaAtiva] = useState<PaginaTipo>('atendimento');
   
   // Fornecido a função modificadora "setIdContratoSelecionado" para caso você precise dela no futuro
   const [, setIdContratoSelecionado] = useState<string>('');
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
       return (
     <div>
@@ -54,12 +49,8 @@ function App() {
           />
         )}
 
-        {paginaAtiva === 'cadastro-Contrato' && (
+        {paginaAtiva === 'cadastro-contrato' && (
           <CadastroContrato />
-        )}
-
-          {paginaAtiva === 'pedidos' && (
-          <Pedidos />
         )}
 
       </div>

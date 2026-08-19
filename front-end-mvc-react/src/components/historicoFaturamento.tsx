@@ -3,11 +3,7 @@ import React from 'react';
 
 // Dados atualizados unificando o Histórico com os novos campos
 const DADOS_MOCK = [
-<<<<<<< HEAD
-  { id: 'FAT-2026-1028', fechamento: '09/09/2026', vencimento: '10/010/2026', valor: 'R$ 2.450,00', status: 'Em aberto' },
-=======
     { id: 'FAT-2026-1028', fechamento: '09/09/2026', vencimento: '10/010/2026', valor: 'R$ 2.450,00', status: 'Em aberto' },
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
   { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', status: 'Pago' },
   { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   status: 'Pendente' },
   { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', status: 'Pago' },
@@ -163,8 +159,4 @@ export const HistoricoFaturas: React.FC = () => {
 
   </div>
 );
-<<<<<<< HEAD
-
-=======
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 };

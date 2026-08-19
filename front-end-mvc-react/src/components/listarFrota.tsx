@@ -29,11 +29,7 @@ export const ListarFrota: React.FC = () => {
   // TELA 1: LISTAGEM DA FROTA (TABELA COM O BOTÃO EXPORTAR INCLUÍDO)
   // -------------------------------------------------------------
   if (subAba === 'lista') {
-<<<<<<< HEAD
-    return (
-=======
      return (
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
   /* container limita a largura em 1200px e px-3 sincroniza as bordas com o seu Header */
   <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
@@ -190,11 +186,7 @@ export const ListarFrota: React.FC = () => {
   // -------------------------------------------------------------
   if (subAba === 'cadastro-unico') {
     return (
-<<<<<<< HEAD
-      <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-=======
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
         {/* CARD BRANCO PADRÃO */}
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
@@ -234,30 +226,6 @@ export const ListarFrota: React.FC = () => {
   // SUB-TELA 2: CADASTRO EM LOTE (UPLOAD)
   // -------------------------------------------------------------
   if (subAba === 'cadastro-lote') {
-<<<<<<< HEAD
-    return (
-      <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
-          
-          <h3 className="fs-5 fw-bold text-dark mb-1">📦 Importar Veículos em Lote</h3>
-          <p className="text-muted small mb-4">Faça o upload de um arquivo de planilha (.csv ou .xlsx) contendo as colunas de Placas e Tags.</p>
-          
-          {/* ZONA DE UPLOAD DISCRETA E ESPAÇADA */}
-          <div className="p-4 py-5 text-center bg-light border border-2 border-dashed border-secondary-subtle rounded-3 mb-4">
-            <span className="fs-3 d-block mb-2">📥</span>
-            <p className="text-secondary small fw-medium m-0">Arraste seu arquivo aqui ou clique para selecionar</p>
-          </div>
-
-          <div className="d-flex flex-column flex-sm-row gap-2 border-top pt-3">
-            <button className="btn btn-dark btn-sm fw-semibold py-2 px-4 order-1 order-sm-2" onClick={() => { alert('Planilha processada com sucesso!'); setSubAba('lista'); }}>
-              Processar Arquivo
-            </button>
-            <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => setSubAba('lista')}>
-              Cancelar
-            </button>
-          </div>
-
-=======
 
     // Diminui o tamanho lateral do
     // className="container my-3 my-md-4 px-3 text-start"
@@ -283,7 +251,6 @@ export const ListarFrota: React.FC = () => {
             </button>
           </div>
 
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
         </div>
       </div>
     );
@@ -294,11 +261,7 @@ export const ListarFrota: React.FC = () => {
   // -------------------------------------------------------------
   if (subAba === 'editar' && veiculoSelecionado) {
     return (
-<<<<<<< HEAD
-      <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-=======
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
           <h3 className="fs-5 fw-bold text-dark mb-1">✏️ Editar Veículo: <span className="text-primary">{veiculoSelecionado.placa}</span></h3>
@@ -324,11 +287,7 @@ export const ListarFrota: React.FC = () => {
   // -------------------------------------------------------------
   if (subAba === 'ativacao' && veiculoSelecionado) {
     return (
-<<<<<<< HEAD
-      <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-=======
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
           <h3 className="fs-5 fw-bold text-dark mb-1">⚙️ Gerenciar Ativação</h3>
@@ -358,11 +317,7 @@ export const ListarFrota: React.FC = () => {
   // -------------------------------------------------------------
   if (subAba === 'detalhes' && veiculoSelecionado) {
     return (
-<<<<<<< HEAD
-      <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-=======
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
           <h3 className="fs-5 fw-bold text-dark mb-1">📊 Detalhes Completos: <span className="text-primary">{veiculoSelecionado.placa}</span></h3>

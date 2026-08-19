@@ -33,11 +33,7 @@ export const CadastroContrato: React.FC = () => {
             
             {/* Bloco 1: Dados da Empresa */}
             <div className="mb-4">
-<<<<<<< HEAD
-              <h4 className="text-primary fw-bold mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em' }}>DADOS DA EMPRESA</h4>
-=======
              <h4 className="text-primary fw-bold text-start mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em', display: 'block', width: '100%' }}>DADOS DA EMPRESA</h4>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
               <div className="row g-2">
                 <div className="col-md-4">
                   <input type="text" name="cnpj" placeholder="CNPJ" value={formData.cnpj} onChange={handleChange} className="form-control form-input-atendimento" />
@@ -51,22 +47,15 @@ export const CadastroContrato: React.FC = () => {
                 <div className="col-md-7">
                   <input type="email" name="email" placeholder="E-mail corporativo" value={formData.email} onChange={handleChange} className="form-control form-input-atendimento" />
                 </div>
-<<<<<<< HEAD
-=======
                 <div className="col-md-7">
                   <input type="text" name="reposavelLegal" placeholder="Nome do responsavel legal da empresa" value={formData.email} onChange={handleChange} className="form-control form-input-atendimento" />
                 </div>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
               </div>
             </div>
 
             {/* Bloco 2: Endereço */}
             <div>
-<<<<<<< HEAD
-              <h4 className="text-primary fw-bold mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em' }}>ENDEREÇO DA EMPRESA</h4>
-=======
               <h4 className="text-primary fw-bold text-start mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em', display: 'block', width: '100%' }}>ENDEREÇO DA EMPRESA</h4>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
               <div className="row g-2">
                 <div className="col-md-3">
                   <input type="text" name="cep" placeholder="CEP" value={formData.cep} onChange={handleChange} className="form-control form-input-atendimento" />
@@ -98,11 +87,7 @@ export const CadastroContrato: React.FC = () => {
           <div className="col-md-5 ps-3 d-flex flex-column justify-content-between">
             
             <div>
-<<<<<<< HEAD
-              <h4 className="text-primary fw-bold mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em' }}>CONDIÇÕES COMERCIAIS</h4>
-=======
               <h4 className="text-primary fw-bold text-start mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em', display: 'block', width: '100%' }}>CONDIÇÕES COMERCIAIS</h4>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
               <div className="row g-2">
                 <div className="col-md-6">
                   <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Data de Início</label>
@@ -138,13 +123,7 @@ export const CadastroContrato: React.FC = () => {
             </div>
 
           </div>
-<<<<<<< HEAD
-
         </div>
-
-=======
-        </div>
->>>>>>> 0bfcbc0 (Novo layout, backend e filas)
       </div>
     </div>
   );
