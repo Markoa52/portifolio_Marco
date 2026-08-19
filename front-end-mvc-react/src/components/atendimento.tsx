@@ -117,7 +117,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
         </div>
       </div>
 
-      {/* GRUPO 5: Usuários (Em Construção) */}
+      {/* GRUPO r: Usuários (Em Construção) */}
       <div className="col-12 col-md-6 col-lg-4">
         <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3 opacity-75">
           <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
@@ -129,7 +129,27 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
           </p>
         </div>
       </div>
+
+            {/* GRUPO 5: Usuários (Em Construção) */}
+      <div className="col-12 col-md-6 col-lg-4">
+        <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3 opacity-75">
+          <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+            <Users size={18} className="text-secondary" />
+            <h4 className="fs-6 fw-bold text-secondary m-0">Configurações</h4>
+          </div>
+          <ul className="list-unstyled mb-0">
+            <li className="btn btn btn-light border btn-sm text-secondary fw-semibold border-0 text-start w-100 py-2 px-3 fw-semibold rounded-2 d-flex align-items-center justify-content-between cp" 
+                onClick={() => { setAbaAtiva('configuracao-sistema'); alterarTexto('Cadastro'); }}>
+              <span style={{ fontSize: '0.9rem' }}>➕ Parametrizar do Sistema</span>
+              <span className="text-muted">➔</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
     </div>
+
+    
   )}
     
         {/* SUB-ABAS DINÂMICAS */}
@@ -156,10 +176,11 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
 
             />
           )}
+
             {/* 🔥 CHAMADA DA NOVA TELA DE CONFIGURAÇÃO */}
-  {abaAtiva === 'configuracao-sistema' && (
-    <ConfiguracaoSistema />
-  )}
+           {abaAtiva === 'configuracao-sistema' && (
+             <ConfiguracaoSistema />
+           )}
 
         </div>
       </main>

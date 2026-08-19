@@ -6,6 +6,7 @@ import { ConsumoAPI } from './components/consumoAPI.tsx';
 import {CadastroContrato} from './components/cadastroContrato.tsx'
 import type { PaginaTipo } from './components/contrato.tsx';
 import { PesquisarContrato } from './components/pesquisarContrato.tsx';
+import {ConfiguracaoSistema} from './components/configuracaoSistema.tsx';
 
 function App() {
 
@@ -51,6 +52,10 @@ function App() {
 
         {paginaAtiva === 'cadastro-contrato' && (
           <CadastroContrato />
+        )}
+
+          {paginaAtiva === 'configuracao-sistema' && (
+          <ConfiguracaoSistema />
         )}
 
       </div>
