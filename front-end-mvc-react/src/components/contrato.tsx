@@ -1,7 +1,11 @@
 import '../styles/contrato.css'; // Toda a estilização do header e abas fica presa aqui!
 import { Home, Truck, FileText, BarChart3, Info } from "lucide-react";
+<<<<<<< HEAD
 
 import React, { useState } from 'react';
+=======
+import React, { useEffect, useState } from 'react';
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
 import { DetalhesPedagio } from './saldoVpr'; 
 import { HistoricoFaturas } from './historicoFaturamento'; 
@@ -9,40 +13,107 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
+<<<<<<< HEAD
 import { EditarUsuario } from './editarUsuario';
 import { Usuario } from './usuario';
 import { MenuMobileModulos } from './menuHumbugerMobile';
 //import { Pedidos} from './pedidos';
+=======
+import { CadastroContrato } from './cadastroContrato';
+
+//import { MenuMobileModulos } from './menuHumbugerMobile';
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
-import type { IEmailRegistro } from '../types';
 
+<<<<<<< HEAD
 export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'cadastro-Contrato' | 'pedidos';
 
 export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' | 'editar-usuario' | 'usuario' | 'pedidos'
  |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento' | 'cadastro-Contrato';
+=======
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisarContrato' | 'cadastro-contrato';
 
-interface IContratoProps {
-  setPaginaAtiva: (pagina: any) => void;
-  paginaAtiva: string;
-  dadosOneDrive: IEmailRegistro[]; // 🌟 Recebe os dados normalizados vindos do App.tsx
-}
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato';
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
+
+import type { IContratoProps } from '../types/IContratoProps';
+import type { IDetalhesContrato } from '../types/IDetalhesContrato';
+import { EditarUsuario } from './editarUsuario';
+import { Usuario } from './usuario';
+import axios from 'axios';
 
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
-export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva }) => {
-  const valorGasto  = 4700;
-  const valorMeta  = 5000;
-     // O React calcula a porcentagem exata automaticamente
-  const porcentagemConsumida = Math.min((valorGasto / valorMeta) * 100, 100); // 64
+export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiva }) => {
+  const [dados, setDados] = useState<any>(null);
+  
+  // ALTERAÇÃO DE FLUXO: Inicializamos como false para não travar a tela se a API demorar
+  const [, setCarregando] = useState<boolean>(false); 
+  const [, setErro] = useState<string | null>(null);
+  
+  const [menuAberto, setMenuAberto] = useState<string | null>(null);
+  const [abaAtiva, setAbaAtiva] = useState<AbaInferior>('cards-gerais');
 
-  // Formata os números para o padrão de moeda brasileiro (R$ 3.200,00)
+  // Captura o ID vindo direto de dentro do payload enviado de carona pela pesquisa
+  const idContratoDoc = payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id || '-';
+
+  // Cálculos matemáticos blindados com valores de segurança contra nulos
+  const valorGasto = Number(dados?.gastos || 4700); // 3200 de fallback visual enquanto o banco não responde
+  const valorMeta = Number(dados?.limiteMeta || 5000);
+  const porcentagemConsumida = Math.min((valorGasto / valorMeta) * 100, 100);
+
   const formatarMoeda = (valor: number) => {
     return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
 
-  const [menuAberto, setMenuAberto] = useState<string | null>(null);
-  const [abaAtiva, setAbaAtiva] = useState<AbaInferior>('cards-gerais');
+    useEffect(() => {
+    async function dispararFluxoAssincronoEConsulta() {
+      if (!payloadEnvio) return;
+
+      // Extrai o ID numérico que o usuário digitou e veio de carona no payload
+      const idContrato = payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id;
+
+      try {
+        setCarregando(true);
+        setErro(null);
+
+        // console.log('1. [Fila] Enviando intenção para a rota do RabbitMQ:', payloadEnvio);
+        
+        // // A) MANDA PARA A FILA (Mantém o seu POST atual intacto para acionar o Worker)
+        // await axios.post('http://localhost:3000/api/contrato', payloadEnvio);
+
+        console.log(`2. [Banco] Buscando dados visuais da tela para o ID: ${idContrato}`);
+
+        // B) 🔥 DISPARA A CONSULTA DIRETA: Consome a sua rota GET que lê direto do SQL Server
+        const respostaDados = await axios.get(`http://localhost:3000/api/contrato/${idContrato}`);
+        
+        if (respostaDados && respostaDados.data) {
+          const resultado = respostaDados.data;
+          console.log('3. [Sucesso] Dados do SQL Server recebidos para a tela:', resultado);
+
+          // Trata se o banco retornou os dados em formato de lista (Array) ou objeto direto
+          if (Array.isArray(resultado) && resultado.length > 0) {
+            setDados(resultado[0]); // Salva a primeira linha do recordset
+          } else {
+            setDados(resultado);    // Salva o objeto direto
+          }
+        } else {
+          throw new Error("A rota de consulta não retornou dados para este ID.");
+        }
+
+      } catch (err: any) {
+        console.error('Erro no fluxo misto (Fila/Consulta) do Contrato:', err);
+        // Captura o erro se o ID digitado não existir no banco de dados
+        setErro(err.response?.data?.erro || err.message || "Erro ao carregar informações.");
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    dispararFluxoAssincronoEConsulta();
+  }, [payloadEnvio]);
+
 
   const alternarSubmenu = (menuName: string) => {
     setMenuAberto(menuAberto === menuName ? null : menuName);
@@ -75,6 +146,7 @@ export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva
         <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-1 gap-md-2 flex-wrap" style={{ marginTop: '-20px' }}>
           
           {/* MENU HAMBÚRGUER MOBILE */}
+<<<<<<< HEAD
           <div className="d-block d-md-none me-2 text-dark" style={{ marginTop: '-37px' }} >
             <MenuMobileModulos setAbaAtiva={setAbaAtiva} />
           </div>
@@ -94,6 +166,27 @@ export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva
             <span className="fs-5 fw-bold">Início</span>
           </div>
 
+=======
+          {/* <div className="d-block d-md-none me-2 text-dark" style={{ marginTop: '-37px' }} >
+            <MenuMobileModulos setAbaAtiva={setAbaAtiva} />
+          </div> */}
+
+          {/* MENU HAMBÚRGUER DESKTOP */}
+          <div className="d-none d-md-block mx-2 mx-md-3">
+            <MenuHamburguer setAbaAtiva={setAbaAtiva} setPaginaAtiva={setPaginaAtiva} />
+          </div>
+
+          {/* ITEM 1: INÍCIO */}
+          <div 
+            className="btn btn-menu-limpo d-flex flex-column align-items-center p-2 text-decoration-none text-dark border-0" 
+            onClick={() => { setAbaAtiva('cards-gerais'); setMenuAberto(null); }}
+            style={{ minWidth: '90px', transition: 'background-color 0.2s' }}
+          >
+            <Home size={26} color="#475569" strokeWidth={2} className="mb-2" />
+            <span className="fs-5 fw-bold">Início</span>
+          </div>
+
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
           {/* ITEM 2: FROTA */}
           <div className="dropdown">
             <button 
@@ -166,7 +259,11 @@ export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva
           {/* MUDANÇA: Forçado margin-right de 24px para afastar do Saldo Pedágio */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
             <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>CONTRATO</span>
+<<<<<<< HEAD
             <span className="fs-5 fw-bold text-dark mt-1">1 Teste</span>
+=======
+            <span className="fs-5 fw-bold text-dark mt-1">{idContratoDoc}</span>
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
           </div>
           
           {/* SALDO VALE PEDÁGIO CORRIGIDO */}
@@ -323,6 +420,7 @@ export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva
 
       </div>
     )}
+<<<<<<< HEAD
 
     {/* ==========================================================================
         RESTAURAÇÃO DAS OUTRAS ABAS DO SEU SISTEMA
@@ -362,6 +460,59 @@ export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva
       {(abaAtiva === 'usuario' || paginaAtiva === 'usuario') && (
         <Usuario setPaginaAtiva={setPaginaAtiva} />
       )}
+=======
+  {/* ==========================================
+      RESTAURAÇÃO DAS OUTRAS ABAS DO SEU SISTEMA
+      ========================================== */}
+  
+        {abaAtiva === 'detalhes-pedagio' && (
+          <DetalhesPedagio onVoltar={() => setAbaAtiva('cards-gerais')} />
+        )}
+
+        {abaAtiva === 'historico-fatura' && (
+          <HistoricoFaturas />
+        )}
+
+        {abaAtiva === 'faturas-abertas' && (
+          <FaturasAbertas  />
+        )}
+
+       {abaAtiva === 'listar-frota' && (
+          <ListarFrota />
+        )}
+
+      {abaAtiva === 'relatorio-passagem' && (
+          <RelatorioPassagens />
+        )}
+  
+        {abaAtiva === 'relatorio-extrato' && (
+          <RelatorioExtrato />
+        )}
+
+  {abaAtiva === 'editar-usuario' && (
+    <EditarUsuario 
+      setPaginaAtiva={setPaginaAtiva} 
+      setAbaAtiva={setAbaAtiva} 
+    />
+  )}
+
+  {(abaAtiva === 'usuario') && (
+    <Usuario setPaginaAtiva={setPaginaAtiva} />
+  )}
+
+</main>
+
+      {abaAtiva === 'contrato-detalhe' && (
+        <ContratoDetailComponent dados={dados} />
+      )}
+
+        {abaAtiva === 'cadastro-contrato' && (
+        <CadastroContrato
+
+        />
+      )}
+
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
     </div>
   
   </main>
@@ -369,4 +520,94 @@ export const Contrato: React.FC<IContratoProps> = ({ setPaginaAtiva, paginaAtiva
 </div>
   );
 };
+<<<<<<< HEAD
 
+=======
+// Componente auxiliar local para exibir os dados textuais do contrato sem loop de importação
+const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = ({ dados }) => {
+  if (!dados) return <p>Nenhum dado de contrato carregado.</p>;
+        return (
+    // 🛠️ ALINHAMENTO GÊMEO: Copiado o exato padrão de tamanho, centralização e bordas do seu Header
+    <div 
+      className="card bg-white text-dark p-4 border-0 shadow-sm my-3" 
+      style={{ 
+        width: "100%",
+        maxWidth: "1200px",       /* 👈 Espelha o tamanho do header */
+        margin: "0 auto",         /* 👈 Garante a mesma centralização no PC */
+        borderRadius: "12px",     /* Arredondamento suave combinando com o topo */
+        boxSizing: "border-box"
+      }}
+    >
+      
+      {/* Título interno minimalista escuro */}
+      <h3 className="fs-6 fw-bold text-dark opacity-75 border-bottom border-light pb-2 mb-4 text-start text-uppercase" style={{ letterSpacing: '0.5px' }}>
+        Informações Contratuais
+      </h3>
+
+      {/* Estrutura de grid compacta */}
+      <div className="container-fluid p-0 text-start">
+        
+        {/* row-cols-md-4 divide os itens em 4 colunas horizontais limpas no PC */}
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 m-0 p-0">
+          
+          {/* Item 1: Data de Início */}
+          <div className="col ps-0"> {/* ps-0 cola o primeiro item perfeitamente no alinhamento esquerdo */}
+            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+              Data de Início
+            </span>
+            <span className="d-block fs-6 fw-bold text-dark mt-1">
+              {dados.StartDate || dados.StartDate ? new Date(dados.StartDate || dados.StartDate).toLocaleDateString('pt-BR') : '-'}
+            </span>
+          </div>
+
+          {/* Item 2: Data de Encerramento */}
+          <div className="col">
+            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+              Data de Encerramento
+            </span>
+            <span className="d-block fs-6 fw-bold text-dark mt-1">
+              {dados.EndDate || dados.EndDate ? new Date(dados.EndDate || dados.EndDate).toLocaleDateString('pt-BR') : 'Vigente'}
+            </span>
+          </div>
+
+          {/* Item 3: Código de Faturamento */}
+          <div className="col">
+            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+              Código de Faturamento
+            </span>
+            <span className="d-block fs-6 fw-bold text-dark mt-1">
+              {dados.BillingCode || dados.BillingCode || '-'}
+            </span>
+          </div>
+
+          {/* Item 4: Prazo de Pagamento */}
+          <div className="col pe-0"> {/* pe-0 cola o último item na borda direita */}
+            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+              Prazo de Pagamento
+            </span>
+            <span className="d-block fs-6 fw-bold text-dark mt-1">
+              {dados.PaymentTerm || dados.PaymentTerm ? `${dados.PaymentTerm || dados.PaymentTerm} dias` : '-'}
+            </span>
+          </div>
+
+          {/* Item 5: Valor Mensalidade */}
+          <div className="col-12 mt-3 pt-3 border-top border-light ps-0">
+            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+              Valor Mensalidade Tag
+            </span>
+            <span className="d-block fs-5 fw-bold mt-1" style={{ color: '#4f46e5' }}>
+              R$ {dados.TagMonthlyFeeUnitValue || dados.TagMonthlyFeeUnitValue || '0,00'}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  );
+
+
+
+
+};
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)

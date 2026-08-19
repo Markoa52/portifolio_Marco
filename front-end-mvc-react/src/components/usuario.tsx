@@ -77,7 +77,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({ }) => {
   }, []);
 
       //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
-   const isMobile = larguraJanela <= 1024;
+   //const isMobile = larguraJanela <= 1024;
 
   // ==========================================================================
   // 3. FILTRAGEM DINÂMICA E LOGÍCA ABAIXO DO CICLO DE VIDA

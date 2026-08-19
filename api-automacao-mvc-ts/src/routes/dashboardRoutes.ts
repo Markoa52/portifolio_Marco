@@ -4,8 +4,8 @@ const router = express.Router();
 import { webhookGLPIService } from '../services/webhookGLPIService';
 import { dashboardController } from '../controllers/dashboardController';
 
-const glpiService = new webhookGLPIService();
-const dashboard = new dashboardController(glpiService);
+const dadosService = new webhookGLPIService();
+const dadosController = new dashboardController(dadosService);
 
 /**
  * @openapi
@@ -34,8 +34,7 @@ const dashboard = new dashboardController(glpiService);
  *                 tempoMedio:
  *                   type: integer
  */
-
-router.get('/dadosChamados', (req, res) => dashboard.obterDadosAPI(req, res));
+router.post('/dadosChamados', (req, res) => dadosController.obterDadosAPI(req, res));
 
 export default router;
 

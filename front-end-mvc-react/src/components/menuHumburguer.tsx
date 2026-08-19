@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import '../styles/contrato.css'; // Carrega os estilos unificados
 
 // Definimos estritamente os tipos de abas válidos para o sistema
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' |'editar-usuario' |'usuario';
+import type { PaginaTipo } from './contrato';
+import { ReceiptText, RefreshCcw, UserPen } from 'lucide-react';
 
 interface IMenuProps {
   setAbaAtiva: (aba: any) => void;
-  setPaginaAtiva: (pagina: any) => void; // <-- Modifique para 'any' aqui
+  setPaginaAtiva: (pagina: PaginaTipo) => void; // <-- Modifique para 'any' aqui
 }
 
 // CORREÇÃO: Agora o componente recebe e desestrutura a propriedade enviada pelo pai
@@ -30,7 +31,7 @@ export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAti
           
           {/* Seção Frota / Usuários */}
           <div className="menu-dropdown-secao-grupo">
-            <p className="menu-dropdown-secao-titulo">🛞 Usuários</p>
+            <p className="menu-dropdown-secao-titulo"><UserPen size={22} className="text-dark" /> Usuários</p>
             <ul>
               <li onClick={() => { setAbaAtiva('editar-usuario'); setMenuGeralAberto(false); }}>
                 Gestão de Usuários
@@ -40,7 +41,11 @@ export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAti
 
           {/* Seção Faturamento / Contrato */}
           <div className="menu-dropdown-secao-grupo">
+<<<<<<< HEAD
             <p className="menu-dropdown-secao-titulo">🛞 Contrato</p>
+=======
+            <p className="menu-dropdown-secao-titulo"><ReceiptText size={22} className="text-dark" />Contrato</p>
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
             <ul>
               <li onClick={() => { setAbaAtiva('faturas-abertas'); setMenuGeralAberto(false); }}>
                 Detalhes do Contrato
@@ -50,7 +55,11 @@ export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAti
 
           {/* Seção Faturamento / Contrato */}
           <div className="menu-dropdown-secao-grupo">
+<<<<<<< HEAD
             <p className="menu-dropdown-secao-titulo">🛞 Trocar contrato</p>
+=======
+            <p className="menu-dropdown-secao-titulo"><RefreshCcw size={22} className="text-dark" /> Trocar contrato</p>
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
             <ul>
               <li onClick={() => { setPaginaAtiva('pesquisarContrato'); setMenuGeralAberto(false); }}>
                 Atendimento

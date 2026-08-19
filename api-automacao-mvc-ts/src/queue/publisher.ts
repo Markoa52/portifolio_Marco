@@ -1,9 +1,8 @@
 import {connetRabbitMQ} from '../config/rabbitConfig';
-import {jobPayload} from '../types/Ipublusher';
 
 export class RabbitMqPublisher {
 
-    async publishEvent(exchange:string, routingKey: string, payload: jobPayload):Promise<void> {
+    async publishEvent(exchange:string, routingKey: string, payload: any):Promise<void> {
     try{
         const channel = await connetRabbitMQ();
 

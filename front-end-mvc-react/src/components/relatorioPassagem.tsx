@@ -120,5 +120,8 @@ export const RelatorioPassagens: React.FC = () => {
 
   </div>
 );
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 };

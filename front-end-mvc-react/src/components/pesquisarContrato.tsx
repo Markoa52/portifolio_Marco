@@ -1,9 +1,51 @@
+<<<<<<< HEAD
 import React, { useState} from 'react';
 import '../styles/pesquisaContrato.css'
+=======
+import React, { useState } from 'react';
+import '../styles/pesquisaContrato.css';
+import type { IPerquisarContratoProps } from '../types/IPerquisarContratoProps';
+import axios from 'axios';
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 import { Search } from 'lucide-react';
 
-export const PesquisarContrato: React.FC = () => {
+// 1. CORREÇÃO: Recebemos as propriedades obrigatórias da interface nas chaves { }
+export const PesquisarContrato: React.FC<IPerquisarContratoProps> = ({ setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal }) => {
+  const [textoDigitado, setTextoDigitado] = useState<string>('');
+  // Guardamos os dados da resposta caso o backend retorne o contrato na consulta
+  //sconst [dadosContrato] = useState<any>(null);
+
+  // 2. CORREÇÃO: Ajustada a tipagem aceita para incluir a ação de busca ('consultar')
+const handleConsultarContrato = async (formato: 'consultar', idDoContrato: string) => {
+  if (!idDoContrato.trim()) {
+    alert('Por favor, digite o ID do contrato.');
+    return;
+  }
+
+  try {
+    const payloadEnvio = {
+      protocoloId: `PROT-${Date.now()}`, 
+      acao: formato,                     
+      dadosLimpos: { id: idDoContrato }
+    };
+
+    console.log('1. Disparando payload para a API/Fila...', payloadEnvio);
+
+    // A) Primeiro faz a requisição. Se o ID não existir, o Backend joga o erro e o código pula direto para o CATCH!
+   await axios.post('http://localhost:3000/api/contrato', payloadEnvio);
+
+    // Se o código chegou até aqui, significa que a API deu sucesso e o ID existe!
+    console.log('2. ID validado com sucesso no banco. Mudando de página...');
+
+    // 🔥 CORREÇÃO DEFINITIVA: Estas três linhas DEVEM ficar aqui dentro, após o sucesso do Axios!
+    setPayloadGlobal(payloadEnvio); 
+    setIdContratoSelecionado(idDoContrato);
+    setPaginaAtiva('contrato'); // 👈 Só muda de tela se o ID for válido!
+
+  } catch (error: any) {
+    console.error('Erro ao solicitar dados do contrato:', error);
     
+<<<<<<< HEAD
   const [pesquisa, setPesquisa] = useState<string>('');
 
       async function buscarContractPorId(contractId: string) {
@@ -25,6 +67,22 @@ export const PesquisarContrato: React.FC = () => {
   // container-fluid limita a largura máxima em 1200px para alinhar com o Header e o Menu de Módulos
   <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
+=======
+    // Captura a mensagem real enviada pelo seu SQL Server ("O contrato número... não existe")
+    const mensagemErro = error.response?.data?.erro || error.response?.data?.mensagem || error.message;
+    
+    alert(`Falha ao iniciar a consulta: ${mensagemErro}`);
+    
+    // 🛑 IMPORTANTE: Não coloque nenhum comando de setPaginaAtiva aqui! O usuário continuará preso na tela de busca.
+  }
+};
+
+
+  return (
+  // container-fluid limita a largura máxima em 1200px para alinhar com o Header e o Menu de Módulos
+  <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
     {/* PAINEL OPERACIONAL (Card Branco Padrão do Sistema) */}
     <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 mx-0 w-100">
       
@@ -48,8 +106,13 @@ export const PesquisarContrato: React.FC = () => {
                 className="form-control border-start-0 ps-1" 
                 placeholder="Pesquisar registros..." 
                 style={{ fontSize: '0.875rem', height:"50px" }}
+<<<<<<< HEAD
                 value={pesquisa} 
                 onChange={(e) => setPesquisa(e.target.value)} 
+=======
+               value={textoDigitado} 
+              onChange={(e) => setTextoDigitado(e.target.value)}
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
               />
             </div>
             {/* O botão 'btn-dark' fica acoplado direto no input, criando uma barra de busca elegante */}
@@ -57,7 +120,11 @@ export const PesquisarContrato: React.FC = () => {
               className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0" 
               type="button"
               style={{ fontSize: '0.875rem', height:"50px" }}
+<<<<<<< HEAD
               onClick={() => buscarContractPorId(pesquisa)}
+=======
+              onClick={() => handleConsultarContrato ('consultar', textoDigitado)}
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
             >
               Buscar
             </button>
@@ -68,5 +135,9 @@ export const PesquisarContrato: React.FC = () => {
     </div>
   </div>
 );
+<<<<<<< HEAD
 
 }
+=======
+};
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)

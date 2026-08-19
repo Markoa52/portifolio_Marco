@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD
 import { Layers, PlusCircle, ShoppingBag, CreditCard, Users, ArrowLeft } from 'lucide-react';
 import { PesquisarContrato } from './pesquisarContrato';
 import { CadastroContrato } from './cadastroContrato';
@@ -23,6 +24,34 @@ export const Atendimento: React.FC<IMenuProps> = ({ }) => {
   };
 
   return (
+=======
+import { ArrowLeft, Layers, PlusCircle, ShoppingBag, CreditCard, Users } from 'lucide-react'; // Mantenha seus imports de ícones
+import { PesquisarContrato } from './pesquisarContrato';
+import { EditarUsuario } from './editarUsuario';
+import { CadastroContrato } from './cadastroContrato';
+import {ConfiguracaoSistema} from './configuracaoSistema'
+// Importe o EditarUsuario e CadastroContrato se já não estiverem importados
+
+// 1. Garanta que a interface do arquivo receba todas as propriedades necessárias
+interface IMenuProps {
+  setPaginaAtiva: (pagina: any) => void;
+  setIdContratoSelecionado: (id: string) => void;
+  setPayloadGlobal: (payload: any) => void;
+}
+
+// 2. 🔥 CORREÇÃO 1: Você PRECISA extrair as funções aqui dentro dos parênteses do componente!
+export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal }) => {
+  const [abaAtiva, setAbaAtiva] = useState<string>('cards-gerais');
+  const [titulo, setTitulo] = useState<string>('Módulos de Atendimento');
+
+  const alterarTexto = (novoTitulo: string) => setTitulo(novoTitulo);
+  const voltarParaModulos = () => {
+    setAbaAtiva('cards-gerais');
+    setTitulo('Módulos de Atendimento');
+  };
+
+         return (
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
     /* TRAVA 1: Força o container a ocupar 100% da largura disponível na tela, limpando travas do pai */
     <div className="container my-3 my-md-4 px-3 pagina-layout-atendimento-blindado">
       
@@ -71,6 +100,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ }) => {
           </ul>
         </div>
       </div>
+<<<<<<< HEAD
 
       {/* GRUPO 2: Cadastro de Contratos */}
       <div className="col-12 col-md-6 col-lg-4">
@@ -138,7 +168,98 @@ export const Atendimento: React.FC<IMenuProps> = ({ }) => {
   </div>
   
 </main>
+=======
+>>>>>>> 0bfcbc0 (Novo layout, backend e filas)
 
+      {/* GRUPO 2: Cadastro de Contratos */}
+      <div className="col-12 col-md-6 col-lg-4">
+        <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3">
+          <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+            <PlusCircle size={18} className="text-success" />
+            <h4 className="fs-6 fw-bold text-dark m-0">Operações e Vendas</h4>
+          </div>
+          <ul className="list-unstyled mb-0">
+            <li className="btn btn btn-light border btn-sm text-secondary fw-semibold border-0 text-start w-100 py-2 px-3 fw-semibold rounded-2 d-flex align-items-center justify-content-between cp" 
+                onClick={() => { setAbaAtiva('cadastro-Contrato'); alterarTexto('Cadastro'); }}>
+              <span style={{ fontSize: '0.9rem' }}>➕ Incluir Novo Contrato</span>
+              <span className="text-muted">➔</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      {/* GRUPO 3: Pedidos e Estoque (Em Construção) */}
+      <div className="col-12 col-md-6 col-lg-4">
+        <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3 opacity-75">
+          <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+            <ShoppingBag size={18} className="text-secondary" />
+            <h4 className="fs-6 fw-bold text-secondary m-0">Pedidos e Estoque de Tags</h4>
+          </div>
+          <p className="text-muted small mb-0 p-2 bg-light border rounded text-center">
+            🛠️ Módulo em desenvolvimento
+          </p>
+        </div>
+      </div>
+
+      {/* GRUPO 4: Faturamento (Em Construção) */}
+      <div className="col-12 col-md-6 col-lg-4">
+        <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3 opacity-75">
+          <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+            <CreditCard size={18} className="text-secondary" />
+            <h4 className="fs-6 fw-bold text-secondary m-0">Faturamento</h4>
+          </div>
+          <p className="text-muted small mb-0 p-2 bg-light border rounded text-center">
+            🛠️ Módulo em desenvolvimento
+          </p>
+        </div>
+      </div>
+
+      {/* GRUPO 5: Usuários (Em Construção) */}
+      <div className="col-12 col-md-6 col-lg-4">
+        <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3 opacity-75">
+          <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
+            <Users size={18} className="text-secondary" />
+            <h4 className="fs-6 fw-bold text-secondary m-0">Usuários</h4>
+          </div>
+          <p className="text-muted small mb-0 p-2 bg-light border rounded text-center">
+            🛠️ Módulo em desenvolvimento
+          </p>
+        </div>
+      </div>
+    </div>
+  )}
+    
+        {/* SUB-ABAS DINÂMICAS */}
+        <div className="w-100 m-0 p-0">
+
+          {abaAtiva === 'pesquisarContrato' && (
+            <PesquisarContrato 
+              setPaginaAtiva={setPaginaAtiva} 
+              setIdContratoSelecionado={setIdContratoSelecionado} 
+              setPayloadGlobal={setPayloadGlobal} 
+            />
+          )}
+
+          {abaAtiva === 'editar-usuario' && (
+            /* 🔥 CORREÇÃO 3: Removido propriedades que não existem ou que causavam erro se a interface deles for restrita */
+            <EditarUsuario 
+              setPaginaAtiva={setPaginaAtiva} 
+              setAbaAtiva={setAbaAtiva} 
+            />
+          )}
+
+          {abaAtiva === 'cadastro-contrato' && (
+            <CadastroContrato 
+
+            />
+          )}
+            {/* 🔥 CHAMADA DA NOVA TELA DE CONFIGURAÇÃO */}
+  {abaAtiva === 'configuracao-sistema' && (
+    <ConfiguracaoSistema />
+  )}
+
+        </div>
+      </main>
     </div>
   );
 };

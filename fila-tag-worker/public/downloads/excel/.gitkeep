@@ -1,0 +1,13 @@
+# Ignora a pasta de dependências em qualquer nível do projeto
+**/node_modules/
+**/dist/
+**/build/
+.env
+
+# 1. Ignora todos os arquivos dentro das pastas de downloads
+**/public/downloads/excel/*
+**/public/downloads/pdf/*
+
+# 2. ABRE EXCEÇÃO: Não ignora o arquivo .gitkeep (garante que as pastas subam)
+!**/public/downloads/excel/.gitkeep
+!**/public/downloads/pdf/.gitkeep

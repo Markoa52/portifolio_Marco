@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '../styles/contrato.css'; // Carrega os estilos unificados
 
 interface IMenuMobileProps {
   setAbaAtiva: (aba: any) => void;

@@ -1,5 +1,5 @@
 import { RabbitMqPublisher } from '../queue/publisher';
-import { jobPayload } from '../types/Ipublusher';
+import { jobPayload } from '../types/IPublisherArquivo';
 
 export class GeradorArquivosServices {
   // Injeta o entregador do RabbitMQ no serviço

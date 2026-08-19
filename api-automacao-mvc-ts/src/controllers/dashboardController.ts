@@ -1,15 +1,14 @@
 import type { Request, Response } from 'express';
 // No CommonJS da API Principal, imports locais não levam extensão no caminho
-import { webhookGLPIService } from '../services/webhookGLPIService'
+import { webhookGLPIService } from '../services/webhookGLPIService';
 
 export class dashboardController{
+constructor(private glpi:webhookGLPIService ){}
 
-    constructor(private dashBoard: webhookGLPIService) {}
-
-    async obterDadosAPI(req: Request, res: Response): Promise<Response | void> {
+async obterDadosAPI(req: Request, res: Response): Promise<Response | void>{
     try {
         // Chama o método da model que já foi convertido e tipado anteriormente
-        const { linhas } = await this.dashBoard.obterTodos();
+        const { linhas } = await this.glpi.obterTodos();
 
         let naoAtendidos = 0;
         let atendidos = 0;
@@ -44,7 +43,5 @@ export class dashboardController{
         return res.status(500).json({ erro: e.message });
     }
 };
-
 }
-
 
