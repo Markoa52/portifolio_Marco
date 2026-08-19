@@ -19,7 +19,7 @@ import apiExternaRoutes from './src/routes/apiExternaRoutes';
 import gerarArquivoRoutes from './src/routes/gerarArquivoAxiosRoutes';
 import gerarArquivoFilaRoutes from './src/routes/gerarArquivoFilaRoutes';
 import contratoRoutes from './src/routes/contratoRoutes';
-
+import parametrizacaoRoutes from './src/routes/parametrizacaoRoutes.js';
 // ==========================================================================
 // INICIALIZAÇÃO CRÍTICA (DEVE SER A PRIMEIRA COISA)
 // ==========================================================================
@@ -81,6 +81,7 @@ app.use('/api', gerarArquivoRoutes);
 app.use('/api', gerarArquivoFilaRoutes); 
 app.use('/api', checarArquivoRoutes); // 🌟 Colocado junto com as outras usando
 app.use('/api', contratoRoutes);
+app.use('/api', parametrizacaoRoutes)
 
 app.use(cors()); // 🌟 2. Ative o CORS antes de qualquer rota!
 app.use(express.json());

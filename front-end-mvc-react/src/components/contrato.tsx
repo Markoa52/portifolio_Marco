@@ -8,16 +8,15 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
-import { CadastroContrato } from './cadastroContrato';
 
 //import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
 
-export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisarContrato' | 'cadastro-contrato' | 'configuracao-sistema';
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema';
 
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisarContrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema';
 
 import type { IContratoProps } from '../types/IContratoProps';
 import type { IDetalhesContrato } from '../types/IDetalhesContrato';
@@ -418,12 +417,6 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
 
       {abaAtiva === 'contrato-detalhe' && (
         <ContratoDetailComponent dados={dados} />
-      )}
-
-        {abaAtiva === 'cadastro-contrato' && (
-        <CadastroContrato
-
-        />
       )}
 
     </div>

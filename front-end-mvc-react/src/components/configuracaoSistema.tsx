@@ -4,79 +4,55 @@ import "../styles/CadastroContrato.css"; // Reaproveita as suas classes de input
 
 export const ConfiguracaoSistema: React.FC = () => {
   // 1. CONTROLADORES DE EXPANSÃO (Guarda qual bloco está aberto na tela)
-  const [blocoAtivo, setBlocoAtivo] = useState<string | null>(null);
+  const [blocoAtivo, setBlocoAtivo] = useState<string | null>(null);  
+ 
+  // Em vez de usar apenas uma string, use um objeto para mapear cada campo
+  const [valoresComerciais, setValoresComerciais] = useState({
+  corteFaturamento: '',
+  planoComercializado: '',
+  planoPagamento: ''
+});
 
-  // 2. ESTADOS DOS FORMULÁRIOS (Totalmente limpos e em branco)
-  const [veiculo, setVeiculo] = useState({ vehicleTypeId: "", vehicleBrandTypeId: "", model: "", axleWheelType: "" });
-  const [categoria, setCategoria] = useState({ vehicleCategoryId: "", description: "" });
-  const [regraTag, setRegraTag] = useState({ contractVehicleTagServiceTypeId: "", contractVehicleTagStatusType: "" });
+const gerenciarMudancaInput = (e: any) => {
+  const { name, value } = e.target;
+  setValoresComerciais((valoresAnteriores) => ({
+    ...valoresAnteriores,
+    [name]: value // Atualiza dinamicamente apenas o campo que mudou
+  }));
+};
+
 
   // Alternador de sanfona (Accordion)
   const alternarBloco = (nomeBloco: string) => {
     setBlocoAtivo(blocoAtivo === nomeBloco ? null : nomeBloco);
   };
 
-  // Handler inteligente para aceitar apenas números nos campos de ID
-  const aplicarSomenteNumeros = (value: string) => value.replace(/\D/g, "");
-
-  const handleVeiculoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setVeiculo((prev) => ({ ...prev, [name]: aplicarSomenteNumeros(value) }));
-  };
-
-  const handleCategoriaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    const valorTratado = name === "description" ? value : aplicarSomenteNumeros(value);
-    setCategoria((prev) => ({ ...prev, [name]: valorTratado }));
-  };
-
-  const handleRegraTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRegraTag((prev) => ({ ...prev, [name]: aplicarSomenteNumeros(value) }));
-  };
-
-  // 3. FUNÇÃO CENTRAL DE ENVIO PARA A FILA
-  const dispararEnvioFila = async (taskName: string, dadosBloco: any) => {
-    const possuiCampoVazio = Object.values(dadosBloco).some(valor => String(valor).trim() === "");
-    if (possuiCampoVazio) {
-      alert("Por favor, preencha todos os campos do bloco antes de salvar.");
-      return;
-    }
-
-    try {
-      const dadosTratados: Record<string, number | string> = {};
-      Object.keys(dadosBloco).forEach((key) => {
-        const valorOriginal = dadosBloco[key];
-        dadosTratados[key] = isNaN(Number(valorOriginal)) || valorOriginal === "" 
-          ? valorOriginal 
-          : parseInt(valorOriginal, 10);
-      });
-
-      const payloadEnvio = {
-        protocoloId: `CONF-${taskName.toUpperCase()}-${Date.now()}`,
+  const handleEnviarComercializadoTipo = async (formato: string, ComercializadoTipo: string) => {
+  if (!ComercializadoTipo.trim()) {
+    alert('Por favor, digite o ID do contrato.');
+    return;
+  }
+      try {
+        const payloadEnvio = {
+        protocoloId: `PROT-${Date.now()}`, 
         acao: 'inserir', 
-        task: taskName, 
-        dadosLimpos: dadosTratados
+        tipo: formato ,
+        dadosLimpos: ComercializadoTipo
       };
 
       console.log(`[Configuração] Despachando nova informação para a fila:`, payloadEnvio);
 
-      const resposta = await axios.post('http://localhost:3000/api/configuracao', payloadEnvio);
+      const resposta = await axios.post('http://localhost:3000/api/parametrizacao', payloadEnvio);
 
       if (resposta.status === 200 || resposta.data?.sucesso) {
         alert(`Sucesso! Parâmetros enviados para a fila.\nProtocolo: ${payloadEnvio.protocoloId}`);
-        
-        // Limpa o bloco específico após o sucesso
-        if (taskName === 'cadastrar_veiculo') setVeiculo({ vehicleTypeId: "", vehicleBrandTypeId: "", model: "", axleWheelType: "" });
-        if (taskName === 'cadastrar_categoria_pedagio') setCategoria({ vehicleCategoryId: "", description: "" });
-        if (taskName === 'cadastrar_regra_tag') setRegraTag({ contractVehicleTagServiceTypeId: "", contractVehicleTagStatusType: "" });
-        setBlocoAtivo(null); 
       }
     } catch (error: any) {
-      console.error(`Erro ao gravar bloco ${taskName}:`, error);
+      console.error(`Erro ao gravar bloco`, error);
       alert(`Falha ao salvar: ${error.response?.data?.erro || error.message}`);
-    }
-  };
+    } 
+};
+
 
     return (
     <div className="w-100 p-2 text-start">
@@ -92,131 +68,97 @@ export const ConfiguracaoSistema: React.FC = () => {
         <div className="d-flex flex-column gap-3">
           
           {/* ====================================================================
-              CARD 1: CLASSIFICAÇÃO E MODELO DO VEÍCULO
+              CARD 4: REGRAS E PARAMETRIZAÇÃO DA CONDIÇÃO COMERCIAL
               ==================================================================== */}
           <div>
             <div 
               className="p-3 bg-light text-start cp d-flex justify-content-between align-items-center" 
-              onClick={() => alternarBloco('veiculo')}
-              style={{ cursor: 'pointer', borderLeft: blocoAtivo === 'veiculo' ? '4px solid #4f46e5' : '4px solid transparent', transition: 'all 0.2s' }}
+              onClick={() => alternarBloco('regraComercial')}
+              style={{ cursor: 'pointer', borderLeft: blocoAtivo === 'regraComercial' ? '4px solid #4f46e5' : '4px solid transparent', transition: 'all 0.2s' }}
             >
               <div>
-                <h4 className="fs-6 fw-bold text-dark m-0">🚗 1. Tipo e Modelo de Veículo</h4>
-                <small className="text-muted">Cadastre novos códigos identificadores para tipos, marcas, anos e eixos de frotas.</small>
-              </div>
-            </div>
-
-            {/* Painel expansível do Bloco 1 */}
-            {blocoAtivo === 'veiculo' && (
-              <div className="p-3 border-0 bg-white">
-                <div className="row g-2 align-items-end text-start m-0">
-                  <div className="col-md-3">
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Novo Cód. Tipo (VehicleTypeId)</label>
-                    <input type="text" inputMode="numeric" name="vehicleTypeId" placeholder="Ex: 5" value={veiculo.vehicleTypeId} onChange={handleVeiculoChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-                  <div className="col-md-3">
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Novo Cód. Marca (VehicleBrandTypeId)</label>
-                    <input type="text" inputMode="numeric" name="vehicleBrandTypeId" placeholder="Ex: 7" value={veiculo.vehicleBrandTypeId} onChange={handleVeiculoChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-                  <div className="col-md-2">
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Ano Modelo (Model)</label>
-                    <input type="text" inputMode="numeric" name="model" placeholder="Ex: 2026" value={veiculo.model} onChange={handleVeiculoChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-                  <div className="col-md-2">
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Qtd. Eixos (AxleWheelType)</label>
-                    <input type="text" inputMode="numeric" name="axleWheelType" placeholder="Ex: 3" value={veiculo.axleWheelType} onChange={handleVeiculoChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-                  <div className="col-md-2">
-                    <button type="button" onClick={() => dispararEnvioFila('cadastrar_veiculo', veiculo)} className="btn btn-primary fw-semibold w-100 py-2" style={{ fontSize: '0.82rem' }}>
-                      💾 Salvar Item
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ====================================================================
-              CARD 2: CATEGORIA TARIFÁRIA DE PEDÁGIO
-              ==================================================================== */}
-          <div>
-            <div 
-              className="p-3 bg-light text-start cp d-flex justify-content-between align-items-center" 
-              onClick={() => alternarBloco('categoria')}
-              style={{ cursor: 'pointer', borderLeft: blocoAtivo === 'categoria' ? '4px solid #4f46e5' : '4px solid transparent', transition: 'all 0.2s' }}
-            >
-              <div>
-                <h4 className="fs-6 fw-bold text-dark m-0">🎫 2. Categoria Tarifária de Pedágio</h4>
-                <small className="text-muted">Registre novas categorias operacionais homologadas e suas respectivas descrições.</small>
-              </div>
-            </div>
-
-            {/* Painel expansível do Bloco 2 */}
-            {blocoAtivo === 'categoria' && (
-              <div className="p-3 border-top bg-white">
-                <div className="row g-2 align-items-end text-start m-0">
-                  <div className="col-md-3">
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Novo Cód. Categoria (VehicleCategoryId)</label>
-                    <input type="text" inputMode="numeric" name="vehicleCategoryId" placeholder="Ex: 5" value={categoria.vehicleCategoryId} onChange={handleCategoriaChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-                  <div className="col-md-6">
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Descrição Completa da Categoria</label>
-                    <input type="text" name="description" placeholder="Ex: Categoria 5: Caminhão com reboque (5 eixos)" value={categoria.description} onChange={handleCategoriaChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-                  <div className="col-md-3">
-                    <button type="button" onClick={() => dispararEnvioFila('cadastrar_categoria_pedagio', categoria)} className="btn btn-primary fw-semibold w-100 py-2" style={{ fontSize: '0.82rem' }}>
-                      💾 Salvar Categoria
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ====================================================================
-              CARD 3: REGRAS E PARAMETRIZAÇÃO DA TAG
-              ==================================================================== */}
-          <div>
-            <div 
-              className="p-3 bg-light text-start cp d-flex justify-content-between align-items-center" 
-              onClick={() => alternarBloco('regraTag')}
-              style={{ cursor: 'pointer', borderLeft: blocoAtivo === 'regraTag' ? '4px solid #4f46e5' : '4px solid transparent', transition: 'all 0.2s' }}
-            >
-              <div>
-                <h4 className="fs-6 fw-bold text-dark m-0">🔧 3. Regras e Parametrização Comercial da Tag</h4>
-                <small className="text-muted">Gere novos status e tipos de faturamento para o provisionamento eletrônico de tags.</small>
+                <h4 className="fs-6 fw-bold text-dark m-0">🔧 3. Regras e Parametrização Comercial do contrato</h4>
+                <small className="text-muted">Gere novos status e tipos para o provisionamento do contrato.</small>
               </div>
             </div>
 
             {/* Painel expansível do Bloco 3 */}
-            {blocoAtivo === 'regraTag' && (
+            {blocoAtivo === 'regraComercial' && (
               <div className="p-3 border-top bg-white">
                 <div className="row g-2 align-items-end text-start m-0">
                   
                   <div className="col-md-4.5 text-start" style={{ width: '37.5%' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Novo Cód. Serviço (ServiceTypeId)</label>
-                    <input type="text" inputMode="numeric" name="contractVehicleTagServiceTypeId" placeholder="Digite o código do serviço" value={regraTag.contractVehicleTagServiceTypeId} onChange={handleRegraTagChange} className="form-control form-input-atendimento text-start" />
-                  </div>
+                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Corte para faturamento (ServiceTypeId)</label>
+                    <input 
+                    type="text" 
+                    inputMode="numeric" 
+                    name="corteFaturamento" 
+                    placeholder="Digite um tipo de corte" 
+                    value={valoresComerciais.corteFaturamento}
+                    onChange={gerenciarMudancaInput}    
+                    className="form-control form-input-atendimento text-start" />
 
-                  <div className="col-md-4.5 text-start" style={{ width: '37.5%' }}>
-                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Novo Cód. Status (StatusType)</label>
-                    <input type="text" inputMode="numeric" name="contractVehicleTagStatusType" placeholder="Digite o código do status" value={regraTag.contractVehicleTagStatusType} onChange={handleRegraTagChange} className="form-control form-input-atendimento text-start" />
-                  </div>
-
-                  <div className="col-md-3 text-start" style={{ width: '25%' }}>
+                    <div>
                     <button 
                       type="button" 
-                      onClick={() => dispararEnvioFila('cadastrar_regra_tag', regraTag)} 
+                       onClick={() => handleEnviarComercializadoTipo('tipoCorte', valoresComerciais.corteFaturamento)} 
                       className="btn btn-primary fw-semibold w-100 py-2" 
                       style={{ fontSize: '0.82rem' }}
                     >
-                      💾 Criar Status
+                      💾 Castrar consdição
                     </button>
                   </div>
+                  </div>
 
+                  <div className="col-md-4.5 text-start" style={{ width: '37.5%' }}>
+                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Plano comercializado (StatusType)</label>
+                    <input 
+                    type="text" 
+                    inputMode="numeric" 
+                    name="planoComercializado" 
+                    placeholder="Digite um plano Comercializado" 
+                    value={valoresComerciais.planoComercializado}
+                    onChange={gerenciarMudancaInput}  
+                    className="form-control form-input-atendimento text-start" />
+
+                     <div>
+                    <button 
+                      type="button" 
+                      onClick={() => handleEnviarComercializadoTipo('tipoComercializado', valoresComerciais.planoComercializado)} 
+                      className="btn btn-primary fw-semibold w-100 py-2" 
+                      style={{ fontSize: '0.82rem' }}
+                    >
+                      💾 Castrar consdição
+                    </button>
+                  </div>
+                  </div>
+
+                    <div className="col-md-4.5 text-start" style={{ width: '37.5%' }}>
+                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Plano de pagamento (StatusType)</label>
+                    <input 
+                    type="text" 
+                    inputMode="numeric" 
+                    name="planoPagamento"
+                    placeholder="Digite um plano de pagamento" 
+                    value={valoresComerciais.planoPagamento}
+                    onChange={gerenciarMudancaInput}  
+                    className="form-control form-input-atendimento text-start" />
+
+                    <div >
+                    <button 
+                      type="button" 
+                      onClick={() => handleEnviarComercializadoTipo('tipoPagamento', valoresComerciais.planoPagamento)}
+                      className="btn btn-primary fw-semibold w-100 py-2" 
+                      style={{ fontSize: '0.82rem' }}
+                    >
+                      💾 Castrar consdição
+                    </button>
+                  </div>
+                  </div>
                 </div>
               </div>
             )}
+            
           </div>
 
         </div> {/* Fecha d-flex flex-column gap-3 */}

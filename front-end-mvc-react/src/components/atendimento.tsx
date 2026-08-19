@@ -66,7 +66,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
           </div>
           <ul className="list-unstyled mb-0">
             <li className="btn btn btn-light border btn-sm text-secondary fw-semibold border-0 text-start w-100 py-2 px-3 fw-semibold rounded-2 d-flex align-items-center justify-content-between cp" 
-                onClick={() => { setAbaAtiva('pesquisarContrato'); alterarTexto('Atendimento'); }}>
+                onClick={() => { setAbaAtiva('pesquisar-contrato'); alterarTexto('Atendimento'); }}>
               <span style={{ fontSize: '0.9rem' }}>📄 Contratos de Clientes</span>
               <span className="text-muted">➔</span>
             </li>
@@ -83,7 +83,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
           </div>
           <ul className="list-unstyled mb-0">
             <li className="btn btn btn-light border btn-sm text-secondary fw-semibold border-0 text-start w-100 py-2 px-3 fw-semibold rounded-2 d-flex align-items-center justify-content-between cp" 
-                onClick={() => { setAbaAtiva('cadastro-Contrato'); alterarTexto('Cadastro'); }}>
+                onClick={() => { setAbaAtiva('cadastro-contrato'); alterarTexto('Cadastro'); }}>
               <span style={{ fontSize: '0.9rem' }}>➕ Incluir Novo Contrato</span>
               <span className="text-muted">➔</span>
             </li>
@@ -139,7 +139,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
           </div>
           <ul className="list-unstyled mb-0">
             <li className="btn btn btn-light border btn-sm text-secondary fw-semibold border-0 text-start w-100 py-2 px-3 fw-semibold rounded-2 d-flex align-items-center justify-content-between cp" 
-                onClick={() => { setAbaAtiva('configuracao-sistema'); alterarTexto('Cadastro'); }}>
+                onClick={() => { setAbaAtiva('configuracao-sistema'); alterarTexto('Parametrização'); }}>
               <span style={{ fontSize: '0.9rem' }}>➕ Parametrizar do Sistema</span>
               <span className="text-muted">➔</span>
             </li>
@@ -155,7 +155,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
         {/* SUB-ABAS DINÂMICAS */}
         <div className="w-100 m-0 p-0">
 
-          {abaAtiva === 'pesquisarContrato' && (
+          {abaAtiva === 'pesquisar-contrato' && (
             <PesquisarContrato 
               setPaginaAtiva={setPaginaAtiva} 
               setIdContratoSelecionado={setIdContratoSelecionado} 

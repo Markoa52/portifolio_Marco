@@ -15,14 +15,14 @@ class criarContrato {
       // Inicia o BEGIN TRANSACTION
       await transaction.begin();
 
-      // 1. Cria a Person e captura o ID gerado pelo repositório
+      // 1. Cria as Condições Comerciais injetando a FK
+      await contratoRepository.criarContrato(contrato, transaction);
+
+      // 2. Cria a Person e captura o ID gerado pelo repositório
       const personId = await contratoRepository.criarPerson(person, transaction);
 
-      // 2. Cria o Endereço injetando a FK
-      await contratoRepository.criarEndereco(endereco, personId, transaction);
-
-      // 3. Cria as Condições Comerciais injetando a FK
-      await contratoRepository.criarContrato(contrato, personId, transaction);
+      //3. Cria o Endereço injetando a FK
+      await contratoRepository.criarEndereco(endereco, transaction);
 
       // 4. Cria os contatos na mesma tabela (Telefone e Email) se existirem
       if (contatos.telefone) {
