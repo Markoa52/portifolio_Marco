@@ -27,8 +27,8 @@ const gerenciarMudancaInput = (e: any) => {
     setBlocoAtivo(blocoAtivo === nomeBloco ? null : nomeBloco);
   };
 
-  const handleEnviarComercializadoTipo = async (formato: string, ComercializadoTipo: string) => {
-  if (!ComercializadoTipo.trim()) {
+  const handleEnviarComercializadoTipo = async (formato: string, condComerciaisTipo: string) => {
+  if (!condComerciaisTipo.trim()) {
     alert('Por favor, digite o ID do contrato.');
     return;
   }
@@ -37,7 +37,7 @@ const gerenciarMudancaInput = (e: any) => {
         protocoloId: `PROT-${Date.now()}`, 
         acao: 'inserir', 
         tipo: formato ,
-        dadosLimpos: ComercializadoTipo
+        dadosLimpos: condComerciaisTipo
       };
 
       console.log(`[Configuração] Despachando nova informação para a fila:`, payloadEnvio);

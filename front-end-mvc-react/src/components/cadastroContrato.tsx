@@ -1,17 +1,55 @@
-import React, { useState } from "react";
 import "../styles/CadastroContrato.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-export const CadastroContrato: React.FC = () => {
+// 1. Tipagem simples para o TypeScript entender o formato da categoria
+
+  export const CadastroContrato: React.FC = () => {
+
+  const [listaCorteFat, setListaCorteFat] = useState<any[]>([]);
+  const [listaPlanoComer, setListaPlanoComer] = useState<any[]>([]);
+  const [listaPlanoPag, setListaPlanoPag] = useState<any[]>([]);
+
   const [formData, setFormData] = useState({
     cnpj: "", nomeEmpresa: "", telefone: "", email: "",
     cep: "", rua: "", numero: "", complemento: "", bairro: "", cidade: "", estado: "",
     dataInicio: "", planoComercializado: "", valorMensalidade: "", valorTag: "", planoPagamento: "", dataCorteFaturamento: "", diaFaturamento: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
+   // O SEGREDO: Adicionado "| HTMLSelectElement" dentro do ChangeEvent
+   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+     const { name, value } = e.target;
+     setFormData((prevState) => ({ ...prevState, [name]: value }));
+   };
+
+   useEffect(() => {
+   let ativo = true;
+
+   async function carregarTodosOsCombos() {
+    try {
+      const resposta = await axios.get("http://localhost:3000/api/configuracao/lookups");
+      
+      if (ativo && resposta.data) {
+        const dados = resposta.data;
+        console.log("Mapeando dados da API para o estado do React:", dados);
+
+        // 🔥 CORREÇÃO INTEGRAL COM BASE NO SEU PRINT:
+        // Lemos as chaves exatas (letras minúsculas e maiúsculas idênticas ao backend)
+        setListaCorteFat(Array.isArray(dados.corteFaturamento) ? dados.corteFaturamento : []);
+        setListaPlanoComer(Array.isArray(dados.planoComercializacao) ? dados.planoComercializacao : []);
+        setListaPlanoPag(Array.isArray(dados.planoPagamento) ? dados.planoPagamento : []);
+      }
+      } catch (error) {
+      console.error("Erro ao carregar dicionários:", error);
+      }
+    }
+  
+    carregarTodosOsCombos();
+
+    return () => {
+    ativo = false;
+    };
+   }, []);
 
   return (
     // Removido o container gigante de 1200px. Agora ele se adapta ao tamanho do bloco de Atendimento (w-100)
@@ -86,41 +124,100 @@ export const CadastroContrato: React.FC = () => {
           {/* COLUNA DA DIREITA: Condições Comerciais (Ocupa 5 de 12) */}
           <div className="col-md-5 ps-3 d-flex flex-column justify-content-between">
             
-            <div>
-              <h4 className="text-primary fw-bold text-start mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em', display: 'block', width: '100%' }}>CONDIÇÕES COMERCIAIS</h4>
-              <div className="row g-2">
-                <div className="col-md-6">
-                  <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Data de Início</label>
-                  <input type="date" name="dataInicio" value={formData.dataInicio} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-                <div className="col-md-6">
-                  <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Corte Faturamento</label>
-                  <input type="date" name="dataCorteFaturamento" value={formData.dataCorteFaturamento} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-                <div className="col-md-12 mt-2">
-                  <input type="text" name="planoComercializado" placeholder="Plano Comercializado" value={formData.planoComercializado} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-                <div className="col-md-6">
-                  <input type="number" name="valorMensalidade" placeholder="Valor Mensalidade (R$)" value={formData.valorMensalidade} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-                <div className="col-md-6">
-                  <input type="number" name="valorTag" placeholder="Valor da Tag (R$)" value={formData.valorTag} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-                <div className="col-md-8">
-                  <input type="text" name="planoPagamento" placeholder="Plano de Pagamento" value={formData.planoPagamento} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-                <div className="col-md-4">
-                  <input type="number" name="diaFaturamento" placeholder="Dia Fat." value={formData.diaFaturamento} onChange={handleChange} className="form-control form-input-atendimento" />
-                </div>
-              </div>
-            </div>
+           <div>
+           <h4 className="text-primary fw-bold text-start mb-2" style={{ fontSize: '0.8rem', letterSpacing: '0.05em', display: 'block', width: '100%' }}>
+             CONDIÇÕES COMERCIAIS
+           </h4>
+           <div className="row g-2">
+    
+          {/* Campo 1: Data de Início (Mantido Original) */}
+          <div className="col-md-6 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Data de Início</label>
+            <input type="date" name="dataInicio" value={formData.dataInicio} onChange={handleChange} className="form-control form-input-atendimento" />
+          </div>
 
-            {/* BOTÃO DE SALVAR COMPACTO NO RODAPÉ DA DIREITA */}
-            <div className="pt-3 border-top text-end mt-4">
-              <button type="button" className="btn btn-primary fw-semibold w-100 py-2" style={{ fontSize: '0.9rem' }}>
-                ➕ Incluir Registro de Contrato
-              </button>
-            </div>
+          {/* Campo 2: ADAPTADO COMBOBOX - CorteFaturamento (Mapeado da sua rota de lookups) */}
+          <div className="col-md-6 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Corte Faturamento</label>
+            <select 
+            name="dataCorteFaturamento" 
+            value={formData.dataCorteFaturamento} 
+            onChange={handleChange} 
+            className="form-select form-input-atendimento"
+            >
+            <option value="">--- Selecione o Corte ---</option>
+            {listaCorteFat?.map((corte: any) => (
+             <option key={corte.id || corte.Id || corte.vehicleCategoryId} value={corte.id || corte.Id || corte.vehicleCategoryId}>
+               {corte.descricao || corte.Descricao || corte.description || `Opção ${corte.id || corte.Id}`}
+             </option>
+             ))}
+            </select>
+          </div>
+
+          {/* Campo 3: ADAPTADO COMBOBOX - Plano Comercializado */}
+          <div className="col-md-12 mt-2 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Plano Comercializado</label>
+            <select 
+             name="planoComercializado" 
+             value={formData.planoComercializado} 
+             onChange={handleChange} 
+             className="form-select form-input-atendimento"
+             >
+             <option value="">--- Selecione o Plano ---</option>
+             {listaPlanoComer?.map((plano: any) => (
+               <option key={plano.id || plano.Id} value={plano.id || plano.Id}>
+                 {plano.nome || plano.Nome || plano.descricao || plano.Descricao}
+               </option>
+             ))}
+            </select>
+          </div>
+
+          {/* Campo 4: Valor Mensalidade (Mantido Original) */}
+          <div className="col-md-6 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Valor Mensalidade (R$)</label>
+            <input type="number" name="valorMensalidade" placeholder="Valor Mensalidade (R$)" value={formData.valorMensalidade} onChange={handleChange} className="form-control form-input-atendimento" />
+          </div>
+      
+          {/* Campo 5: Valor da Tag (Mantido Original) */}
+          <div className="col-md-6 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Valor da Tag (R$)</label>
+            <input type="number" name="valorTag" placeholder="Valor da Tag (R$)" value={formData.valorTag} onChange={handleChange} className="form-control form-input-atendimento" />
+          </div>
+      
+          {/* Campo 6: ADAPTADO COMBOBOX - Plano de Pagamento */}
+          <div className="col-md-8 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Plano de Pagamento</label>
+            <select 
+            name="planoPagamento" 
+            value={formData.planoPagamento} 
+            onChange={handleChange} 
+            className="form-select form-input-atendimento"
+            >
+            <option value="">--- Selecione o Pagamento ---</option>
+            {listaPlanoPag?.map((prazo: any) => (
+              <option key={prazo.id || prazo.Id} value={prazo.id || prazo.Id}>
+                {prazo.descricao || prazo.Descricao || `${prazo.id || prazo.Id} dias`}
+              </option>
+            ))}
+            </select>
+          </div>
+
+          {/* Campo 7: Dia de Faturamento (Mantido Original) */}
+          <div className="col-md-4 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Dia Fat.</label>
+            <input type="number" name="diaFaturamento" placeholder="Dia Fat." value={formData.diaFaturamento} onChange={handleChange} className="form-control form-input-atendimento" />
+          </div>
+
+          </div>
+
+          </div>
+
+          {/* BOTÃO DE SALVAR COMPACTO NO RODAPÉ DA DIREITA */}
+          <div className="pt-3 border-top text-end mt-4">
+            <button type="button" className="btn btn-primary fw-semibold w-100 py-2" style={{ fontSize: '0.9rem' }}>
+              ➕ Incluir Registro de Contrato
+            </button>
+          </div>
 
           </div>
         </div>

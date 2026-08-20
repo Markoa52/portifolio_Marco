@@ -47,4 +47,28 @@ export class ContratoRepository {
       throw erro;
     }
   }
+
+  // O método não recebe req/res, ele apenas busca e devolve os dados crus!
+  async buscarCondicoesComerciaisCombos(): Promise<any> {
+    try {
+      const pool = await Database.getConnection(); // Ajuste conforme sua conexão
+
+      // Executa as consultas do SQL Server em paralelo para alimentar todos os combos de vez
+      const [descricaoCorte, descricaoComer, descricaoPag] = await Promise.all([
+        pool.request().query('SELECT id, descricao FROM corteFaturamentoTipo'),
+        pool.request().query('SELECT id, descricao FROM planoComercializacaoTipo'),
+        pool.request().query('SELECT id, descricao FROM planoPagamentoTipo')
+      ]);
+
+      // Retorna a caixa de dicionários descompactada do recordset
+      return {
+        corteFaturamento: descricaoCorte.recordset,
+        planoComercializacao: descricaoComer.recordset,
+        planoPagamento: descricaoPag.recordset
+      };
+    } catch (error: any) {
+      console.error("Erro na query de lookups no SQL Server:", error.message);
+      throw error; // Lança o erro para a Controller capturar no catch
+    }
+  }
 }
