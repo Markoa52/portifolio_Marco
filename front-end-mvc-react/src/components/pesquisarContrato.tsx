@@ -27,7 +27,7 @@ const handleConsultarContrato = async (formato: 'consultar', idDoContrato: strin
     console.log('1. Disparando payload para a API/Fila...', payloadEnvio);
 
     // A) Primeiro faz a requisição. Se o ID não existir, o Backend joga o erro e o código pula direto para o CATCH!
-   await axios.post('http://localhost:3000/api/contrato', payloadEnvio);
+   await axios.post('http://localhost:3000/api/contrato/pesquisa', payloadEnvio);
 
     // Se o código chegou até aqui, significa que a API deu sucesso e o ID existe!
     console.log('2. ID validado com sucesso no banco. Mudando de página...');

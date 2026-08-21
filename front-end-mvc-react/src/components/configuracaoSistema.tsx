@@ -21,7 +21,6 @@ const gerenciarMudancaInput = (e: any) => {
   }));
 };
 
-
   // Alternador de sanfona (Accordion)
   const alternarBloco = (nomeBloco: string) => {
     setBlocoAtivo(blocoAtivo === nomeBloco ? null : nomeBloco);

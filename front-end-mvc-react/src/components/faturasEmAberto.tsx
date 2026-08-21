@@ -1,19 +1,19 @@
 import React from 'react';
 
 const FATURAS_EM_ABERTO = [
-  { id: 'FAT-2026-1027', fechamento: '05/09/2026', vencimento: '15/10/2026', valor: 'R$ 2.550,00', Urgente: true  , status:'em aberto'},
-  { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1024', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1025', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1026', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1021', fechamento: '05/09/2026', vencimento: '15/10/2026', valor: 'R$ 2.550,00', Urgente: true  , status:'em aberto'},
+  { id: 'FAT-2026-1022', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+  { id: 'FAT-2026-1023', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1024', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1025', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+  { id: 'FAT-2026-1026', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1027', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1028', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+  { id: 'FAT-2026-1029', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1030', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1031', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+  { id: 'FAT-2026-1032', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+  { id: 'FAT-2026-1033', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
 ];
 
 export const FaturasAbertas: React.FC = () => {

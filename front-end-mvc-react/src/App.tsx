@@ -42,7 +42,7 @@ function App() {
           />
         )}
 
-        {paginaAtiva === 'pesquisarContrato' && (
+        {paginaAtiva === 'pesquisar-contrato' && (
           <PesquisarContrato 
             setPaginaAtiva={setPaginaAtiva} 
             setIdContratoSelecionado={setIdContratoSelecionado}
