@@ -1,15 +1,15 @@
 import express from 'express';
 const router = express.Router();
 
-import { webhookGLPIService } from '../services/webhookGLPIService';
+import { webhookPedagioService } from '../services/webhookGLPIService';
 import { dashboardController } from '../controllers/dashboardController';
 
-const dadosService = new webhookGLPIService();
+const dadosService = new webhookPedagioService();
 const dadosController = new dashboardController(dadosService);
 
 /**
  * @openapi
- * /api/dadosChamados:
+ * /api/dadosPedagio:
  *   get:
  *     tags:
  *       - Dashboard
@@ -34,7 +34,7 @@ const dadosController = new dashboardController(dadosService);
  *                 tempoMedio:
  *                   type: integer
  */
-router.post('/dadosChamados', (req, res) => dadosController.obterDadosAPI(req, res));
+router.post('/dadosPedagio', (req, res) => dadosController.obterDadosAPI(req, res));
 
 export default router;
 

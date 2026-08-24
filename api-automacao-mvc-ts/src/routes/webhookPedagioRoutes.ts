@@ -1,11 +1,11 @@
 import express from 'express';
 const router = express.Router();
 
-import { webhookGLPIService } from '../services/webhookGLPIService';
-import { webhookGLPIController } from '../controllers/webhookGLPIController'; 
+import { webhookPedagioService } from '../services/webhookGLPIService';
+import { webhookPedagioController } from '../controllers/webhookPedagioController'; 
 
-const chamado = new webhookGLPIService();
-const webhook = new webhookGLPIController(chamado);
+const pedagio = new webhookPedagioService();
+const webhook = new webhookPedagioController(pedagio);
 
 /**
  * @openapi

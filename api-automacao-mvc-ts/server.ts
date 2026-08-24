@@ -12,7 +12,7 @@ import checarArquivoRoutes from './src/routes/checarArquivoRoutes.js';
 // ==========================================================================
 // 3. IMPORTAÇÃO DAS ROTAS (Movido para o topo)
 // ==========================================================================
-import webhookGLPIRoutes from './src/routes/webhookGLPIRoutes';
+import webhookPedagioRoutes from './src/routes/webhookPedagioRoutes.js';
 import dashboardRoutes from './src/routes/dashboardRoutes';
 import oneDriveRoutes from './src/routes/oneDriveRoutes';
 import apiExternaRoutes from './src/routes/apiExternaRoutes';
@@ -74,7 +74,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // ==========================================================================
 // REGISTRO DAS ROTAS
 // ==========================================================================
-app.use('/api', webhookGLPIRoutes);      
+app.use('/api', webhookPedagioRoutes);      
 app.use('/api', oneDriveRoutes);   
 app.use('/api', dashboardRoutes);       
 app.use('/api', apiExternaRoutes);  

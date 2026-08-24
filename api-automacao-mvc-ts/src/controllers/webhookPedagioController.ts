@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import { webhookGLPIService } from '../services/webhookGLPIService';
+import { webhookPedagioService } from '../services/webhookGLPIService';
 
-export class webhookGLPIController{
-     constructor(private webHook: webhookGLPIService){}
+export class webhookPedagioController{
+     constructor(private webHook: webhookPedagioService){}
 
     // CORREÇÃO: Altere para export const e tipa os parâmetros do Express
     async processarWebhook (req: Request, res: Response): Promise<Response | void>{

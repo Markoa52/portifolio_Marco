@@ -6,7 +6,7 @@ import { CAMINHO_EXCELW, NOME_TABELA } from '../config/excelConfig';
 
 import {IRetornoObterTodos} from '../types/IRetornoObterTodos';
 
-export class webhookGLPIService {
+export class webhookPedagioService {
     // 1. Tipagem do retorno do método de leitura envelopado em uma Promise
         async obterTodos(): Promise<IRetornoObterTodos> {
         const workbook = new ExcelJS.Workbook();
