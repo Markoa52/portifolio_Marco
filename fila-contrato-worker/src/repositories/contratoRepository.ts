@@ -13,7 +13,7 @@ export class ContratoRepository {
       // 2. CORREÇÃO: Query parametrizada com @ para evitar SQL Injection
       const resultado = await pool.request()
           .input('idInput', sqlServer.Int, contractId)
-          .query('SELECT * FROM contract WHERE id = @idInput');
+          .query('SELECT * FROM contrato WHERE id = @idInput');
           
       // Retorna a primeira linha encontrada ou null se não houver registros
       if (Array.isArray(resultado.recordset) && resultado.recordset.length > 0) {

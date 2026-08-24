@@ -1,46 +1,65 @@
-import { Database } from '../config/sqlLiteConfig.js'; // Importa a sua nova classe de conexão
-import { ParametrizacaoRepository } from '../repositories/cadastroParametrizacaoRepository.js' //ContratoRepository'; // Certifique-se de que o repositório exporta assim
+import { Database } from '../config/sqlConfig.js'; // 🛠️ Alterado para a sua classe de conexão SQL Server
+import { ParametrizacaoRepository } from '../repositories/cadastroParametrizacaoRepository.js';
+import sqlServer from 'mssql'; // 👈 Importação obrigatória do driver do SQL Server para gerenciar a transação
 
 const criaParametrizacao = new ParametrizacaoRepository(); 
 
 class Parametrizacao {
 
   async processarCadastroRelacional(payload: any) {
-    const dadosReais = payload.payload;
+    // 🔍 Dupla checagem: captura o objeto independente de vir em payload.payload ou payload.dadosLimpos
+    const dadosReais = payload?.payload || payload?.dadosLimpos || payload;
     if (!dadosReais) return;
 
-    const { tipo } = dadosReais;
-    const db = await Database.getConnection();
+    // Captura o tipo de ação enviado pelo formulário expansível
+    const tipo = dadosReais.tipo || payload.task;
+    
+    // Obtém o pool de conexão global do SQL Server
+    const pool = await Database.getConnection();
+    
+    // 🛠️ Cria o objeto de transação nativo do SQL Server
+    const transacao = new sqlServer.Transaction(pool);
 
     try {
-      await db.exec('BEGIN TRANSACTION');
+      console.log(`[SQL Server] Iniciando transação para parametrização do tipo [${tipo}]...`);
+      
+      // Abre a transação no banco de dados
+      await transacao.begin();
 
       // Cenário 1: Corte de Faturamento
-      if (tipo === 'tipoCorte') {
+      if (tipo === 'tipoCorte' || tipo === 'cadastrar_categoria_pedagio') {
           await criaParametrizacao.criarCorteFaturamento(dadosReais);
       }
       
       // Cenário 2: Plano Comercializado
-      else if (tipo === 'tipoComercializado') {
+      else if (tipo === 'tipoComercializado' || tipo === 'cadastrar_veiculo') {
           await criaParametrizacao.criarPlanoComercializado(dadosReais);
       }
       
       // Cenário 3: Plano de Pagamento
-      else if (tipo === 'tipoPagamento') {
+      else if (tipo === 'tipoPagamento' || tipo === 'cadastrar_regra_tag') {
           await criaParametrizacao.criarPlanoPagamento(dadosReais);
       }
 
-      await db.exec('COMMIT');
-      console.log(`[Service] Parametrização do tipo [${tipo}] salva com sucesso!`);
+      // Conclui e grava as alterações no banco de dados de forma definitiva
+      await transacao.commit();
+      
+      console.log(`[Service] Parametrização do tipo [${tipo}] salva no SQL Server com sucesso!`);
       return { sucesso: true };
 
     } catch (erro) {
-      try { await db.exec('ROLLBACK'); } catch {}
-      console.error("[Service] Erro no processamento. Transação cancelada.", erro);
+      try { 
+        // Se houver qualquer falha ou erro de constraint, desfaz tudo o que foi feito no bloco
+        await transacao.rollback(); 
+        console.log("[SQL Server] Rollback executado com sucesso.");
+      } catch (erroRollback) {
+        console.error("[SQL Server] Falha ao tentar executar Rollback:", erroRollback);
+      }
+      
+      console.error("[Service] Erro no processamento. Transação cancelada no SQL Server.", erro);
       throw erro; 
     }
+  }
 }
-}
-
 
 export const criaParametrizacaoServices = new Parametrizacao();

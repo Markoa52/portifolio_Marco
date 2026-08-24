@@ -2,14 +2,14 @@ import { RabbitMqPublisher } from '../queue/publisher';
 import { ContratoRepository } from '../repositories/contratoRepository'; // 👈 1. IMPORTA O SEU REPOSITÓRIO DO BANCO
 
 const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "consultar" | "atualizar" | "excluir"; routingKey: string }> = {
-  inserir:   { tipoArquivo: 'inserir',   routingKey: 'reports.v1.trigger.cria_contrato' },
+  inserir:   { tipoArquivo: 'inserir',   routingKey: 'reports.v1.trigger.criar-contrato' },
   consultar: { tipoArquivo: 'consultar', routingKey: 'reports.v1.trigger.consulta_contrato' },
   atualizar: { tipoArquivo: 'atualizar', routingKey: 'reports.v1.trigger.atualiza_contrato' },
   excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui_contrato' }
 };
 
 export class ContratoService {
-  // 2. INJETA O REPOSITÓRIO DO SQL SERVER NO CONSTRUTOR JUNTO COM O RABBIT
+  // 👈 2. INJETA O REPOSITÓRIO DO SQL SERVER NO CONSTRUTOR JUNTO COM O RABBIT
   constructor(
     private rabbitPublisher: RabbitMqPublisher,
     private contratoRepository: ContratoRepository 
@@ -41,7 +41,7 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
 
     console.log(`[API] 1. Consultando SQL Server para verificar o Contrato ID: ${contractId}`);
     
-    // B) EFETUA A CONSULTA REAL NO SEU SQL SERVER
+    // B) 🔥 EFETUA A CONSULTA REAL NO SEU SQL SERVER
     const contratoLocalizado = await this.contratoRepository.findById(contractId);
 
     // SE O ID NÃO EXISTIR NO BANCO: Dispara o erro que vai travar a transição de tela no React!
@@ -63,7 +63,7 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
       task: 'generate_daily_report',
       tipoArquivo: estrategiaAtual.tipoArquivo,
       solicitadoEm: new Date().toISOString(),
-      js: contratoLocalizado // Agora a fila e o Worker vão receber os dados reais do banco!
+      js: contratoLocalizado // 👈 Agora a fila e o Worker vão receber os dados reais do banco!
     };
 
     const EXCHANGE = 'reports.exchange';
@@ -74,7 +74,7 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
     // 5. Envia para o RabbitMQ em segundo plano
     await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payload);
 
-    // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+    // C) 🔥 RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
     // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
     return { 
       sucesso: true, 
@@ -84,7 +84,9 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
   }
 
   async acoes(dadosDoPedido: any) {
-    const { protocoloId, acao } = dadosDoPedido;
+
+    const { metadata } = dadosDoPedido;
+    const { protocoloId, acao } = metadata;
 
     // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
     const estrategiaAtual = MAPA_DE_ACOES[acao] ?? {
@@ -109,7 +111,7 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
     // 5. Envia para o RabbitMQ em segundo plano
     await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payload);
 
-    // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+    // C) 🔥 RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
     // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
     return { 
       sucesso: true, 

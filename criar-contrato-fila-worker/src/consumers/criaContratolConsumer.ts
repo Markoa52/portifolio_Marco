@@ -1,7 +1,7 @@
 import { connectRabbit } from '../config/rabbitConfig.js';
 import criaContrato from '../queues/criaContratoQueue.js';
 
-const criarContrato = require('./CadastroContratoService');
+import {cadastroContratoService} from '../services/criaContratoServices.js'
 
 // DEFINIÇÃO DOS NOMES DA DLX (Padrão de mercado baseado na sua fila atual)
 const DLX_EXCHANGE_NAME = `${criaContrato.nome}.dlx`;
@@ -60,7 +60,7 @@ export async function iniciarConsumer(): Promise<void> {
                 const payload = JSON.parse(msg.content.toString());
                 
                 // Executa a lógica que gera a planilha Excel
-                await criarContrato.processarCadastroRelacional(payload);
+                await cadastroContratoService.processarCadastroRelacional(payload);
 
                 channel.ack(msg); // Sucesso: remove da fila em definitivo
             } catch (erro: any) {

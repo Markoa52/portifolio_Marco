@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { iniciarConsumers } from './src/loaders/consumerLoader.js';
 import path from 'path';
 import fs from 'fs';
+import { Database } from './src/config/sqlConfig.js';
 
 const app = express();
 const PORT = 3001;
@@ -44,7 +45,28 @@ async function start(): Promise<void> {
     }
 }
 
-start();
+async function inicializarAplicacao() {
+  try {
+    console.log('🔄 Despertando banco de dados e preparando tabelas...');
+    
+    // Força a execução do getConnection() logo na partida do projeto
+    await Database.getConnection(); 
+    
+    // Só inicia os consumers e o servidor DEPOIS que o banco estiver pronto
+    await iniciarConsumers();
+    
+    app.listen(3001, () => {
+      console.log('🚀 Servidor do Microsserviço iniciado na porta 3001 com tabelas prontas!');
+    });
+
+  } catch (error) {
+    console.error('❌ Falha crítica ao iniciar aplicação:', error);
+    process.exit(1);
+  }
+}
+
+// Dispara a inicialização
+inicializarAplicacao();
 
 // OBRIGATÓRIO: Garante que o Express fique aberto ouvindo as requisições HTTP do Polling e Navegador
 app.listen(PORT, () => {

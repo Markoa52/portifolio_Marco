@@ -1,5 +1,5 @@
 export interface InputsFormularioCadastroContrato {
-cnpj: number;
+cnpj: string;
 nomeEmpresa: string;
 telefone: string;
 email: string;
@@ -7,7 +7,7 @@ responsavelLegal: string;
 
 cep: string;
 rua: string;
-numero: number;
+numero: string;
 bairro: string;
 cidade: string;
 estado: string;

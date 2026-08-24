@@ -28,7 +28,7 @@ async criarPlanoComercializado(dados: any) {
         const pool = await Database.getConnection();
         const resultado = await pool.request()
         .input('descricao', sqlServer.Text, dados.js)
-        .query(`INSERT INTO planoComercializacaoTipo (descricao) VALUES (@descricao);`);
+        .query(`INSERT INTO planoComercializadoTipo (descricao) VALUES (@descricao);`);
 
         if (Array.isArray(resultado.recordset) && resultado.recordset.length > 0) {
           return resultado.recordset[0];

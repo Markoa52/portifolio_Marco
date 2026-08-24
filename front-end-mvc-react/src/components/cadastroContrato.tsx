@@ -20,12 +20,12 @@ import axios from "axios";
    // O SEGREDO: Adicionado "| HTMLSelectElement" dentro do ChangeEvent
      const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
      const { name, value } = e.target;
-     setFormData((prevState) => ({ ...prevState, [name]: value }));
+     setFormData((prevState) => ({ ...prevState, [name]: String(value) }));
      };
 
      const handleChangeCep= (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
      const { name, value } = e.target;
-     setformDataCep((prevState) => ({ ...prevState, [name]: value }));
+     setformDataCep((prevState) => ({ ...prevState, [name]: String(value) }));
      };
 
    // 1. Função que busca o CEP (Chame ela no blur do input de CEP ou em um botão)
@@ -74,7 +74,7 @@ async function enviarDadosCadastroContrato() {
         criadoEm: new Date().toISOString()
       },
       contextoPerson: {
-        cnpj: Number(cnpj),
+        cnpj: String(cnpj),
         nomeEmpresa: String(nomeEmpresa)
       },
       contextoContato: {
@@ -82,7 +82,7 @@ async function enviarDadosCadastroContrato() {
         email: String(email)
       },
       contextoContrato: {
-        cnpj: Number(cnpj),
+        cnpj: String(cnpj),
         dataInicio: String(dataInicio),
         corteFaturamento: Number(corteFaturamentoTipo),
         planoComercializado: Number(planoComercializadoTipo), 
@@ -96,16 +96,16 @@ async function enviarDadosCadastroContrato() {
       contextoEndereco: {
         cep: String(cepExt),
         rua: String(ruaExt),
-        numero: Number(numero),
+        numero: String(numero),
         bairro: String(bairroExt),
         cidade: String(cidadeExt),
         estado: String(estadoExt),
         complemento: String(complemento),
-        documentNumber: Number(cnpj)
+        documentNumber: String(cnpj)
       },
       contextoResposnsavelLegal: {
         responsavelLegal: String(resposavelLegalNome),
-        documentNumber: Number(cnpj)
+        documentNumber: String(cnpj)
       }
     };
 
@@ -139,7 +139,7 @@ async function enviarDadosCadastroContrato() {
         // CORREÇÃO INTEGRAL COM BASE NO SEU PRINT:
         // Lemos as chaves exatas (letras minúsculas e maiúsculas idênticas ao backend)
         setListaCorteFat(Array.isArray(dados.corteFaturamento) ? dados.corteFaturamento : []);
-        setListaPlanoComer(Array.isArray(dados.planoComercializacao) ? dados.planoComercializacao : []);
+        setListaPlanoComer(Array.isArray(dados.planoComercializado) ? dados.planoComercializado : []);
         setListaPlanoPag(Array.isArray(dados.planoPagamento) ? dados.planoPagamento : []);
       }
       } catch (error) {

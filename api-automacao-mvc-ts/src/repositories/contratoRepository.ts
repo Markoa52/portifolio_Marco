@@ -13,7 +13,7 @@ export class ContratoRepository {
       // 2. CORREÇÃO: Query parametrizada com @ para evitar SQL Injection
       const resultado = await pool.request()
           .input('idInput', sqlServer.Int, contractId)
-          .query('SELECT * FROM contract WHERE Id = @idInput');
+          .query('SELECT * FROM contrato WHERE Id = @idInput');
           
       // Retorna a primeira linha encontrada ou null se não houver registros
       if (Array.isArray(resultado.recordset) && resultado.recordset.length > 0) {
@@ -34,7 +34,7 @@ export class ContratoRepository {
       
       // 2. CORREÇÃO: Query parametrizada com @ para evitar SQL Injection
       const resultado = await pool.request()
-          .query('SELECT * FROM contract');
+          .query('SELECT * FROM contrato');
           
       // Retorna a primeira linha encontrada ou null se não houver registros
       if (Array.isArray(resultado.recordset) && resultado.recordset.length > 0) {
@@ -56,14 +56,14 @@ export class ContratoRepository {
       // Executa as consultas do SQL Server em paralelo para alimentar todos os combos de vez
       const [descricaoCorte, descricaoComer, descricaoPag] = await Promise.all([
         pool.request().query('SELECT id, descricao FROM corteFaturamentoTipo'),
-        pool.request().query('SELECT id, descricao FROM planoComercializacaoTipo'),
+        pool.request().query('SELECT id, descricao FROM planoComercializadoTipo'),
         pool.request().query('SELECT id, descricao FROM planoPagamentoTipo')
       ]);
 
       // Retorna a caixa de dicionários descompactada do recordset
       return {
         corteFaturamento: descricaoCorte.recordset,
-        planoComercializacao: descricaoComer.recordset,
+        planoComercializado: descricaoComer.recordset,
         planoPagamento: descricaoPag.recordset
       };
     } catch (error: any) {
