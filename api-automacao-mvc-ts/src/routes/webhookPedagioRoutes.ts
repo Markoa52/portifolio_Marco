@@ -12,7 +12,7 @@ const webhook = new webhookPedagioController(pedagio);
  * /api/webhook:
  *   post:
  *     tags:
- *       - Webhook GLPI
+ *       - Webhook Transações Pedágio
  *     summary: Recebe notificações de eventos em tempo real do GLPI
  *     description: Endpoint que processa aberturas e atualizações de chamados.
  *     requestBody:

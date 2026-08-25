@@ -41,6 +41,16 @@ class Parametrizacao {
           await criaParametrizacao.criarPlanoPagamento(dadosReais);
       }
 
+        // Cenário 4: Status do contrato
+      else if (tipo === 'tipoContratoStatus' || tipo === 'cadastrar_regra_tag') {
+          await criaParametrizacao.criarStatusContrato(dadosReais);
+      }
+
+       // Cenário 5: Status da fatura
+      else if (tipo === 'tipoFaturaStatus' || tipo === 'cadastrar_regra_tag') {
+          await criaParametrizacao.criarStatusFatura(dadosReais);
+      }
+
       // Conclui e grava as alterações no banco de dados de forma definitiva
       await transacao.commit();
       

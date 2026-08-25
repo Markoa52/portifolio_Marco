@@ -57,5 +57,42 @@ async criarPlanoComercializado(dados: any) {
       throw erro;
     }
  }
+
+    async criarStatusContrato(dados: any) {
+    try {  
+        const pool = await Database.getConnection();
+        const resultado = await pool.request()
+        .input('descricao', sqlServer.Text, dados.js)
+        .query(`INSERT INTO contratoStatusTipo (descricao) VALUES (@descricao);`);
+
+        if (Array.isArray(resultado.recordset) && resultado.recordset.length > 0) {
+          return resultado.recordset[0];
+         }
+         return null; 
+
+   } catch (erro) {
+      console.error("Erro na consulta do repositório:", erro);
+      throw erro;
+    }
+ }
+
+  async criarStatusFatura(dados: any) {
+    try {  
+        const pool = await Database.getConnection();
+        const resultado = await pool.request()
+        .input('descricao', sqlServer.Text, dados.js)
+        .query(`INSERT INTO FinancialBilling.dbo.billStatusTipo (descricao) VALUES (@descricao);`);
+
+        if (Array.isArray(resultado.recordset) && resultado.recordset.length > 0) {
+          return resultado.recordset[0];
+         }
+         return null; 
+
+   } catch (erro) {
+      console.error("Erro na consulta do repositório:", erro);
+      throw erro;
+    }
+ }
+
 }
 export const parametrizacaoRepository = new ParametrizacaoRepository();

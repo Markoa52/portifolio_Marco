@@ -10,7 +10,9 @@ export const ConfiguracaoSistema: React.FC = () => {
   const [valoresComerciais, setValoresComerciais] = useState({
   corteFaturamento: '',
   planoComercializado: '',
-  planoPagamento: ''
+  planoPagamento: '',
+  contratoStatus: '',
+  faturaStatus: ''
 });
 
 const gerenciarMudancaInput = (e: any) => {
@@ -104,7 +106,7 @@ const gerenciarMudancaInput = (e: any) => {
                       className="btn btn-primary fw-semibold w-100 py-2" 
                       style={{ fontSize: '0.82rem' }}
                     >
-                      💾 Castrar consdição
+                      💾 Cadastrar condição
                     </button>
                   </div>
                   </div>
@@ -127,7 +129,7 @@ const gerenciarMudancaInput = (e: any) => {
                       className="btn btn-primary fw-semibold w-100 py-2" 
                       style={{ fontSize: '0.82rem' }}
                     >
-                      💾 Castrar consdição
+                      💾 Cadastrar condição
                     </button>
                   </div>
                   </div>
@@ -150,10 +152,57 @@ const gerenciarMudancaInput = (e: any) => {
                       className="btn btn-primary fw-semibold w-100 py-2" 
                       style={{ fontSize: '0.82rem' }}
                     >
-                      💾 Castrar consdição
+                      💾 Cadastrar condição
                     </button>
                   </div>
                   </div>
+
+                  <div className="col-md-4.5 text-start" style={{ width: '37.5%' }}>
+                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Status do Contrato (StatusType)</label>
+                    <input 
+                    type="text" 
+                    inputMode="numeric" 
+                    name="contratoStatus"
+                    placeholder="Digite um staus do contrato" 
+                    value={valoresComerciais.contratoStatus}
+                    onChange={gerenciarMudancaInput}  
+                    className="form-control form-input-atendimento text-start" />
+
+                    <div >
+                    <button 
+                      type="button" 
+                      onClick={() => handleEnviarComercializadoTipo('tipoContratoStatus', valoresComerciais.contratoStatus)}
+                      className="btn btn-primary fw-semibold w-100 py-2" 
+                      style={{ fontSize: '0.82rem' }}
+                    >
+                      💾 Cadastrar condição
+                    </button>
+                  </div>
+                  </div>
+
+                  <div className="col-md-4.5 text-start" style={{ width: '37.5%' }}>
+                    <label className="text-muted mb-1 d-block" style={{ fontSize: '0.7rem' }}>Status da fatura (StatusType)</label>
+                    <input 
+                    type="text" 
+                    inputMode="numeric" 
+                    name="faturaStatus"
+                    placeholder="Digite um staus da fatura" 
+                    value={valoresComerciais.faturaStatus}
+                    onChange={gerenciarMudancaInput}  
+                    className="form-control form-input-atendimento text-start" />
+
+                    <div >
+                    <button 
+                      type="button" 
+                      onClick={() => handleEnviarComercializadoTipo('tipoFaturaStatus', valoresComerciais.faturaStatus)}
+                      className="btn btn-primary fw-semibold w-100 py-2" 
+                      style={{ fontSize: '0.82rem' }}
+                    >
+                      💾 Cadastrar condição
+                    </button>
+                  </div>
+                  </div>
+
                 </div>
               </div>
             )}
