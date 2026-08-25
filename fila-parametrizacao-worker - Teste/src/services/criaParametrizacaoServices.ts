@@ -30,6 +30,16 @@ class Parametrizacao {
           await criaParametrizacao.criarPlanoPagamento(dadosReais);
       }
 
+       // Cenário 4: Status do contrato
+      else if (tipo === 'tipoContratoStatus') {
+          await criaParametrizacao.criarContratoStatus(dadosReais);
+      }
+
+      // Cenário 5: Status do contrato
+      else if (tipo === 'tipoFaturaStatus') {
+          await criaParametrizacao.criarFaturaStatus(dadosReais);
+      }
+
       await db.exec('COMMIT');
       console.log(`[Service] Parametrização do tipo [${tipo}] salva com sucesso!`);
       return { sucesso: true };

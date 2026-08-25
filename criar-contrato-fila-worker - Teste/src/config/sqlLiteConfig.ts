@@ -69,6 +69,7 @@ export class Database {
             // `);
 
 
+
             await this.instance.exec(`
               CREATE TABLE IF NOT EXISTS contrato (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,7 +137,8 @@ export class Database {
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS corteFaturamentoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS planoComercializadoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS planoPagamentoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
-            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contractoStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contratoStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+
 
             // TABELAS NO BANCO DE FATURAMENTO (banco_fat)
             await this.instance.exec(`
