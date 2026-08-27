@@ -168,7 +168,7 @@ export const DetalhesPedagio: React.FC<IDetalhesProps> = ({ contractId, onVoltar
       </div>
     </div>
 
-  </div> // 💡 Fecha o container mestre inicial
+  </div> // Fecha o container mestre inicial
 );
 
 };
