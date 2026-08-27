@@ -26,7 +26,31 @@ import axios from 'axios';
 
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
 export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiva }) => {
+
+  const mapearStatusCor = (status: number) => {
+  switch (status) {
+    case 5:
+      return { texto: 'text-danger', badge: 'bg-danger text-white' }; // Vermelho
+    case 4:
+      return { texto: 'text-warning', badge: 'bg-warning text-dark' }; // Amarelo
+    case 3:
+      return { texto: 'text-success', badge: 'bg-success text-white' }; // Verde
+    case 2:
+      return { texto: 'text-purple', badge: 'bg-purple text-white', estilo: { color: '#6f42c1', backgroundColor: '#6f42c1' } }; // Roxo (Customizado)
+    case 1:
+      return { texto: 'text-primary', badge: 'bg-primary text-white' }; // Azul
+    default:
+      return { texto: 'text-secondary', badge: 'bg-secondary text-white' }; // Cinza Padrão
+    }
+  };
+
   const [dados, setDados] = useState<any>(null);
+  const [contratoCriado, setContratoCriado] = useState<any>(null);
+  const [faturaCriado, setFaturaCriado] = useState<any>(null);
+  const [gastosAtuais, setGastosAtuais] = useState<any>(null);
+  const [veiculoContrato, setVeiculoContrato] = useState<any>(null);
+  const [veiculoContaVPR, setVeiculoContaVPR] = useState<any>(null);
+  const [limiteContrato, setlimiteContrato] = useState<any>(null);
   
   // ALTERAÇÃO DE FLUXO: Inicializamos como false para não travar a tela se a API demorar
   const [, setCarregando] = useState<boolean>(false); 
@@ -36,11 +60,11 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
   const [abaAtiva, setAbaAtiva] = useState<AbaInferior>('cards-gerais');
 
   // Captura o ID vindo direto de dentro do payload enviado de carona pela pesquisa
-  const idContratoDoc = payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id || '-';
+  //const idContratoDoc = payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id || '-';
 
   // Cálculos matemáticos blindados com valores de segurança contra nulos
-  const valorGasto = Number(dados?.gastos || 4700); // 3200 de fallback visual enquanto o banco não responde
-  const valorMeta = Number(dados?.limiteMeta || 5000);
+  const valorGasto = Number(gastosAtuais?.totalValor || 0); // 3200 de fallback visual enquanto o banco não responde
+  const valorMeta = Number(limiteContrato?.limiteContrato || 0);
   const porcentagemConsumida = Math.min((valorGasto / valorMeta) * 100, 100);
 
   const formatarMoeda = (valor: number) => {
@@ -65,22 +89,44 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
 
         console.log(`2. [Banco] Buscando dados visuais da tela para o ID: ${idContrato}`);
 
-        // B) 🔥 DISPARA A CONSULTA DIRETA: Consome a sua rota GET que lê direto do SQL Server
-        const respostaDados = await axios.get(`http://localhost:3000/api/contrato/${idContrato}`);
-        
-        if (respostaDados && respostaDados.data) {
-          const resultado = respostaDados.data;
-          console.log('3. [Sucesso] Dados do SQL Server recebidos para a tela:', resultado);
+        // B) DISPARA A CONSULTA DIRETA: Consome a sua rota GET que lê direto do SQL Server
+        //const respostaDados = await axios.get(`http://localhost:3000/api/contrato/${idContrato}`);
 
-          // Trata se o banco retornou os dados em formato de lista (Array) ou objeto direto
-          if (Array.isArray(resultado) && resultado.length > 0) {
-            setDados(resultado[0]); // Salva a primeira linha do recordset
-          } else {
-            setDados(resultado);    // Salva o objeto direto
-          }
+        const [respostaDados, respostaFaturas, respostaGastosAtuais, respostaVeiculo, respostaContaVeiculoVPR, respostaLimiteContrato ] = await Promise.all([
+          axios.get(`http://localhost:3000/api/contrato/${idContrato}`),        
+          axios.get(`http://localhost:3000/api/contrato/fatura/${idContrato}`),  
+          axios.get(`http://localhost:3000/api/contrato/saldo/${idContrato}`),
+          axios.get(`http://localhost:3000/api/veiculo/${idContrato}`),
+          axios.get(`http://localhost:3000/api/veiculo/saldoVPR/${idContrato}`),
+          axios.get(`http://localhost:3000/api/contrato/limite/${idContrato}`)    
+        ]);
+
+          // 3. CORREÇÃO: Alimenta o contratoCriado lendo direto as colunas do SQLite (id e nomeEmpresa)
+          setContratoCriado(respostaDados.data);
+          setFaturaCriado(respostaFaturas.data);
+          setGastosAtuais(respostaGastosAtuais.data);
+          setVeiculoContrato(respostaVeiculo.data);
+          setVeiculoContaVPR(respostaContaVeiculoVPR.data);
+          setlimiteContrato(respostaLimiteContrato.data);
+        
+          if (respostaDados && respostaDados.data) {
+          const resultado = respostaDados.data;
+          console.log('3. [Sucesso] Dados do SQLite recebidos para a tela:', resultado);
+
+          // 1. Define qual é o objeto com os dados reais (trata se veio array ou objeto direto)
+          const dadosDoContrato = Array.isArray(resultado) && resultado.length > 0 
+            ? resultado[0] 
+            : resultado;
+
+          // 2. Salva no estado geral
+          setDados(dadosDoContrato);
+
+
         } else {
           throw new Error("A rota de consulta não retornou dados para este ID.");
         }
+
+        return respostaDados;
 
       } catch (err: any) {
         console.error('Erro no fluxo misto (Fila/Consulta) do Contrato:', err);
@@ -98,6 +144,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
   const alternarSubmenu = (menuName: string) => {
     setMenuAberto(menuAberto === menuName ? null : menuName);
   };
+
+  const coresStatus = mapearStatusCor(faturaCriado?.status);
 
   return (
   <div className="pagina-container">
@@ -217,15 +265,17 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           {/* MUDANÇA: Forçado margin-right de 24px para afastar do Saldo Pedágio */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
             <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>CONTRATO</span>
-            <span className="fs-5 fw-bold text-dark mt-1">{idContratoDoc}</span>
+            <span className="fs-7 fw-bold text-dark mt-1">{contratoCriado ?`${contratoCriado.id}-${contratoCriado.nomeEmpresa}` : "---"}</span>
           </div>
           
           {/* SALDO VALE PEDÁGIO CORRIGIDO */}
           {/* MUDANÇA: Alterado 'alignItems' de 'flex-end' para 'flex-start' para puxar o texto para a esquerda */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
-            <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>SALDO PEDÁGIO</span>
-            <div className="d-flex align-items-center gap-1 mt-1">
-              <span className="fs-5 fw-bold text-dark">R$ 1.000,00</span>     
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px',  minWidth: '80px' }}>
+            <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>VALE PEDÁGIO</span>
+            <div className="d-flex align-items-center gap-2 mt-1">
+              <span className="fs-7 fw-bold text-dark">{veiculoContaVPR != null ? 
+              (new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(typeof veiculoContaVPR === 'object' ? veiculoContaVPR.total : veiculoContaVPR)) 
+              : ("R$ 0,00")}</span>     
               <div onClick={() => setAbaAtiva('detalhes-pedagio')} className="cp d-flex align-items-center" style={{ cursor: 'pointer' }}>
                 <Info size={14} color="#64748b" strokeWidth={2.5} />
               </div>
@@ -285,17 +335,51 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
                 Consultar faturas →
               </button>
             </div>
-            <p className="text-muted small mb-3" style={{ fontSize: '0.85rem' }}>
-              Sua fatura está fechada e aguardando pagamento
-            </p>
+            <h5 className="text-start m-0">{faturaCriado?.billId}</h5>
             <div className="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
-              <h1 className="fs-4 mb-0 fw-bold text-danger">A Pagar</h1>
-              <div className="text-end fw-semibold text-secondary" style={{ fontSize: '0.8rem' }}>
-                <span className="badge bg-secondary mb-1">MAIO</span><br />
-                <span className="d-block mb-1">VENCIMENTO: 27/08/2024</span>
-                <span className="fs-6 fw-bold text-dark d-block">R$: 32.965,69</span>
-              </div>
-            </div>
+      
+      {/* 1. TEXTO DO STATUS: Aplica a cor dinâmica (Vermelho, Amarelo, Verde, Roxo ou Azul) */}
+      <h1 
+        className={`fs-4 mb-0 fw-bold ${coresStatus.texto}`}
+        style={faturaCriado?.status === 2 ? { color: '#6f42c1' } : {}} // Injeta a cor roxa nativa se for status 2
+      >
+        {faturaCriado?.status === 5 ? 'VENCIDO' :
+         faturaCriado?.status === 4 ? 'A PAGAR' :
+         faturaCriado?.status === 3 ? 'PAGO' :
+         faturaCriado?.status === 2 ? 'EM FECHAMENTO' :
+         faturaCriado?.status === 1 ? 'EM ABERTO' : ''}
+      </h1>
+      
+      <div className="text-end fw-semibold text-secondary" style={{ fontSize: '0.8rem' }}>
+        
+        {/* 2. BADGE DO MÊS: Acompanha a mesma cor do status para fazer sentido visual */}
+        <span  
+          className={`badge mb-1 ${coresStatus.badge}`}
+          style={faturaCriado?.status === 2 ? { backgroundColor: '#6f42c1', color: '#fff' } : {}} // Injeta o fundo roxo se for status 2
+        >
+          {faturaCriado?.dataAbertura ? (
+            new Date(`${faturaCriado.dataAbertura}T12:00:00`)
+              .toLocaleString('pt-BR', { month: 'long' })
+              .replace(/^\w/, (c) => c.toUpperCase())
+          ) : (
+            "---"
+          )}
+        </span>
+        <br />
+
+        <span className="d-block mb-1">FECHAMENTO: {faturaCriado?.dataFechamento || "---"}</span>
+        <span className="d-block mb-1">VENCIMENTO: {faturaCriado?.dataVencimento || "---"}</span>
+        
+        {/* VALOR FORMATADO EM REAIS (R$) */}
+        <span className="fs-6 fw-bold text-dark d-block">
+          {faturaCriado?.totalValor != null ? (
+            new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(faturaCriado.totalValor)
+          ) : (
+            "R$ 0,00"
+          )}
+        </span>
+      </div>
+    </div>
           </div>
         </div>
 
@@ -339,20 +423,26 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         {/* CARD 3: Veículos (Esquerda Inferior) */}
         <div className="col-md-6 p-2">
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white">
+
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Veículos</h3>
-              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
+              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('listar-frota')}>
                 Consultar veículos →
               </button>
             </div>
+
             <div className="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
-              <h2 className="fs-2 mb-0 fw-bold text-dark">2.800</h2>
+              <h2 className="fs-2 mb-0 fw-bold text-dark">{veiculoContrato?.length || 0}
+              <span className="d-block mb-2 text-muted" style={{ fontSize: '0.75rem' }}>Veículos cadastrados</span>
+              </h2>
+      
               <div className="text-end fw-semibold text-secondary" style={{ fontSize: '0.8rem' }}>
-                <span className="badge bg-success mb-1" style={{ fontSize: '0.7rem' }}>1.800</span>
+                <span className="badge bg-success mb-1" style={{ fontSize: '0.7rem' }}>{veiculoContrato?.every((item: any) => item.status !== 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}</span>
                 <span className="d-block mb-2 text-muted" style={{ fontSize: '0.75rem' }}>Com tag ativa</span>
-                <span className="badge bg-secondary mb-1" style={{ fontSize: '0.7rem' }}>400</span>
+                <span className="badge bg-secondary mb-1" style={{ fontSize: '0.7rem' }}>{veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}</span>
                 <span className="d-block text-muted" style={{ fontSize: '0.75rem' }}>Sem tag</span>
               </div>
+
             </div>
           </div>
         </div>
@@ -374,27 +464,28 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
 
       </div>
     )}
-  {/* ==========================================
+
+     {/* ==========================================
       RESTAURAÇÃO DAS OUTRAS ABAS DO SEU SISTEMA
       ========================================== */}
   
         {abaAtiva === 'detalhes-pedagio' && (
-          <DetalhesPedagio onVoltar={() => setAbaAtiva('cards-gerais')} />
+          <DetalhesPedagio contractId={Number(payloadEnvio.dadosLimpos.id)} onVoltar={() => setAbaAtiva('cards-gerais')}/>
         )}
 
         {abaAtiva === 'historico-fatura' && (
-          <HistoricoFaturas />
+          <HistoricoFaturas contractId={Number(payloadEnvio.dadosLimpos.id)} />
         )}
 
         {abaAtiva === 'faturas-abertas' && (
-          <FaturasAbertas  />
+          <FaturasAbertas contractId={Number(payloadEnvio.dadosLimpos.id)}/>
         )}
 
-       {abaAtiva === 'listar-frota' && (
-          <ListarFrota />
+        {abaAtiva === 'listar-frota' && (
+          <ListarFrota contractId={Number(payloadEnvio.dadosLimpos.id)} />
         )}
 
-      {abaAtiva === 'relatorio-passagem' && (
+        {abaAtiva === 'relatorio-passagem' && (
           <RelatorioPassagens />
         )}
   
@@ -402,33 +493,34 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           <RelatorioExtrato />
         )}
 
-  {abaAtiva === 'editar-usuario' && (
-    <EditarUsuario 
-      setPaginaAtiva={setPaginaAtiva} 
-      setAbaAtiva={setAbaAtiva} 
-    />
-  )}
+        {abaAtiva === 'editar-usuario' && (
+          <EditarUsuario 
+            setPaginaAtiva={setPaginaAtiva} 
+            setAbaAtiva={setAbaAtiva} 
+          />
+        )}
 
-  {(abaAtiva === 'usuario') && (
-    <Usuario setPaginaAtiva={setPaginaAtiva} />
-  )}
+        {(abaAtiva === 'usuario') && (
+          <Usuario setPaginaAtiva={setPaginaAtiva} />
+        )}
 
-</main>
+       </main>
 
-      {abaAtiva === 'contrato-detalhe' && (
-        <ContratoDetailComponent dados={dados} />
-      )}
+        {abaAtiva === 'contrato-detalhe' && (
+          <ContratoDetailComponent dados={dados} />
+        )}
 
-    </div>
+       </div>
   
-  );
-};
-// Componente auxiliar local para exibir os dados textuais do contrato sem loop de importação
-const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = ({ dados }) => {
-  if (!dados) return <p>Nenhum dado de contrato carregado.</p>;
+      );
+     };
+
+    // Componente auxiliar local para exibir os dados textuais do contrato sem loop de importação
+    const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = ({ dados }) => {
+    if (!dados) return <p>Nenhum dado de contrato carregado.</p>;
         return (
-    // 🛠️ ALINHAMENTO GÊMEO: Copiado o exato padrão de tamanho, centralização e bordas do seu Header
-    <div 
+     // 🛠️ ALINHAMENTO GÊMEO: Copiado o exato padrão de tamanho, centralização e bordas do seu Header
+     <div 
       className="card bg-white text-dark p-4 border-0 shadow-sm my-3" 
       style={{ 
         width: "100%",
@@ -437,7 +529,7 @@ const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = (
         borderRadius: "12px",     /* Arredondamento suave combinando com o topo */
         boxSizing: "border-box"
       }}
-    >
+     >
       
       {/* Título interno minimalista escuro */}
       <h3 className="fs-6 fw-bold text-dark opacity-75 border-bottom border-light pb-2 mb-4 text-start text-uppercase" style={{ letterSpacing: '0.5px' }}>
@@ -505,8 +597,4 @@ const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = (
       </div>
     </div>
   );
-
-
-
-
 };

@@ -9,7 +9,7 @@ const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "consultar" | "at
 };
 
 export class ContratoService {
-  // 👈 2. INJETA O REPOSITÓRIO DO SQL SERVER NO CONSTRUTOR JUNTO COM O RABBIT
+  // 2. INJETA O REPOSITÓRIO DO SQL SERVER NO CONSTRUTOR JUNTO COM O RABBIT
   constructor(
     private rabbitPublisher: RabbitMqPublisher,
     private contratoRepository: ContratoRepository 
@@ -25,7 +25,37 @@ async obterContratos(): Promise<any> {
   // Adicione este método dentro da classe ContratoService no seu arquivo contratoService.ts:
 async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
   // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
-  const contrato = await this.contratoRepository.findById(contractId);
+  const contrato = await this.contratoRepository.buscaDadosDoContrato(contractId);
+  return contrato;
+}
+
+async obterFatura(contractId: number): Promise<any> {
+  // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
+  const contrato = await this.contratoRepository.buscaFatura(contractId);
+  return contrato;
+}
+
+async obterSaldoFatura(contractId: number): Promise<any> {
+  // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
+  const contrato = await this.contratoRepository.buscaSaldoFatura(contractId);
+  return contrato;
+}
+
+async obterFaturaAberto(contractId: number): Promise<any> {
+  // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
+  const contrato = await this.contratoRepository.buscaFaturasEmAberto(contractId);
+  return contrato;
+}
+
+async obterFaturas(contractId: number): Promise<any> {
+  // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
+  const contrato = await this.contratoRepository.buscaFaturas(contractId);
+  return contrato;
+}
+
+async obterLimiteContrato(contractId: number): Promise<any> {
+  // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
+  const contrato = await this.contratoRepository.buscaLimite(contractId);
   return contrato;
 }
 
@@ -41,7 +71,7 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
 
     console.log(`[API] 1. Consultando SQL Server para verificar o Contrato ID: ${contractId}`);
     
-    // B) 🔥 EFETUA A CONSULTA REAL NO SEU SQL SERVER
+    // B) EFETUA A CONSULTA REAL NO SEU SQL SERVER
     const contratoLocalizado = await this.contratoRepository.findById(contractId);
 
     // SE O ID NÃO EXISTIR NO BANCO: Dispara o erro que vai travar a transição de tela no React!
@@ -49,30 +79,30 @@ async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
       throw new Error(`O contrato número ${contractId} não existe no banco de dados.`);
     }
 
-    console.log(`[API] Contrato ${contractId} localizado com sucesso no banco! Sincronizando filas...`);
+    // console.log(`[API] Contrato ${contractId} localizado com sucesso no banco! Sincronizando filas...`);
 
-    // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
-    const estrategiaAtual = MAPA_DE_ACOES[acao] ?? {
-      tipoArquivo: 'consultar',
-      routingKey: 'reports.v1.trigger.consulta_contrato'
-    };
+    // // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
+    // const estrategiaAtual = MAPA_DE_ACOES[acao] ?? {
+    //   tipoArquivo: 'consultar',
+    //   routingKey: 'reports.v1.trigger.consulta_contrato'
+    // };
 
-    // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
-    const payload = {
-      protocoloId,
-      task: 'generate_daily_report',
-      tipoArquivo: estrategiaAtual.tipoArquivo,
-      solicitadoEm: new Date().toISOString(),
-      js: contratoLocalizado // 👈 Agora a fila e o Worker vão receber os dados reais do banco!
-    };
+    // // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
+    // const payload = {
+    //   protocoloId,
+    //   task: 'generate_daily_report',
+    //   tipoArquivo: estrategiaAtual.tipoArquivo,
+    //   solicitadoEm: new Date().toISOString(),
+    //   js: contratoLocalizado // 👈 Agora a fila e o Worker vão receber os dados reais do banco!
+    // };
 
-    const EXCHANGE = 'reports.exchange';
-    const ROUTING_KEY = estrategiaAtual.routingKey;
+    // const EXCHANGE = 'reports.exchange';
+    // const ROUTING_KEY = estrategiaAtual.routingKey;
 
-    console.log(`[Agendador] Montando payload para o protocolo: ${protocoloId} | Fila: ${ROUTING_KEY}`);
+    // console.log(`[Agendador] Montando payload para o protocolo: ${protocoloId} | Fila: ${ROUTING_KEY}`);
 
-    // 5. Envia para o RabbitMQ em segundo plano
-    await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payload);
+    // // 5. Envia para o RabbitMQ em segundo plano
+    // await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payload);
 
     // C) 🔥 RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
     // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!

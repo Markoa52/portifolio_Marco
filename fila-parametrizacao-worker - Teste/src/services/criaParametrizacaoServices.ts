@@ -35,10 +35,32 @@ class Parametrizacao {
           await criaParametrizacao.criarContratoStatus(dadosReais);
       }
 
-      // Cenário 5: Status do contrato
+      // Cenário 5: Status da fatura
       else if (tipo === 'tipoFaturaStatus') {
           await criaParametrizacao.criarFaturaStatus(dadosReais);
       }
+
+      // Cenário 6: Tipo do veiculo
+      else if (tipo === 'tipoVeiculo') {
+          await criaParametrizacao.criarTipoVeiculo(dadosReais);
+      }
+
+      // Cenário 7: Marca do veiculo
+      else if (tipo === 'marcaVeiculo') {
+          await criaParametrizacao.criarMarcaVeiculo(dadosReais);
+      }
+
+      // Cenário 8: Eixo do veiculo
+      else if (tipo === 'eixoVeiculo') {
+          await criaParametrizacao.criarEixoVeiculo(dadosReais);
+      }
+
+      // Cenário 9: Transacao do veiculo
+      else if (tipo === 'transacaoVeiculo') {
+          await criaParametrizacao.criarTransacaoVeiculo(dadosReais);
+      }
+
+
 
       await db.exec('COMMIT');
       console.log(`[Service] Parametrização do tipo [${tipo}] salva com sucesso!`);

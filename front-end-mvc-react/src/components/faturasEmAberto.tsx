@@ -1,59 +1,109 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-const FATURAS_EM_ABERTO = [
-  { id: 'FAT-2026-1021', fechamento: '05/09/2026', vencimento: '15/10/2026', valor: 'R$ 2.550,00', Urgente: true  , status:'em aberto'},
-  { id: 'FAT-2026-1022', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1023', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1024', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1025', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1026', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1027', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1028', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1029', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1030', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1031', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
-  { id: 'FAT-2026-1032', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
-  { id: 'FAT-2026-1033', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
-];
+// const FATURAS_EM_ABERTO = [
+//   { id: 'FAT-2026-1021', fechamento: '05/09/2026', vencimento: '15/10/2026', valor: 'R$ 2.550,00', Urgente: true  , status:'em aberto'},
+//   { id: 'FAT-2026-1022', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+//   { id: 'FAT-2026-1023', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1024', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1025', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+//   { id: 'FAT-2026-1026', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1027', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1028', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+//   { id: 'FAT-2026-1029', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1030', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1031', fechamento: '05/08/2026', vencimento: '15/08/2026', valor: 'R$ 1.450,00', Urgente: true  , status:'vencida'},
+//   { id: 'FAT-2026-1032', fechamento: '12/08/2026', vencimento: '22/08/2026', valor: 'R$ 890,00',   Urgente: false , status:'fechado'},
+//   { id: 'FAT-2026-1033', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
+// ];
 
-export const FaturasAbertas: React.FC = () => {
+interface PropsFaturas {
+  contractId: number;
+}
 
-  const obterClasseCorValor = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case 'aberto':
-    case 'em aberto':
-      return 'text-primary'; // 🔵 Azul para faturas em aberto
-    case 'fechado':
-    case 'fechada':
-      return 'text-warning'; // 🟡 Amarelo/Laranja escuro comercial para fechadas (legível)
-    case 'vencido':
-    case 'vencida':
-      return 'text-danger fw-black'; // 🔴 Vermelho vivo e negrito pesado para vencidas
-    default:
-      return 'text-dark'; // Cor padrão caso seja outro status (ex: Pago)
-  }
-};
+export const FaturasAbertas: React.FC<PropsFaturas> = ({ contractId }) => {
 
-const alterarTexto = (status: string) => {
-  // O switch ou if precisa usar a palavra 'return' para enviar o texto para a label
-  switch (status?.toLowerCase()) {
-    case 'aberto':
-    case 'em aberto':
-      return 'Em aberto';
-    case 'fechado':
-    case 'fechada':
-      return 'Aguardando Vencimento';
-    case 'vencido':
-    case 'vencida':
-      return 'Débito Pendente';
-    default:
-      return 'Status Desconhecido';
-  }
-};
+  // 1. CORREÇÃO: Inicializa com um array vazio [] para o seu .map() não quebrar na primeira renderização
+  const [faturaCriado, setFaturaCriado] = useState<any[]>([]);
+  
+  // Ajustado para capturar as funções de loading e erro que você declarou vazias
+  const [, setCarregando] = useState<boolean>(false); 
+  const [, setErro] = useState<string | null>(null);
 
-  return (
-  /* container limita a largura em 1200px e px-3 sincroniza milimetricamente com as bordas do seu Header */
-  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+  useEffect(() => {
+    async function dispararFluxoAssincronoEConsulta() {
+      if (!contractId) return;
+
+      try {
+        // 2. CORREÇÃO: Ativa o loading e limpa erros antes de bater na API
+        setCarregando(true);
+        setErro(null);
+
+        console.log(`🔍 [Banco] Buscando faturas em aberto para o Contrato ID: ${contractId}`);
+
+        // 3. CORREÇÃO: Requisição movida para DENTRO do bloco try/catch
+        const respostaFaturas = await axios.get(`http://localhost:3000/api/fatura/aberto/${contractId}`);
+
+        if (respostaFaturas && respostaFaturas.data) {
+          console.log('✅ [Sucesso] Faturas recebidas do SQLite:', respostaFaturas.data);
+          
+          // 4. CORREÇÃO: Garante que estamos salvando uma Array pura (trata se o banco mandar nulo)
+          setFaturaCriado(Array.isArray(respostaFaturas.data) ? respostaFaturas.data : [respostaFaturas.data]);
+        } else {
+          setFaturaCriado([]);
+        }
+
+      } catch (err: any) {
+        console.error('❌ Erro no fluxo de consulta das faturas:', err);
+        setFaturaCriado([]); // Evita travar a tela em caso de queda do servidor
+        setErro(err.response?.data?.erro || err.message || "Erro ao carregar informações das faturas.");
+      } finally {
+        // Desliga o estado de espera na tela
+        setCarregando(false);
+      }
+    }
+
+    dispararFluxoAssincronoEConsulta();
+   }, [contractId]); // Executa novamente de forma reativa sempre que o ID do contrato mudar
+
+    const obterClasseCorValor = (status: number | string) => {
+    // Convertemos para Number para bater com os status salvos no seu SQLite (1 a 5)
+    switch (Number(status)) {
+      case 1: // PENDENTE (Em aberto original)
+        return 'text-primary'; // 🔵 Azul
+      case 2: // EM PROCESSAMENTO (Fechada/A Pagar original)
+        return { color: '#6f42c1' } // 🟡 Roxo/Laranja comercial legível 
+      case 4: // EM ATRASO (Vencida original)
+        return 'text-warning'; // 🟡 Amarelo/Laranja comercial legível 
+      case 3: // PAGO
+        return 'text-success fw-bold'; // 🟢 Verde para pagas
+      case 5: // MUTADO/CANCELADO
+        return 'text-danger fw-black'; // 🔴 Vermelho vivo e negrito pesado
+      default:
+        return 'text-dark'; // Cor padrão caso seja outro status
+    }
+   };
+
+    const alterarTexto = (status: number | string) => {
+      switch (Number(status)) {
+        case 1:
+          return 'Em aberto';
+        case 2:
+          return 'Aguardando Vencimento';
+        case 4:
+          return 'Débito Pendente';
+        case 3:
+          return 'Fatura Paga';
+        case 5:
+          return 'Fatura Cancelada';
+        default:
+          return 'Status Desconhecido';
+      }
+    };
+
+    return (
+    /* container limita a largura em 1200px e px-3 sincroniza milimetricamente com as bordas do seu Header */
+    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
     <div className="border-bottom pb-3 mb-4">
@@ -62,7 +112,7 @@ const alterarTexto = (status: string) => {
 
     {/* LISTA DE FATURAS */}
     <div className="d-flex flex-column gap-3">
-      {FATURAS_EM_ABERTO.map((fatura) => (
+      {faturaCriado.map((fatura: any) => (
         /* O CARD DA FATURA: Se for urgente, adiciona uma borda vermelha de alerta (border-danger) */
         <div 
           key={fatura.id} 
@@ -88,7 +138,7 @@ const alterarTexto = (status: string) => {
            <span className="text-muted fw-bold d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>VALOR</span>
            {/* 🌟 A mágica acontece aqui: a classe muda de cor baseada no status da fatura */}
            <h3 className={`fs-5 fw-bold m-0 ${obterClasseCorValor(fatura.status)}`}>
-             {fatura.valor}
+             {fatura.totalValor}
            </h3>
            </div>
 
