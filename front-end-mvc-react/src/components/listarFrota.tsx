@@ -1,19 +1,11 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import type { IPropsFaturas } from '../types/IPropsFaturas';
+import type { IVeiculo } from '../types/IVeiculo';
 
 // Atualizamos as opções de sub-telas da frota com os novos cadastros
 type SubAbaFrota = 'lista' | 'editar' | 'ativacao' | 'detalhes' | 'cadastro-unico' | 'cadastro-lote';
 
-interface IVeiculo {
-  placa: string;
-  tag: string;
-  status: 'Ativo' | 'Inativo' | 'Manutenção';
-  dataAtivacao: string;
-}
-
-interface PropsFaturas {
-  contractId: number;
-}
 
 // const VEICULOS_MOCK: IVeiculo[] = [
 //   { placa: 'ABC-1234', tag: 'TAG-99812', status: 'Ativo', dataAtivacao: '12/01/2025' },
@@ -21,7 +13,7 @@ interface PropsFaturas {
 //   { placa: 'KGB-0077', tag: 'TAG-11223', status: 'Manutenção', dataAtivacao: '05/06/2025' },
 // ];
 
-export const ListarFrota: React.FC<PropsFaturas> = ({contractId}) => {
+export const ListarFrota: React.FC<IPropsFaturas> = ({contractId}) => {
   const [subAba, setSubAba] = useState<SubAbaFrota>('lista');
   const [veiculoSelecionado, setVeiculoSelecionado] = useState<IVeiculo | null>(null);
   const [veiculoCriado, setveiculoCriado] = useState<any[]>([]);

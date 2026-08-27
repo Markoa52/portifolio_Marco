@@ -1,14 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { IEmailRegistro } from '../types/index.ts';
 import '../styles/editarUsuario.css';
-import type { PaginaTipo, AbaInferior } from './contrato.tsx'; 
 import { ArrowLeft, Eye, Info, Pencil, Search, Trash2 } from 'lucide-react';
-
-interface IGerenciadorProps {
-  dadosIniciais?: IEmailRegistro[];
-  setPaginaAtiva?: (pagina: PaginaTipo) => void;
-  setAbaAtiva?: (aba: AbaInferior) => void;
-}
+import type { IGerenciadorProps } from '../types/IGerenciadorProps.ts';
 
 export const EditarUsuario: React.FC<IGerenciadorProps> = ({ setAbaAtiva, dadosIniciais }) => {
 

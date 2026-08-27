@@ -1,11 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import type { IPropsFaturas } from '../types/IPropsFaturas';
 
-interface PropsFaturas {
-  contractId: number;
-}
-
-export const HistoricoFaturas: React.FC<PropsFaturas> = ({ contractId }) => {
+export const HistoricoFaturas: React.FC<IPropsFaturas> = ({ contractId }) => {
 
   // 1. CORREÇÃO: Inicializa com um array vazio [] para o seu .map() não quebrar na primeira renderização
   const [faturaCriado, setFaturaCriado] = useState<any[]>([]);

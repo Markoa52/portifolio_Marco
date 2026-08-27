@@ -3,17 +3,12 @@ import { ArrowLeft, Layers, PlusCircle, ShoppingBag, CreditCard, Users } from 'l
 import { PesquisarContrato } from './pesquisarContrato';
 import { EditarUsuario } from './editarUsuario';
 import { CadastroContrato } from './cadastroContrato';
-import {ConfiguracaoSistema} from './configuracaoSistema'
-// Importe o EditarUsuario e CadastroContrato se já não estiverem importados
+import {ConfiguracaoSistema} from './configuracaoSistema';
 
 // 1. Garanta que a interface do arquivo receba todas as propriedades necessárias
-interface IMenuProps {
-  setPaginaAtiva: (pagina: any) => void;
-  setIdContratoSelecionado: (id: string) => void;
-  setPayloadGlobal: (payload: any) => void;
-}
+import type { IMenuProps } from '../types/IMenuProps';
 
-// 2. 🔥 CORREÇÃO 1: Você PRECISA extrair as funções aqui dentro dos parênteses do componente!
+// 2. CORREÇÃO 1: Você PRECISA extrair as funções aqui dentro dos parênteses do componente!
 export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal }) => {
   const [abaAtiva, setAbaAtiva] = useState<string>('cards-gerais');
   const [titulo, setTitulo] = useState<string>('Módulos de Atendimento');
@@ -164,7 +159,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
           )}
 
           {abaAtiva === 'editar-usuario' && (
-            /* 🔥 CORREÇÃO 3: Removido propriedades que não existem ou que causavam erro se a interface deles for restrita */
+            /* CORREÇÃO 3: Removido propriedades que não existem ou que causavam erro se a interface deles for restrita */
             <EditarUsuario 
               setPaginaAtiva={setPaginaAtiva} 
               setAbaAtiva={setAbaAtiva} 
@@ -177,7 +172,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
             />
           )}
 
-            {/* 🔥 CHAMADA DA NOVA TELA DE CONFIGURAÇÃO */}
+            {/* CHAMADA DA NOVA TELA DE CONFIGURAÇÃO */}
            {abaAtiva === 'configuracao-sistema' && (
              <ConfiguracaoSistema />
            )}

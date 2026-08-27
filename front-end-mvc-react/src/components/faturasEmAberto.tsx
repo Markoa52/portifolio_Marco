@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import type { IPropsFaturas } from '../types/IPropsFaturas';
 
 // const FATURAS_EM_ABERTO = [
 //   { id: 'FAT-2026-1021', fechamento: '05/09/2026', vencimento: '15/10/2026', valor: 'R$ 2.550,00', Urgente: true  , status:'em aberto'},
@@ -17,11 +18,7 @@ import axios from 'axios';
 //   { id: 'FAT-2026-1033', fechamento: '25/08/2026', vencimento: '05/09/2026', valor: 'R$ 3.200,00', Urgente: false , status:'fechado'},
 // ];
 
-interface PropsFaturas {
-  contractId: number;
-}
-
-export const FaturasAbertas: React.FC<PropsFaturas> = ({ contractId }) => {
+export const FaturasAbertas: React.FC<IPropsFaturas> = ({ contractId }) => {
 
   // 1. CORREÇÃO: Inicializa com um array vazio [] para o seu .map() não quebrar na primeira renderização
   const [faturaCriado, setFaturaCriado] = useState<any[]>([]);

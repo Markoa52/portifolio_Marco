@@ -1,14 +1,5 @@
 import React from 'react';
-
-// Interface para estruturar as colunas pedidas
-interface IExtrato {
-  id: string;
-  placa: string;
-  data: string;
-  tipo: string;         /* Ex: Pedágio, Recarga, Taxa, Estorno */
-  statusViagem: string; /* Ex: Confirmada, Contestada, Processando */
-  valor: string;
-}
+import type { IExtrato } from '../types/IExtrato';
 
 // Dados simulados de extrato financeiro para popular a tabela
 const EXTRATO_MOCK: IExtrato[] = [

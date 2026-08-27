@@ -131,7 +131,7 @@ return (
         </div>
 
         {/* ====================================================================
-            🔥 NOVO CARD 2: PARAMETRIZAÇÃO ADICIONAL DO SISTEMA
+            NOVO CARD 2: PARAMETRIZAÇÃO ADICIONAL DO SISTEMA
             ==================================================================== */}
           <div>
            <div className="p-3 bg-light text-start cp d-flex justify-content-between align-items-center" onClick={() => alternarBloco('regraVeiculos')} // 👈 Nova string de estado
@@ -183,7 +183,7 @@ return (
         </div>
 
         {/* ====================================================================
-            🔥 NOVO CARD 3: PARAMETRIZAÇÃO ADICIONAL DO SISTEMA
+            NOVO CARD 3: PARAMETRIZAÇÃO ADICIONAL DO SISTEMA
             ==================================================================== */}
           <div>
            <div className="p-3 bg-light text-start cp d-flex justify-content-between align-items-center" onClick={() => alternarBloco('regraGerais')} // 👈 Nova string de estado

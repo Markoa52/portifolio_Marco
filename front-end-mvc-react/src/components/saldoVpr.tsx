@@ -2,11 +2,7 @@ import React, { useEffect, useState } from 'react';
 // IMPORTAÇÃO DOS ÍCONES DA LUCIDE (Deixa o botão e o topo muito mais profissionais)
 import { ArrowLeft, Landmark, History } from 'lucide-react';
 import axios from 'axios';
-
-interface IDetalhesProps {
-  contractId: number;
-  onVoltar: () => void; // Função para permitir voltar à tela anterior
-}
+import type { IDetalhesProps } from '../types/IDetalhesProps';
 
 export const DetalhesPedagio: React.FC<IDetalhesProps> = ({ contractId, onVoltar }) => {
 
