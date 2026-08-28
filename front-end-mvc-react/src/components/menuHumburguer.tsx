@@ -3,10 +3,10 @@ import '../styles/contrato.css'; // Carrega os estilos unificados
 
 // Definimos estritamente os tipos de abas válidos para o sistema
 import { ReceiptText, RefreshCcw, UserPen } from 'lucide-react';
-import type { IMenuProps } from '../types/IMenuProps';
+import type { IMenuHumProps } from '../types/IMenuHumProps';
 
 // CORREÇÃO: Agora o componente recebe e desestrutura a propriedade enviada pelo pai
-export const MenuHamburguer: React.FC<IMenuProps> = ({ setAbaAtiva, setPaginaAtiva}) => {
+export const MenuHamburguer: React.FC<IMenuHumProps> = ({ setAbaAtiva, setPaginaAtiva}) => {
   const [menuGeralAberto, setMenuGeralAberto] = useState<boolean>(false);
 
   return (

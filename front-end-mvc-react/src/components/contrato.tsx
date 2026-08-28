@@ -8,15 +8,17 @@ import { FaturasAbertas } from './faturasEmAberto';
 import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
+import { ConsultaPedidosCards } from './consultaPedidosCards';
+import {SolicitacaoPedido} from './solicitacaoPedido'
 
 //import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
 
-export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema';
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido';
 
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido';
 
 import type { IContratoProps } from '../types/IContratoProps';
 import type { IDetalhesContrato } from '../types/IDetalhesContrato';
@@ -388,7 +390,7 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Últimos pedidos</h3>
-              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
+              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }} onClick={() => setAbaAtiva('consultaPedidosCards')}>
                 Consultar pedidos →
               </button>
             </div>
@@ -504,6 +506,17 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           <Usuario setPaginaAtiva={setPaginaAtiva} />
         )}
 
+        {(abaAtiva === 'consultaPedidosCards') && (
+          <ConsultaPedidosCards onNovoPedido={() => setAbaAtiva('solicitacaoPedido')}/>
+        )}
+
+        {abaAtiva === 'solicitacaoPedido' && ( 
+         <SolicitacaoPedido 
+           // Se quiser, pode passar uma prop onVoltar para o cadastro conseguir retornar
+           onVoltar={() => setAbaAtiva('consultaPedidosCards')} 
+         />
+        )}
+
        </main>
 
         {abaAtiva === 'contrato-detalhe' && (
@@ -511,6 +524,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         )}
 
        </div>
+
+       
   
       );
      };

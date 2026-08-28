@@ -51,7 +51,7 @@ export class Database {
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
 
-            //await this.instance.exec(`DROP TABLE veiculo`);
+            //await this.instance.exec(`DROP TABLE pedidoTag`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo`);
             //await this.instance.exec(`DROP TABLE contaContrato`);
             //await this.instance.exec(`INSERT INTO contaContrato (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
@@ -301,8 +301,14 @@ export class Database {
               CREATE TABLE IF NOT EXISTS pedidoTag (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 dataRegistro TEXT,
-                contratoId INTEGER,
+                nomeComprador TEXT,
+                telefone TEXT,
+                emai TEXT,
                 quantidade INTEGER,
+                valorUnidade REAL,
+                valorTotal REAL,
+                enderecoEntrega TEXT,
+                contratoId INTEGER,
                 reposnsavelRecebimento INETEGER,
                 usuarioPerdido INTEGER,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id)

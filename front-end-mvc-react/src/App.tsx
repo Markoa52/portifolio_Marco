@@ -24,10 +24,10 @@ function App() {
         {paginaAtiva === 'dashboard' && <Dashboard />}
         {paginaAtiva === 'consumoAPI' && <ConsumoAPI />}
 
-        {/* 🔥 REVISÃO CRUCIAL 1: Garanta que o termo seja 'contrato' em minúsculo */}
+        {/* REVISÃO CRUCIAL 1: Garanta que o termo seja 'contrato' em minúsculo */}
         {paginaAtiva === 'contrato' && (
           <Contrato 
-            payloadEnvio={payloadGlobal}      /* 👈 Envia o payload que a pesquisa salvou na memória */
+            payloadEnvio={payloadGlobal}      /* Envia o payload que a pesquisa salvou na memória */
             setPaginaAtiva={setPaginaAtiva}   /* Permite voltar para o atendimento depois */
             paginaAtiva={paginaAtiva}
           />
@@ -38,7 +38,7 @@ function App() {
           <Atendimento 
             setPaginaAtiva={setPaginaAtiva} 
             setIdContratoSelecionado={setIdContratoSelecionado}
-            setPayloadGlobal={setPayloadGlobal} /* 👈 Permite que a busca salve os dados de carona */
+            setPayloadGlobal={setPayloadGlobal} /* ermite que a busca salve os dados de carona */
           />
         )}
 
@@ -46,7 +46,7 @@ function App() {
           <PesquisarContrato 
             setPaginaAtiva={setPaginaAtiva} 
             setIdContratoSelecionado={setIdContratoSelecionado}
-            setPayloadGlobal={setPayloadGlobal} // 👈 Adicione esta linha
+            setPayloadGlobal={setPayloadGlobal} // Adicione esta linha
           />
         )}
 
