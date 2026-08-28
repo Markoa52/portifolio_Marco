@@ -57,7 +57,7 @@ export class Database {
             //await this.instance.exec(`INSERT INTO contaContrato (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
 
             //await this.instance.exec(`INSERT INTO pedidoTagRastreamento (dataRegistro, statusPedidoId, pedidoTagId) VALUES ('2026-08-28', 3, 1)`);
-            await this.instance.exec(`UPDATE pedidoTagRastreamento set statusPedidoId=2 where id=3;`);
+            //await this.instance.exec(`UPDATE pedidoTagRastreamento set statusPedidoId=2 where id=3;`);
           
             //await this.instance.exec(` ALTER TABLE veiculo ADD COLUMN contratoId;`);
 
