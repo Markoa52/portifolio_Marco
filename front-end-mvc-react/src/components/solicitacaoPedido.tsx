@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import type { ISolicitacaoProps } from '../types/ISolicitacaoProps';
 
-export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar }) => {
+export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar, contractId }) => {
   // 1. Estado Inicial do Formulário
   const [formData, setFormData] = useState({
     nome: '',
@@ -39,21 +39,24 @@ export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar }) => 
       setCarregando(true);
       
       const payload = {
-        cliente: {
-          nome: formData.nome,
-          telefone: formData.telefone,
-          email: formData.email
-        },
-        pedido: {
-          quantidade: formData.quantidade,
-          valorTotal: valorTotalCalculado
-        },
-        entrega: {
-          enderecoCompleto: `${formData.endereco}, ${formData.cidade} - ${formData.estado}`
+         metadata: {
+        protocoloId: `PROT-${Date.now()}`, 
+        acao: 'inserir', 
+        criadoEm: new Date().toISOString(),
+        contratoId: Number(contractId)
+      },
+        contextoPedido: {
+          nome: String(formData.nome),
+          telefone: String(formData.telefone),
+          email: String(formData.email),
+          quantidade: Number(formData.quantidade),
+          valorUnidade: Number(formData.valorUnitario),
+          valorTotal: Number(valorTotalCalculado),
+          enderecoCompleto: String( `${formData.endereco}, ${formData.cidade} - ${formData.estado}`)
         }
       };
 
-      const resposta = await axios.post('http://localhost:3000/api/pedidos/solicitar', payload);
+      const resposta = await axios.post('http://localhost:3000/api/pedido/solicitar', payload);
 
       if (resposta.data?.pedidoId) {
         setSucessoId(resposta.data.pedidoId);
@@ -133,7 +136,7 @@ export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar }) => 
                   </div>
                   <div className="col-6 mb-3">
                     <label className="text-muted small fw-semibold mb-1">Preço Unitário</label>
-                    <input type="text" disabled value="R$ 150,00" className="form-control bg-light text-start text-secondary fw-bold" />
+                    <input type="text" disabled name="unidade" value="R$ 150,00" className="form-control bg-light text-start text-secondary fw-bold" />
                   </div>
                 </div>
 

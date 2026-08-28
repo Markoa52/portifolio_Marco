@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import type { IConsultaPedidosProps } from '../types/IConsultaPedidoProps';
 
-export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPedido }) => {
+export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPedido, contractId }) => {
   // Estados para armazenamento dos dados e controle da tela
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [filtroId, setFiltroId] = useState<string>('');
@@ -18,7 +18,7 @@ export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPed
       setErro(null);
 
       // Configura os parâmetros de busca caso o operador tenha digitado algo
-      const url = `http://localhost:3000/api/pedidos`;
+      const url = `http://localhost:3000/api/pedidos/${contractId}`;
       const resposta = await axios.get(url, {
         params: idBusca ? { id: idBusca } : {}
       });
@@ -128,12 +128,12 @@ export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPed
                     <div className="mb-3 text-start">
                       <span className="text-muted small d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>CLIENTE / EMPRESA</span>
                       <div className="fw-bold text-dark text-truncate" style={{ fontSize: '0.9rem' }}>
-                        {pedido.nomeEmpresa || pedido.clienteNome || "Cliente não informado"}
+                        {pedido.id || pedido.quantidade || "Cliente não informado"}
                       </div>
                       
                       <div className="d-flex align-items-center gap-1 text-secondary mt-2 small">
                         <Calendar size={14} />
-                        <span>Emissão: {pedido.dataEmissao || "---"}</span>
+                        <span>Emissão: {pedido.dataRegistro || "---"}</span>
                       </div>
                     </div>
 

@@ -53,7 +53,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
   const [veiculoContrato, setVeiculoContrato] = useState<any>(null);
   const [veiculoContaVPR, setVeiculoContaVPR] = useState<any>(null);
   const [limiteContrato, setlimiteContrato] = useState<any>(null);
-  
+  const [pedidoRastreamento, setPedidoRastreamento] = useState<any>(null);
+          
   // ALTERAÇÃO DE FLUXO: Inicializamos como false para não travar a tela se a API demorar
   const [, setCarregando] = useState<boolean>(false); 
   const [, setErro] = useState<string | null>(null);
@@ -94,13 +95,14 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         // B) DISPARA A CONSULTA DIRETA: Consome a sua rota GET que lê direto do SQL Server
         //const respostaDados = await axios.get(`http://localhost:3000/api/contrato/${idContrato}`);
 
-        const [respostaDados, respostaFaturas, respostaGastosAtuais, respostaVeiculo, respostaContaVeiculoVPR, respostaLimiteContrato ] = await Promise.all([
+        const [respostaDados, respostaFaturas, respostaGastosAtuais, respostaVeiculo, respostaContaVeiculoVPR, respostaLimiteContrato, respostaPedidoRastreamento ] = await Promise.all([
           axios.get(`http://localhost:3000/api/contrato/${idContrato}`),        
           axios.get(`http://localhost:3000/api/contrato/fatura/${idContrato}`),  
           axios.get(`http://localhost:3000/api/contrato/saldo/${idContrato}`),
           axios.get(`http://localhost:3000/api/veiculo/${idContrato}`),
           axios.get(`http://localhost:3000/api/veiculo/saldoVPR/${idContrato}`),
-          axios.get(`http://localhost:3000/api/contrato/limite/${idContrato}`)    
+          axios.get(`http://localhost:3000/api/contrato/limite/${idContrato}`),    
+          axios.get(`http://localhost:3000/api/pedido/rastreamento/${idContrato}`)
         ]);
 
           // 3. CORREÇÃO: Alimenta o contratoCriado lendo direto as colunas do SQLite (id e nomeEmpresa)
@@ -110,7 +112,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           setVeiculoContrato(respostaVeiculo.data);
           setVeiculoContaVPR(respostaContaVeiculoVPR.data);
           setlimiteContrato(respostaLimiteContrato.data);
-        
+          setPedidoRastreamento(respostaPedidoRastreamento.data);
+
           if (respostaDados && respostaDados.data) {
           const resultado = respostaDados.data;
           console.log('3. [Sucesso] Dados do SQLite recebidos para a tela:', resultado);
@@ -329,17 +332,17 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           <div className="row g-3">
       
         {/* CARD 1: Fatura (Esquerda Superior) */}
-        <div className="col-md-6 p-2">
-          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+         <div className="col-md-6 p-1">
+          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+            <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Fatura</h3>
               <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
                 Consultar faturas →
               </button>
             </div>
-            <h5 className="text-start m-0">{faturaCriado?.billId}</h5>
-            <div className="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
-      
+            
+            <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3">
+      <h5 className="text-start m-0">{faturaCriado?.billId}</h5>
       {/* 1. TEXTO DO STATUS: Aplica a cor dinâmica (Vermelho, Amarelo, Verde, Roxo ou Azul) */}
       <h1 
         className={`fs-4 mb-0 fw-bold ${coresStatus.texto}`}
@@ -380,60 +383,124 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
             "R$ 0,00"
           )}
         </span>
-      </div>
-    </div>
-          </div>
+        </div>
+        </div>
+        </div>
         </div>
 
         {/* CARD 2: Últimos Pedidos (Direita Superior) */}
-        <div className="col-md-6 p-2">
-          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h3 className="fs-6 mb-0 fw-bold text-dark">Últimos pedidos</h3>
-              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }} onClick={() => setAbaAtiva('consultaPedidosCards')}>
-                Consultar pedidos →
-              </button>
-            </div>
+        <div className="col-md-6 p-1">
+        <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
 
-            <div className="position-relative px-2 mt-1 pt-1">
-              <div className="position-absolute start-0 end-0 bg-secondary-subtle" style={{ height: '2px', zIndex: 0, top: '10px' }}></div>
-              
-              <div className="d-flex justify-content-between text-center position-relative mb-1" style={{ zIndex: 1 }}>
-                <div style={{ width: '30%' }}><span className="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center fw-bold lh-1" style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}>✓</span></div>
-                <div style={{ width: '30%' }}><span className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center fw-bold lh-1" style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}>2</span></div>
-                <div style={{ width: '30%' }}><span className="rounded-circle bg-secondary-subtle text-secondary border d-inline-flex align-items-center justify-content-center fw-bold lh-1" style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}>3</span></div>
-              </div>
-
-              <div className="d-flex justify-content-between text-center">
-                <div style={{ width: '30%' }}>
-                  <p className="fw-bold text-success mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Realizado</p>
-                  <span className="text-muted d-block" style={{ fontSize: '0.6rem' }}>12 Ago • 14:32</span>
-                </div>
-                <div style={{ width: '30%' }}>
-                  <p className="fw-bold text-primary mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Em separação</p>
-                  <span className="text-muted d-block" style={{ fontSize: '0.6rem' }}>12 Ago • 15:10</span>
-                </div>
-                <div style={{ width: '30%' }}>
-                  <p className="fw-semibold text-muted mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Enviado para transportadora</p>
-                  <span className="text-muted d-block" style={{ fontSize: '0.6rem' }}>Aguardando...</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h3 className="fs-6 mb-0 fw-bold text-dark">Últimos pedidos</h3>
+          <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }} onClick={() => setAbaAtiva('consultaPedidosCards')}>
+            Consultar pedidos →
+          </button>
         </div>
 
-        {/* CARD 3: Veículos (Esquerda Inferior) */}
-        <div className="col-md-6 p-2">
-          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white">
+        <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3">
+  
+       {/* Cabeçalho do Bloco com o Código do Pedido */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+         <div>
+         <strong className="text-dark fs-6">
+           PED-{pedidoRastreamento?.pedidoTagId || "---"} : {
+             /* 💡 A MÁGICA: Convertemos para número e exibimos o status correto de cada etapa */
+             Number(pedidoRastreamento?.statusPedidoId) === 1 ? "Realizado" :
+             Number(pedidoRastreamento?.statusPedidoId) === 2 ? "Em Separação" :
+             Number(pedidoRastreamento?.statusPedidoId) === 3 ? "Concluído" : 
+             "Aguardando..."
+           }
+         </strong>
+         </div>
+        </div>
 
-            <div className="d-flex justify-content-between align-items-center mb-3">
+     {/* Linha do Progresso (Timeline) */}
+     <div className="position-relative px-2 mt-1 pt-1 mb-3">
+
+     {/* Barra de Fundo Cinza Conectora */}
+      <div className="position-absolute start-0 end-0 bg-secondary-subtle" style={{ height: '2px', zIndex: 0, top: '10px' }}></div>
+    
+     {/* Círculos Indicadores de Etapa (1, 2 e 3) */}
+      <div className="d-flex justify-content-between text-center position-relative mb-2" style={{ zIndex: 1 }}>
+      <div style={{ width: '30%' }}>
+        <span className="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center fw-bold lh-1" style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}>✓</span>
+      </div>
+      
+      <div style={{ width: '30%' }}>
+        {/* 💡 CORREÇÃO: 
+            1. Se estiver na etapa 2 (Em separação), ganha fundo amarelo comercial (bg-warning) e texto escuro (text-dark).
+            2. Se já passou dela (etapa > 2), muda para verde de sucesso (bg-success text-white) exibindo o '✓'.
+            3. Se ainda não chegou, mantém o visual cinza discreto de bloqueado. */}
+        <span 
+          className={`rounded-circle d-inline-flex align-items-center justify-content-center fw-bold lh-1 ${
+            Number(pedidoRastreamento?.statusPedidoId) > 2 
+              ? 'bg-success text-white' 
+              : Number(pedidoRastreamento?.statusPedidoId) === 2 
+                ? 'bg-warning text-dark' 
+                : 'bg-secondary-subtle text-secondary border'
+          }`} 
+          style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}
+        >
+          {Number(pedidoRastreamento?.statusPedidoId) > 2 ? '✓' : '2'}
+        </span>
+      </div>
+
+      <div style={{ width: '30%' }}>
+        {/* Pinta de roxo/azul se chegou na última etapa */}
+        <span className={`rounded-circle d-inline-flex align-items-center justify-content-center fw-bold lh-1 text-white ${Number(pedidoRastreamento?.statusPedidoId) === 3 ? 'bg-primary' : 'bg-secondary-subtle text-secondary border'}`} style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}>3</span>
+      </div>
+     </div>
+
+     {/* Textos Informativos e Datas Embaixo de Cada Círculo */}
+      <div className="d-flex justify-content-between text-center">
+      
+      {/* Etapa 1: Realizado */}
+      <div style={{ width: '30%' }}>
+        <p className="fw-bold text-success mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Realizado</p>
+        <span className="text-muted d-block small mt-1" style={{ fontSize: '0.6rem' }}>
+          {/* CORREÇÃO: Tratado como variável real. Se não existir no objeto, exibe o texto padrão */}
+          {pedidoRastreamento?.dataRegistro || "Aguardando..."}
+        </span>
+      </div>
+
+       {/* Etapa 2: Em separação */}
+       <div style={{ width: '30%' }}>
+        <p className={`fw-bold mb-0 ${Number(pedidoRastreamento?.statusPedidoId) >= 2 ? 'text-primary' : 'text-muted'}`} style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Em separação</p>
+        <span className="text-muted d-block small mt-1" style={{ fontSize: '0.6rem' }}>
+          {Number(pedidoRastreamento?.statusPedidoId) >= 2 ? (pedidoRastreamento?.dataRegistro || "Aguardando...") : "---"}
+        </span>
+       </div>
+
+       {/* Etapa 3: Enviado */}
+        <div style={{ width: '30%' }}>
+        <p className={`fw-bold mb-0 ${Number(pedidoRastreamento?.statusPedidoId) === 3 ? 'text-primary' : 'text-muted'}`} style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Enviado</p>
+        <span className="text-muted d-block small mt-1" style={{ fontSize: '0.6rem' }}>
+          {Number(pedidoRastreamento?.statusPedidoId) === 3 ? (pedidoRastreamento?.dataRegistro || "Aguardando...") : "---"}
+        </span>
+        </div>
+
+        </div> {/* Fecha bloco de textos */}
+        </div> {/* Fecha position-relative da timeline */}
+
+        </div> {/* Fecha card principal mestre */}
+
+        </div>
+        </div>
+   
+
+        {/* CARD 3: Veículos (Esquerda Inferior) */}
+         <div className="col-md-6 p-1">
+          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+            <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Veículos</h3>
               <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('listar-frota')}>
                 Consultar veículos →
               </button>
             </div>
 
-            <div className="d-flex justify-content-between align-items-center bg-light p-3 rounded-3">
+            <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3">
               <h2 className="fs-2 mb-0 fw-bold text-dark">{veiculoContrato?.length || 0}
               <span className="d-block mb-2 text-muted" style={{ fontSize: '0.75rem' }}>Veículos cadastrados</span>
               </h2>
@@ -450,15 +517,15 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         </div>
 
         {/* CARD 4: Tag (Direita Inferior) */}
-        <div className="col-md-6 p-2">
-          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
-            <div className="d-flex justify-content-between align-items-center mb-3">
+         <div className="col-md-6 p-1">
+          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+            <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Tag</h3>
               <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
                 Ativar tags →
               </button>
             </div>
-            <div className="alert alert-secondary py-2 px-3 text-center mb-0 fw-medium" role="alert" style={{ fontSize: '0.8rem' }}>
+            <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3" role="alert" style={{ fontSize: '0.8rem' }}>
               🛠️ Conteúdo em construção
             </div>
           </div>
@@ -507,11 +574,13 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         )}
 
         {(abaAtiva === 'consultaPedidosCards') && (
-          <ConsultaPedidosCards onNovoPedido={() => setAbaAtiva('solicitacaoPedido')}/>
+          <ConsultaPedidosCards onNovoPedido={() => setAbaAtiva('solicitacaoPedido')} 
+          contractId={Number(payloadEnvio.dadosLimpos.id)}
+          />
         )}
 
         {abaAtiva === 'solicitacaoPedido' && ( 
-         <SolicitacaoPedido 
+         <SolicitacaoPedido contractId={Number(payloadEnvio.dadosLimpos.id)}
            // Se quiser, pode passar uma prop onVoltar para o cadastro conseguir retornar
            onVoltar={() => setAbaAtiva('consultaPedidosCards')} 
          />
