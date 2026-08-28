@@ -285,10 +285,69 @@ export class Database {
               );
             `);
 
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS tag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                contratoId INTEGER,
+                pedidoTagId INTEGER,
+                serial TEXT,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id),
+                FOREIGN KEY (pedidoTagId) REFERENCES pedidoTag(id)
+              );
+            `);
+
+          await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS pedidoTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                contratoId INTEGER,
+                quantidade INTEGER,
+                reposnsavelRecebimento INETEGER,
+                usuarioPerdido INTEGER,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS pedidoTagRatreamento (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                statusPedidoId INTEGER,
+                pedidoTagId INTEGER,
+                FOREIGN KEY (pedidoTagId) REFERENCES pedidoTag(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS contratoVeiculoTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                tagId INTEGER,
+                contratoVeiculoTagStatusTipo INTEGER,
+                contratoVeiculoTagServiceTipo,
+                FOREIGN KEY (tagId) REFERENCES tag(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS osaManufaturaTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                lote INTEGER,
+                serial INTEGER
+              );
+            `);
+
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contratoVeiculoTagServiceTipo (id INTEGER PRIMARY KEY AUTOINCREMENT,descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contratoVeiculoTagStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT,descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS statusPedidoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descrição TEXT);`);
+
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS veiculoMarcaTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS veiculoModeloTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS veiculoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS eixoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+
 
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS corteFaturamentoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS planoComercializadoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
@@ -298,6 +357,16 @@ export class Database {
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS transacaoVeiculoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS transacaoContratoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS extratoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS banco_fat.contratoVeiculoTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                TmTagId INTEGER,
+                contratoVeiculoTagStatusTipo INTEGER,
+                contratoVeiculoTagServiceTipo
+              );
+            `);
             
             // TABELAS NO BANCO DE FATURAMENTO (banco_fat)
             await this.instance.exec(`
