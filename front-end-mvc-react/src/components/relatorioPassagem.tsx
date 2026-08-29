@@ -1,14 +1,5 @@
 import React from 'react';
-
-
-// Interface estrita para os dados de passagem
-interface IPassagem {
-  id: string;
-  placa: string;
-  dataPassagem: string;
-  valorPassagem: string;
-  local: string;
-}
+import type { IPassagem } from '../types/IPassagem';
 
 // Dados simulados de passagens (pedágios) para popular a tabela
 const PASSAGENS_MOCK: IPassagem[] = [

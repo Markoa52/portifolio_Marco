@@ -28,27 +28,47 @@ class Parametrizacao {
 
       // Cenário 1: Corte de Faturamento
       if (tipo === 'tipoCorte' || tipo === 'cadastrar_categoria_pedagio') {
-          await criaParametrizacao.criarCorteFaturamento(dadosReais);
+          await criaParametrizacao.criarCorteFaturamento(dadosReais, transacao);
       }
       
       // Cenário 2: Plano Comercializado
       else if (tipo === 'tipoComercializado' || tipo === 'cadastrar_veiculo') {
-          await criaParametrizacao.criarPlanoComercializado(dadosReais);
+          await criaParametrizacao.criarPlanoComercializado(dadosReais, transacao);
       }
       
       // Cenário 3: Plano de Pagamento
       else if (tipo === 'tipoPagamento' || tipo === 'cadastrar_regra_tag') {
-          await criaParametrizacao.criarPlanoPagamento(dadosReais);
+          await criaParametrizacao.criarPlanoPagamento(dadosReais, transacao);
       }
 
         // Cenário 4: Status do contrato
       else if (tipo === 'tipoContratoStatus' || tipo === 'cadastrar_regra_tag') {
-          await criaParametrizacao.criarStatusContrato(dadosReais);
+          await criaParametrizacao.criarStatusContrato(dadosReais, transacao);
       }
 
        // Cenário 5: Status da fatura
       else if (tipo === 'tipoFaturaStatus' || tipo === 'cadastrar_regra_tag') {
-          await criaParametrizacao.criarStatusFatura(dadosReais);
+          await criaParametrizacao.criarStatusFatura(dadosReais, transacao);
+      }
+
+      // Cenário 6: Tipo do veiculo
+      else if (tipo === 'tipoVeiculo') {
+          await criaParametrizacao.criarTipoVeiculo(dadosReais, transacao);
+      }
+
+      // Cenário 7: Marca do veiculo
+      else if (tipo === 'marcaVeiculo') {
+          await criaParametrizacao.criarMarcaVeiculo(dadosReais, transacao);
+      }
+
+      // Cenário 8: Eixo do veiculo
+      else if (tipo === 'eixoVeiculo') {
+          await criaParametrizacao.criarEixoVeiculo(dadosReais, transacao);
+      }
+
+      // Cenário 9: Transacao do veiculo
+      else if (tipo === 'transacaoVeiculo') {
+          await criaParametrizacao.criarTransacaoVeiculo(dadosReais, transacao);
       }
 
       // Conclui e grava as alterações no banco de dados de forma definitiva

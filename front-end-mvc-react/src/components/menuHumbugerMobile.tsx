@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import '../styles/contrato.css'; // Carrega os estilos unificados
-
-interface IMenuMobileProps {
-  setAbaAtiva: (aba: any) => void;
-}
+import type { IMenuMobileProps } from '../types/IMenuMobileProps';
 
 export const MenuMobileModulos: React.FC<IMenuMobileProps> = ({ setAbaAtiva }) => {
   const [aberto, setAberto] = useState<boolean>(false);

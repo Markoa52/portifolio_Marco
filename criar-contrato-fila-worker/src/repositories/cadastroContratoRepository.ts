@@ -370,4 +370,33 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
     
     console.log(`[Serviço] Responsável legal (${responsavelLegalData.responsavelLegal}) cadastrado com sucesso!`);
   }
+
+  async criarContaContrato(ContaContratoData: any, contratoId: number, transaction?: sqlServer.Transaction) {
+  try {
+    // Se receber uma transação, cria o request nela. Caso contrário, usa o pool global.
+    const request = transaction 
+      ? new sqlServer.Request(transaction) 
+      : (await Database.getConnection()).request();
+
+    // SQL Server usa parâmetros nomeados (@parametro)
+    const query = `
+      INSERT INTO contaContrato (cnpj, contratoId, limiteContrato, saldoContrato)
+      VALUES (@cnpj, @contratoId, @limiteContrato, @saldoContrato);
+    `;
+
+    // Mapeamento e tipagem estrita dos inputs contra SQL Injection
+    await request
+      .input('cnpj', sqlServer.VarChar, ContaContratoData.cnpj || null)
+      .input('contratoId', sqlServer.Int, contratoId)
+      .input('limiteContrato', sqlServer.Decimal(18, 2), ContaContratoData.limiteContrato || 0)
+      .input('saldoContrato', sqlServer.Decimal(18, 2), 0) // Define o saldo inicial zerado
+      .query(query);
+      
+    console.log(`[Serviço] conta contrato (${ContaContratoData.contaContrato}) cadastrado com sucesso!`);
+    
+  } catch (erro) {
+    console.error("Erro no processamento do criarContaContrato Repository:", erro);
+    throw erro;
+  }
+}
 }

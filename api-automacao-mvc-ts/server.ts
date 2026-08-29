@@ -12,7 +12,7 @@ import checarArquivoRoutes from './src/routes/checarArquivoRoutes.js';
 // ==========================================================================
 // 3. IMPORTAÇÃO DAS ROTAS (Movido para o topo)
 // ==========================================================================
-import webhookPedagioRoutes from './src/routes/webhookPedagioRoutes.js';
+import webhookGLPIRoutes from './src/routes/webhookPedagioRoutes.js';
 import dashboardRoutes from './src/routes/dashboardRoutes';
 import oneDriveRoutes from './src/routes/oneDriveRoutes';
 import apiExternaRoutes from './src/routes/apiExternaRoutes';
@@ -21,6 +21,8 @@ import gerarArquivoFilaRoutes from './src/routes/gerarArquivoFilaRoutes';
 import contratoRoutes from './src/routes/contratoRoutes';
 import parametrizacaoRoutes from './src/routes/parametrizacaoRoutes.js';
 import condicoesComerciaisRoutes from './src/routes/condicoesComerciaisRoutes.js'
+import veiculoRoutes from './src/routes/veiculoRoutes.js'
+import pedidoRoutes from './src/routes/pedidoRoutes.js'
 // ==========================================================================
 // INICIALIZAÇÃO CRÍTICA (DEVE SER A PRIMEIRA COISA)
 // ==========================================================================
@@ -74,7 +76,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 // ==========================================================================
 // REGISTRO DAS ROTAS
 // ==========================================================================
-app.use('/api', webhookPedagioRoutes);      
+app.use('/api', webhookGLPIRoutes);      
 app.use('/api', oneDriveRoutes);   
 app.use('/api', dashboardRoutes);       
 app.use('/api', apiExternaRoutes);  
@@ -84,6 +86,8 @@ app.use('/api', checarArquivoRoutes); // 🌟 Colocado junto com as outras usand
 app.use('/api', contratoRoutes);
 app.use('/api', parametrizacaoRoutes)
 app.use('/api', condicoesComerciaisRoutes)
+app.use('/api', veiculoRoutes)
+app.use('/api', pedidoRoutes)
 
 app.use(cors()); // 🌟 2. Ative o CORS antes de qualquer rota!
 app.use(express.json());

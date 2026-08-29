@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 // No CommonJS da API Principal, imports locais não levam extensão no caminho
-import { webhookGLPIService } from '../services/webhookGLPIService';
+import { webhookPedagioService } from '../services/webhookPedagioService';
 
 export class dashboardController{
-constructor(private glpi:webhookGLPIService ){}
+constructor(private glpi:webhookPedagioService ){}
 
 async obterDadosAPI(req: Request, res: Response): Promise<Response | void>{
     try {

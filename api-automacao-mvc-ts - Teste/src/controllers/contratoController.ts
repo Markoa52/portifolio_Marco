@@ -76,6 +76,111 @@ export class contratoController {
     }
   }
 
+  async buscarFaturaId(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const contractId = parseInt(String(id ?? ''));
+
+      if (isNaN(contractId)) {
+        return res.status(400).json({ erro: 'O parâmetro ID fornecido na URL deve ser um número válido.' });
+      }
+
+      console.log(`[Controller] Efetuando busca rápida no SQL Server para a tela. ID: ${contractId}`);
+
+      // Acessa o repositório diretamente de dentro do serviço para trazer os dados sem disparar filas
+      // (Se o seu service já tem o repository injetado, criamos um método leve lá ou chamamos o repo direto)
+      const contratoLocalizado = await this.contratoService.obterFatura(contractId);
+
+      if (!contratoLocalizado) {
+        return res.status(404).json({ erro: `Contrato número ${contractId} não localizado no banco.` });
+      }
+
+      return res.status(200).json(contratoLocalizado);
+    } catch (erro: any) {
+      console.error('Erro no buscarPorId (GET):', erro.message);
+      return res.status(500).json({ erro: erro.message });
+    }
+  }
+
+  async buscarFaturaAbertoId(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const contractId = parseInt(String(id ?? ''));
+
+      if (isNaN(contractId)) {
+        return res.status(400).json({ erro: 'O parâmetro ID fornecido na URL deve ser um número válido.' });
+      }
+
+      console.log(`[Controller] Efetuando busca rápida no SQL Server para a tela. ID: ${contractId}`);
+
+      // Acessa o repositório diretamente de dentro do serviço para trazer os dados sem disparar filas
+      // (Se o seu service já tem o repository injetado, criamos um método leve lá ou chamamos o repo direto)
+      const contratoLocalizado = await this.contratoService.obterFaturaAberto(contractId);
+
+      if (!contratoLocalizado) {
+        return res.status(404).json({ erro: `Contrato número ${contractId} não localizado no banco.` });
+      }
+
+      return res.status(200).json(contratoLocalizado);
+    } catch (erro: any) {
+      console.error('Erro no buscarPorId (GET):', erro.message);
+      return res.status(500).json({ erro: erro.message });
+    }
+  }
+
+    async buscarFaturasId(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const contractId = parseInt(String(id ?? ''));
+
+      if (isNaN(contractId)) {
+        return res.status(400).json({ erro: 'O parâmetro ID fornecido na URL deve ser um número válido.' });
+      }
+
+      console.log(`[Controller] Efetuando busca rápida no SQL Server para a tela. ID: ${contractId}`);
+
+      // Acessa o repositório diretamente de dentro do serviço para trazer os dados sem disparar filas
+      // (Se o seu service já tem o repository injetado, criamos um método leve lá ou chamamos o repo direto)
+      const contratoLocalizado = await this.contratoService.obterFaturas(contractId);
+
+      if (!contratoLocalizado) {
+        return res.status(404).json({ erro: `Contrato número ${contractId} não localizado no banco.` });
+      }
+
+      return res.status(200).json(contratoLocalizado);
+    } catch (erro: any) {
+      console.error('Erro no buscarPorId (GET):', erro.message);
+      return res.status(500).json({ erro: erro.message });
+    }
+  }
+
+
+    async buscarSaldoFaturaId(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const contractId = parseInt(String(id ?? ''));
+
+      if (isNaN(contractId)) {
+        return res.status(400).json({ erro: 'O parâmetro ID fornecido na URL deve ser um número válido.' });
+      }
+
+      console.log(`[Controller] Efetuando busca rápida no SQL Server para a tela. ID: ${contractId}`);
+
+      // Acessa o repositório diretamente de dentro do serviço para trazer os dados sem disparar filas
+      // (Se o seu service já tem o repository injetado, criamos um método leve lá ou chamamos o repo direto)
+      const contratoLocalizado = await this.contratoService.obterSaldoFatura(contractId);
+
+      if (!contratoLocalizado) {
+        return res.status(404).json({ erro: `Contrato número ${contractId} não localizado no banco.` });
+      }
+
+      return res.status(200).json(contratoLocalizado);
+    } catch (erro: any) {
+      console.error('Erro no buscarPorId (GET):', erro.message);
+      return res.status(500).json({ erro: erro.message });
+    }
+  }
+
    async contrato(req: Request, res: Response): Promise<Response> {
     try {
 
@@ -95,6 +200,33 @@ export class contratoController {
       return res.status(500).json({ erro: erro.message });
     }
   }
+
+      async contratoLimite(req: Request, res: Response): Promise<Response> {
+    try {
+      const { id } = req.params;
+      const contractId = parseInt(String(id ?? ''));
+
+      if (isNaN(contractId)) {
+        return res.status(400).json({ erro: 'O parâmetro ID fornecido na URL deve ser um número válido.' });
+      }
+
+      console.log(`[Controller] Efetuando busca rápida no SQL Server para a tela. ID: ${contractId}`);
+
+      // Acessa o repositório diretamente de dentro do serviço para trazer os dados sem disparar filas
+      // (Se o seu service já tem o repository injetado, criamos um método leve lá ou chamamos o repo direto)
+      const Limitecontrato = await this.contratoService.obterLimiteContrato(contractId);
+
+    if (Limitecontrato === null || Limitecontrato === undefined) {
+      return res.status(404).json({ erro: `Contrato ID ${Limitecontrato} ou saldoVPR não localizado no banco.` });
+    }
+
+      return res.status(200).json(Limitecontrato);
+    } catch (erro: any) {
+      console.error('Erro no buscarPorId (GET):', erro.message);
+      return res.status(500).json({ erro: erro.message });
+    }
+  }
+  
 }
 
 

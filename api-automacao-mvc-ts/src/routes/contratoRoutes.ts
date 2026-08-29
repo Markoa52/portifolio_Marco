@@ -63,11 +63,146 @@ router.get('/contrato/:id', (req, res) => geradorController.buscarPorId(req, res
 
 /**
  * @openapi
- * /api/contrato:
+ * /api/contrato/fatura{id}:
+ *   get:
+ *     tags:
+ *       - Fatura
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/contrato/fatura/:id', (req, res) => geradorController.buscarFaturaId(req, res));
+
+/**
+ * @openapi
+ * /api/fatura/aberto{id}:
+ *   get:
+ *     tags:
+ *       - Fatura
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/fatura/aberto/:id', (req, res) => geradorController.buscarFaturaAbertoId(req, res));
+
+/**
+ * @openapi
+ * /api/contrato/faturas/{id}:
+ *   get:
+ *     tags:
+ *       - Fatura
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/contrato/faturas/:id', (req, res) => geradorController.buscarFaturasId(req, res));
+
+/**
+ * @openapi
+ * /api/fatura/saldo{id}:
+ *   get:
+ *     tags:
+ *       - Fatura
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/fatura/saldo/:id', (req, res) => geradorController.buscarSaldoFaturaId(req, res));
+
+/**
+ * @openapi
+ * /api/contrato/saldo{id}:
+ *   get:
+ *     tags:
+ *       - Contrato
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/contrato/limite/:id', (req, res) => geradorController.contratoLimite(req, res));
+
+/**
+ * @openapi
+ * /api/contrato/pesquisa:
  *   post:
  *     tags:
  *       - Contrato
- *     summary: Açoes em contrato de cliente(Inserir, atualizar e excluir)
+ *     summary: Verifica se o contrato existe
  *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
  *     requestBody:
  *       required: true

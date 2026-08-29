@@ -1,15 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import '../styles/usuario.css';
 import type { IEmailRegistro } from '../types/index.ts';
-import type { PaginaTipo } from './contrato.tsx';
 import axios from 'axios';
 import { Search } from 'lucide-react';
-
-// 1. Como a página busca os próprios dados, deixamos a prop 'dados' como opcional ou limpamos
-export interface IVisaoGeralProps {
-  dados?: any[]; 
-  setPaginaAtiva?: (pagina: PaginaTipo) => void;
-}
+import type { IVisaoGeralProps } from '../types/IVisaoGeralProps.ts';
 
 export const Usuario: React.FC<IVisaoGeralProps> = ({ }) => {
 

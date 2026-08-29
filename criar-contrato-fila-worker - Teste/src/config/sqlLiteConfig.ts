@@ -48,13 +48,26 @@ export class Database {
             // 4. CRIAÇÃO DAS TABELAS (Garantindo a execução síncrona dos blocos)
             console.log('Criando tabelas no banco de dados...');
 
+            //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
+            //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
+
+            //await this.instance.exec(`DROP TABLE pedidoTagRatreamento`);
+            //await this.instance.exec(`DROP TABLE ContaVeiculo`);
+            //await this.instance.exec(`DROP TABLE contaContrato`);
+            //await this.instance.exec(`INSERT INTO contaContrato (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
+
+            //await this.instance.exec(`INSERT INTO pedidoTagRastreamento (dataRegistro, statusPedidoId, pedidoTagId) VALUES ('2026-08-28', 3, 1)`);
+            //await this.instance.exec(`UPDATE pedidoTagRastreamento set statusPedidoId=2 where id=3;`);
+          
+            //await this.instance.exec(` ALTER TABLE veiculo ADD COLUMN contratoId;`);
+
             //   await this.instance.exec(`
             //   ALTER TABLE contrato ADD COLUMN diaSemanaCorte;
             //   ALTER TABLE banco_fat.contrato_faturamento ADD COLUMN diaSemanaCorte;
             // `);
 
-            // await this.instance.exec(`DELETE FROM sqlite_sequence;`)
-            // await this.instance.exec(`DELETE FROM banco_fat.sqlite_sequence;`);
+            //await this.instance.exec(`DELETE FROM sqlite_sequence;`)
+            //await this.instance.exec(`DELETE FROM banco_fat.sqlite_sequence;`);
 
             // await this.instance.exec(`
             //   DELETE FROM contrato;
@@ -67,7 +80,6 @@ export class Database {
             //   DELETE FROM banco_fat.endereco_faturamento;
             //   DELETE FROM banco_fat.bill;
             // `);
-
 
             await this.instance.exec(`
               CREATE TABLE IF NOT EXISTS contrato (
@@ -84,6 +96,59 @@ export class Database {
                 prazoPagamento INTEGER,
                 diaSemanaCorte INTEGER,
                 contratoStatusId INTEGER
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS contaContrato (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cnpj TEXT,
+                contratoId INTEGER,
+                limiteContrato REAL,
+                saldoContrato REAL,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id)
+              );
+
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS lancamentoContabilContrato (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contaContratoId INTEGER,
+                valorTransacao REAL,
+                saldoAposTransacao REAL,
+                trasacaoProcessamentoId INTEGER,
+                transacaoContratoTipo INTEGER,
+                FOREIGN KEY (contaContratoId) REFERENCES contaContrato(id),
+                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS trasacaoProcessamento (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contratoId INTEGER,
+                valorTransacaoPedagio REAL,
+                valorCobradoPedagio REAL,
+                valorCobradoValePedagio REAL,
+                valorReembolso REAL,
+                pracaPedagio TEXT,
+                documentoEmbarcador TEXT,
+                recargaValePedagioId INETEGER,
+                statusViagemTipo INTEGER,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id),
+                FOREIGN KEY (recargaValePedagioId) REFERENCES recargaValePedagio(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS recargaValePedagio (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contratoId INTEGER,
+                trasacaoProcessamentoId INTEGER,
+                valorRecarga REAL,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id),
+                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
               );
             `);
 
@@ -133,11 +198,185 @@ export class Database {
               );
             `);
 
+             await this.instance.exec(`
+               CREATE TABLE IF NOT EXISTS veiculo (
+                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 placa TEXT NOT NULL,
+                 marca TEXT,
+                 modelo TEXT,
+                 tipoveiculo TEXT,
+                 eixo TEXT,
+                 rntc TEXT,
+                 documento TEXT,
+                 contratoId INTEGER,
+                 status TEXT DEFAULT 'aguardando ativação', -- NOVO CAMPO: Inicia automaticamente como 'ativo'
+                 FOREIGN KEY (contratoId) REFERENCES contrato(id)
+               );
+             `);
+
+              await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS contaVeiculo (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                veiculoId INTEGER,
+                saldoContaVeiculo REAL,
+                FOREIGN KEY (veiculoId) REFERENCES veiculo(id)
+              );
+
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS lancamentoContabilVeiculo (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contaVeiculoId INTEGER,
+                valorTransacao REAL,
+                saldoAposTransacao REAL,
+                trasacaoProcessamentoId INTEGER,
+                transacaoVeiculoTipo INTEGER,
+                recargaValePedagioId INETEGER,
+                pagamentoPix INTEGER,
+                pagamentoCartao INTEGER,
+                FOREIGN KEY (contaVeiculoId) REFERENCES contaVeiculo(id),
+                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id),
+                FOREIGN KEY (recargaValePedagioId) REFERENCES recargaValePedagio(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS relatorioBillItem (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                billItemId INTEGER,
+                billItemTipo REAL,
+                contratoId INTEGER,
+                valor REAL,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS relatorioPassagem (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contratoId INTEGER,
+                dataInicio DATE,
+                dataFim DATE,
+                valorTransacaoPedagio REAL,
+                valorCobradoPedagio REAL,
+                valorCobradoValePedagio REAL,
+                valorReembolso REAL,
+                pracaPedagio TEXT,
+                trasacaoProcessamentoId INTEGER,
+                status INTEGER,
+                valor REAL,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id),
+                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS relatorioExtrato (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                contratoId INTEGER,
+                dataViagem DATE,
+                valorTransacaoPedagio REAL,
+                valorCobradoPedagio REAL,
+                valorCobradoValePedagio REAL,
+                valorReembolso REAL,
+                pracaPedagio TEXT,
+                trasacaoProcessamentoId INTEGER,
+                extratoTipo INTEGER,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id),
+                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS tag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                contratoId INTEGER,
+                pedidoTagId INTEGER,
+                serial TEXT,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id),
+                FOREIGN KEY (pedidoTagId) REFERENCES pedidoTag(id)
+              );
+            `);
+
+          await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS pedidoTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                nomeComprador TEXT,
+                telefone TEXT,
+                email TEXT,
+                quantidade INTEGER,
+                valorUnidade REAL,
+                valorTotal REAL,
+                enderecoEntrega TEXT,
+                contratoId INTEGER,
+                responsavelRecebimento TEXT,
+                usuarioPedido INTEGER,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS pedidoTagRastreamento (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                statusPedidoId INTEGER,
+                pedidoTagId INTEGER,
+                FOREIGN KEY (pedidoTagId) REFERENCES pedidoTag(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS contratoVeiculoTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                tagId INTEGER,
+                contratoVeiculoTagStatusTipo INTEGER,
+                contratoVeiculoTagServiceTipo,
+                FOREIGN KEY (tagId) REFERENCES tag(id)
+              );
+            `);
+
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS osaManufaturaTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                lote INTEGER,
+                serial INTEGER
+              );
+            `);
+
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contratoVeiculoTagServiceTipo (id INTEGER PRIMARY KEY AUTOINCREMENT,descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contratoVeiculoTagStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT,descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS statusPedidoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descrição TEXT);`);
+
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS veiculoMarcaTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS veiculoModeloTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS veiculoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS eixoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+
+
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS corteFaturamentoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS planoComercializadoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS planoPagamentoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
-            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contractoStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS contratoStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS statusViagemTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS transacaoVeiculoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS transacaoContratoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS extratoTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
 
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS banco_fat.contratoVeiculoTag (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dataRegistro TEXT,
+                TmTagId INTEGER,
+                contratoVeiculoTagStatusTipo INTEGER,
+                contratoVeiculoTagServiceTipo
+              );
+            `);
+            
             // TABELAS NO BANCO DE FATURAMENTO (banco_fat)
             await this.instance.exec(`
               CREATE TABLE IF NOT EXISTS banco_fat.contrato_faturamento (
@@ -198,7 +437,30 @@ export class Database {
               );
             `);
 
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS banco_fat.billItem (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                billId INTEGER,
+                billItemTipo INTEGER,
+                contractId INTEGER,
+                dataRegistro TEXT,
+                valor TEXT,
+                FOREIGN KEY (billId) REFERENCES bill(id)
+              );
+            `);
+
             await this.instance.exec(`CREATE TABLE IF NOT EXISTS banco_fat.billStatusTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+            await this.instance.exec(`CREATE TABLE IF NOT EXISTS banco_fat.billItemTipo (id INTEGER PRIMARY KEY AUTOINCREMENT, descricao TEXT);`);
+
+            //await this.instance.exec(`INSERT INTO banco_fat.billItem (billId, billItemTipo, contractId, dataRegistro, valor) VALUES (null, 9, 1, datetime('now', 'localtime'), 100);`);
+            //await this.instance.exec(`INSERT INTO banco_fat.billItem (billId, billItemTipo, contractId, dataRegistro, valor) VALUES (null, 9, 1, datetime('now', 'localtime'), 630);`);
+
+            //await this.instance.exec(`DROP TABLE banco_fat.bill_item`);
+            //await this.instance.exec(`DROP TABLE veiculo`);
+            //await this.instance.exec(`DELETE FROM banco_fat.bill where id=2`);
+            //await this.instance.exec(`INSERT INTO banco_fat.bill (contractId, dataAbertura, dataFechamento, dataVencimento, status) VALUES (1, '2026-07-14', '2026-08-14', '2026-08-26', 4);`);
+
+            //await this.instance.exec(`UPDATE banco_fat.bill set status=3 where id=3`);
 
             console.log('[Sucesso] Todas as tabelas relacionais foram geradas e persistidas!');
         }

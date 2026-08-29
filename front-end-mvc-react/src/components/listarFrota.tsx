@@ -1,29 +1,118 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import type { IPropsFaturas } from '../types/IPropsFaturas';
+import type { IVeiculo } from '../types/IVeiculo';
 
 // Atualizamos as opções de sub-telas da frota com os novos cadastros
 type SubAbaFrota = 'lista' | 'editar' | 'ativacao' | 'detalhes' | 'cadastro-unico' | 'cadastro-lote';
 
-interface IVeiculo {
-  placa: string;
-  tag: string;
-  status: 'Ativo' | 'Inativo' | 'Manutenção';
-  dataAtivacao: string;
-}
 
-const VEICULOS_MOCK: IVeiculo[] = [
-  { placa: 'ABC-1234', tag: 'TAG-99812', status: 'Ativo', dataAtivacao: '12/01/2025' },
-  { placa: 'XYZ-5678', tag: 'TAG-44321', status: 'Inativo', dataAtivacao: '20/03/2025' },
-  { placa: 'KGB-0077', tag: 'TAG-11223', status: 'Manutenção', dataAtivacao: '05/06/2025' },
-];
+// const VEICULOS_MOCK: IVeiculo[] = [
+//   { placa: 'ABC-1234', tag: 'TAG-99812', status: 'Ativo', dataAtivacao: '12/01/2025' },
+//   { placa: 'XYZ-5678', tag: 'TAG-44321', status: 'Inativo', dataAtivacao: '20/03/2025' },
+//   { placa: 'KGB-0077', tag: 'TAG-11223', status: 'Manutenção', dataAtivacao: '05/06/2025' },
+// ];
 
-export const ListarFrota: React.FC = () => {
+export const ListarFrota: React.FC<IPropsFaturas> = ({contractId}) => {
   const [subAba, setSubAba] = useState<SubAbaFrota>('lista');
   const [veiculoSelecionado, setVeiculoSelecionado] = useState<IVeiculo | null>(null);
+  const [veiculoCriado, setveiculoCriado] = useState<any[]>([]);
 
   const navegarPara = (tela: SubAbaFrota, veiculo: IVeiculo | null) => {
     setVeiculoSelecionado(veiculo);
     setSubAba(tela);
   };
+
+    const [listaMarcaVeiculo, setlistaMarcaVeiculo] = useState<any[]>([]);
+    const [listaTipoVeiculo, setlistaTipoVeiculo] = useState<any[]>([]);
+    const [listaEixoVeiculo, setlistaEixoVeiculo] = useState<any[]>([]);
+  
+    const [formData, setFormData] = useState({ placa: "", marca: "", modelo: "", tipoveiculo: "", eixo: "", rntc: "", documento: "" });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({ ...prevState, [name]: String(value) }));
+    };
+
+   async function enviarDadosCadastroVeiculo() {
+   try {
+
+    // Captura dados do formulário principal
+    const { placa, marca, modelo, tipoveiculo, eixo, rntc, documento } = formData;
+
+    // Montagem do payload idêntica ao que o seu Worker espera receber
+    const payloadEnvio = {
+      metadata: {
+        protocoloId: `PROT-${Date.now()}`, 
+        acao: 'inserir', 
+        criadoEm: new Date(),
+        contratoId: Number(contractId)
+      },
+      contextoVeiculo: {
+        placa: String(placa),
+        marca: String(marca),
+        modelo: String(modelo),
+        tipoveiculo: String(tipoveiculo),
+        eixo: String(eixo),
+        rntc: String(rntc),
+        documento: String(documento)
+      }
+    };
+
+    console.log(`[Configuração] Despachando nova informação para a fila:`, payloadEnvio);
+
+    // Dispara para a API do Express que gerencia a fila
+    const resposta = await axios.post('http://localhost:3000/api/veiculo/acoes', payloadEnvio);
+    
+    // Verifica se a API aceitou a mensagem
+    if (resposta.status === 200 || resposta.status === 202 || resposta.data?.sucesso) {
+      alert(`Sucesso! Parâmetros enviados para a fila.\nProtocolo: ${payloadEnvio.metadata.protocoloId}`);
+    }
+
+  } catch (error) {
+    console.error("Erro ao enviar dados para a API/Fila:", error);
+    alert("Falha ao processar o cadastro do contrato. Verifique o console.");
+  }
+}
+
+useEffect(() => {
+
+  if (!contractId) return;
+
+   let ativo = true;
+
+   async function carregarTodosOsCombos() {
+    try {
+      const resposta = await axios.get("http://localhost:3000/api/veiculo/lookups");
+      
+      if (ativo && resposta.data) {
+        const dados = resposta.data;
+        console.log("Mapeando dados da API para o estado do React:", dados);
+
+        // CORREÇÃO INTEGRAL COM BASE NO SEU PRINT:
+        // Lemos as chaves exatas (letras minúsculas e maiúsculas idênticas ao backend)
+        setlistaMarcaVeiculo(Array.isArray(dados.marca) ? dados.marca : []);
+        setlistaTipoVeiculo(Array.isArray(dados.veiculoTipo) ? dados.veiculoTipo : []);
+        setlistaEixoVeiculo(Array.isArray(dados.eixo) ? dados.eixo : []);
+
+        const respostaVeiculos = await axios.get(`http://localhost:3000/api/veiculo/${contractId}`)
+
+        setveiculoCriado(Array.isArray(respostaVeiculos.data) ? respostaVeiculos.data : [respostaVeiculos.data]);
+        } else {
+          setveiculoCriado([]);
+        }
+        
+      } catch (error) {
+      console.error("Erro ao carregar dicionários:", error);
+      }
+    }
+  
+    carregarTodosOsCombos();
+
+    return () => {
+    ativo = false;
+    };
+   }, []);
 
     // -------------------------------------------------------------
   // TELA 1: LISTAGEM DA FROTA (TABELA COM O BOTÃO EXPORTAR INCLUÍDO)
@@ -83,7 +172,7 @@ export const ListarFrota: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {VEICULOS_MOCK.map((veiculo) => (
+            {veiculoCriado.map((veiculo) => (
               <tr key={veiculo.placa}>
                 <td>
                   <span className="text-primary fw-bold cp text-decoration-underline" onClick={() => navegarPara('editar', veiculo)} style={{ cursor: 'pointer' }}>
@@ -94,14 +183,14 @@ export const ListarFrota: React.FC = () => {
                 <td>
                   <span 
                     className={`badge px-2.5 py-1.5 fw-bold ${
-                      veiculo.status.toLowerCase() === 'ativa' || veiculo.status.toLowerCase() === 'ativo' ? 'bg-success-subtle text-success border border-success-subtle' :
-                      veiculo.status.toLowerCase() === 'bloqueada' || veiculo.status.toLowerCase() === 'bloqueado' ? 'bg-danger-subtle text-danger border border-danger-subtle' :
+                      veiculo?.status?.toLowerCase() === 'ativa' || veiculo?.status?.toLowerCase() === 'ativo' ? 'bg-success-subtle text-success border border-success-subtle' :
+                      veiculo?.status?.toLowerCase() === 'bloqueada' || veiculo?.status?.toLowerCase() === 'bloqueado' ? 'bg-danger-subtle text-danger border border-danger-subtle' :
                       'bg-warning-subtle text-warning-emphasis border border-warning-subtle'
                     }`}
                     onClick={() => navegarPara('ativacao', veiculo)}
                     style={{ cursor: 'pointer' }}
                   >
-                    {veiculo.status} ⚙
+                    {veiculo?.status || 'Inativo'} ⚙
                   </span>
                 </td>
                 <td className="text-secondary">{veiculo.dataAtivacao}</td>
@@ -121,7 +210,7 @@ export const ListarFrota: React.FC = () => {
           Exibe apenas no mobile e some do tamanho médio (md) para cima
           ========================================================================== */}
       <div className="d-block d-md-none d-flex flex-column">
-        {VEICULOS_MOCK.map((veiculo) => (
+        {veiculoCriado.map((veiculo) => (
           /* CORREÇÃO CHAVE: Adicionado 'mb-3' para criar o espaço perfeito separando um veículo do outro! */
           <div key={veiculo.placa} className="p-3 bg-light border border-light-subtle rounded-3 text-start shadow-none mb-3">
             
@@ -172,10 +261,7 @@ export const ListarFrota: React.FC = () => {
     </div>
 
   </div>
-);
-
-
-  }
+);}
 
 
   // -------------------------------------------------------------
@@ -197,18 +283,81 @@ export const ListarFrota: React.FC = () => {
           <form style={{ maxWidth: '480px' }} onSubmit={(e) => e.preventDefault()}>
             <div className="row g-2 mb-4">
               <div className="col-12 col-sm-6">
-                <label className="form-label small fw-bold text-secondary mb-1">Placa:</label>
-                <input type="text" placeholder="Ex: ABC-1234" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
+                <label className="form-label small fw-bold text-secondary mb-1">Placa</label>
+                <input value={formData.placa} onChange={handleChange} name="placa" type="text" placeholder="Ex: ABC-1234" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
               </div>
+
+              {/* Campo 2: ADAPTADO COMBOBOX - CorteFaturamento (Mapeado da sua rota de lookups) */}
+              <div className="col-md-6 text-start">
+                <label className="form-label small fw-bold text-secondary mb-1">Marca</label>
+                <select name="marca"
+                value={formData.marca} 
+                onChange={handleChange} 
+                className="form-select form-input-atendimento"
+                >
+                <option value="">--- Selecione a marca ---</option>
+                {listaMarcaVeiculo?.map((marca: any) => (
+                 <option key={marca.id || marca.Id} value={marca.id || marca.Id}>
+                   {marca.descricao || marca.Descricao || marca.description || `Opção ${marca.id || marca.Id}`}
+                 </option>
+                 ))}
+                </select>
+              </div>
+
               <div className="col-12 col-sm-6">
-                <label className="form-label small fw-bold text-secondary mb-1">Número da Tag:</label>
-                <input type="text" placeholder="Digite a Tag" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
+                <label className="form-label small fw-bold text-secondary mb-1">Modelo</label>
+                <input value={formData.modelo} onChange={handleChange} name="modelo" type="text" placeholder="Digite a Tag" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
               </div>
-            </div>
+
+              {/* Campo 2: ADAPTADO COMBOBOX - CorteFaturamento (Mapeado da sua rota de lookups) */}
+              <div className="col-md-6 text-start">
+                <label className="form-label small fw-bold text-secondary mb-1">Tipo do veículo</label>
+                <select name="tipoveiculo"
+                value={formData.tipoveiculo} 
+                onChange={handleChange} 
+                className="form-select form-input-atendimento"
+                >
+                <option value="">--- Selecione o tipo do veiculo ---</option>
+                {listaTipoVeiculo?.map((tipoveiculo: any) => (
+                 <option key={tipoveiculo.id || tipoveiculo.Id} value={tipoveiculo.id || tipoveiculo.Id}>
+                   {tipoveiculo.descricao || tipoveiculo.Descricao || tipoveiculo.description || `Opção ${tipoveiculo.id || tipoveiculo.Id}`}
+                 </option>
+                 ))}
+                </select>
+              </div>
+
+              {/* Campo 2: ADAPTADO COMBOBOX - CorteFaturamento (Mapeado da sua rota de lookups) */}
+              <div className="col-md-6 text-start">
+                <label className="form-label small fw-bold text-secondary mb-1">Eixo</label>
+                <select name="eixo"
+                value={formData.eixo} 
+                onChange={handleChange} 
+                className="form-select form-input-atendimento"
+                >
+                <option value="">--- Selecione a eixo ---</option>
+                {listaEixoVeiculo?.map((eixo: any) => (
+                 <option key={eixo.id || eixo.Id} value={eixo.id || eixo.Id}>
+                   {eixo.descricao || eixo.Descricao || eixo.description || `Opção ${eixo.id || eixo.Id}`}
+                 </option>
+                 ))}
+                </select>
+              </div>
+
+              <div className="col-12 col-sm-6">
+                <label className="form-label small fw-bold text-secondary mb-1">Rntc</label>
+                <input value={formData.rntc} onChange={handleChange} name="rntc" type="text" placeholder="Digite a Tag" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
+              </div>
+
+              <div className="col-12 col-sm-6">
+                <label className="form-label small fw-bold text-secondary mb-1">Documento</label>
+                <input value={formData.documento} onChange={handleChange} name="documento" type="text" placeholder="Digite a Tag" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
+              </div>
+
+            </div> 
 
             {/* BOTÕES COMPACTOS: w-100 no celular e flex-grow-0 no PC */}
             <div className="d-flex flex-column flex-sm-row gap-2 border-top pt-3">
-              <button type="submit" className="btn btn-dark btn-sm fw-semibold py-2 px-4 order-1 order-sm-2" onClick={() => { alert('Veículo cadastrado!'); setSubAba('lista'); }}>
+              <button type="submit" className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => {enviarDadosCadastroVeiculo(); setSubAba('lista'); }}>
                 Salvar Veículo
               </button>
               <button type="button" className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => setSubAba('lista')}>

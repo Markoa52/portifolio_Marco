@@ -76,6 +76,151 @@ export class ParametrizacaoRepository {
       throw erro;
     }
   }
+
+    async criarContratoStatus(dados: any) {
+    try {  
+      const db = await Database.getConnection();
+      
+      const resultado = await db.run(
+        `INSERT INTO contratoStatusTipo (descricao) VALUES (?);`,
+        [dados.js]
+      );
+
+      if (resultado.lastID) {
+        const registroCriado = await db.get(
+          `SELECT * FROM contratoStatusTipo WHERE id = ?;`,
+          [resultado.lastID]
+        );
+        return registroCriado;
+      }
+      return null; 
+
+    } catch (erro) {
+      console.error("Erro na consulta do repositório (contratoStatusTipo):", erro);
+      throw erro;
+    }
+  }
+
+    async criarFaturaStatus(dados: any) {
+    try {  
+      const db = await Database.getConnection();
+      
+      const resultado = await db.run(
+        `INSERT INTO billStatusTipo (descricao) VALUES (?);`,
+        [dados.js]
+      );
+
+      if (resultado.lastID) {
+        const registroCriado = await db.get(
+          `SELECT * FROM billStatusTipo WHERE id = ?;`,
+          [resultado.lastID]
+        );
+        return registroCriado;
+      }
+      return null; 
+
+    } catch (erro) {
+      console.error("Erro na consulta do repositório (contratoStatusTipo):", erro);
+      throw erro;
+    }
+  }
+
+      async criarTipoVeiculo(dados: any) {
+    try {  
+      const db = await Database.getConnection();
+      
+      const resultado = await db.run(
+        `INSERT INTO veiculoTipo (descricao) VALUES (?);`,
+        [dados.js]
+      );
+
+      if (resultado.lastID) {
+        const registroCriado = await db.get(
+          `SELECT * FROM veiculoTipo WHERE id = ?;`,
+          [resultado.lastID]
+        );
+        return registroCriado;
+      }
+      return null; 
+
+    } catch (erro) {
+      console.error("Erro na consulta do repositório (contratoStatusTipo):", erro);
+      throw erro;
+    }
+  }
+
+        async criarMarcaVeiculo(dados: any) {
+    try {  
+      const db = await Database.getConnection();
+      
+      const resultado = await db.run(
+        `INSERT INTO veiculoMarcaTipo (descricao) VALUES (?);`,
+        [dados.js]
+      );
+
+      if (resultado.lastID) {
+        const registroCriado = await db.get(
+          `SELECT * FROM veiculoMarcaTipo WHERE id = ?;`,
+          [resultado.lastID]
+        );
+        return registroCriado;
+      }
+      return null; 
+
+    } catch (erro) {
+      console.error("Erro na consulta do repositório (contratoStatusTipo):", erro);
+      throw erro;
+    }
+  }
+
+          async criarEixoVeiculo(dados: any) {
+    try {  
+      const db = await Database.getConnection();
+      
+      const resultado = await db.run(
+        `INSERT INTO eixoTipo (descricao) VALUES (?);`,
+        [dados.js]
+      );
+
+      if (resultado.lastID) {
+        const registroCriado = await db.get(
+          `SELECT * FROM eixoTipo WHERE id = ?;`,
+          [resultado.lastID]
+        );
+        return registroCriado;
+      }
+      return null; 
+
+    } catch (erro) {
+      console.error("Erro na consulta do repositório (contratoStatusTipo):", erro);
+      throw erro;
+    }
+  }
+
+         async criarTransacaoVeiculo(dados: any) {
+    try {  
+      const db = await Database.getConnection();
+      
+      const resultado = await db.run(
+        `INSERT INTO transacaoVeiculoTipo (descricao) VALUES (?);`,
+        [dados.js]
+      );
+
+      if (resultado.lastID) {
+        const registroCriado = await db.get(
+          `SELECT * FROM transacaoVeiculoTipo WHERE id = ?;`,
+          [resultado.lastID]
+        );
+        return registroCriado;
+      }
+      return null; 
+
+    } catch (erro) {
+      console.error("Erro na consulta do repositório (contratoStatusTipo):", erro);
+      throw erro;
+    }
+  }
+
 }
 
 export const parametrizacaoRepository = new ParametrizacaoRepository();

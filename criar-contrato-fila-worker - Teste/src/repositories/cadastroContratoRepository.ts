@@ -291,7 +291,6 @@ export class ContratoRepository {
     return tmEnderecoId;
 }
 
-
 async criarContato(contatoData: any) {
     const db = await Database.getConnection();
 
@@ -335,4 +334,25 @@ async criarResponsavelLegal(responsavelLegalData: any) {
     console.log(`[Serviço] Responsável legal (${responsavelLegalData.responsavelLegal}) cadastrado com sucesso!`);
 }
 
+async criarContaContrato(ContaContratoData: any, contratoId: number) {
+    const db = await Database.getConnection();
+
+    // 1. CORREÇÃO: Alinhado com o seu CREATE TABLE: responsavelLegal (nome, personId)
+    // Trocado os ':' por '?' e removida a vírgula órfã e a subquery.
+    const query = `
+      INSERT INTO contaContrato (cnpj, contratoId, limiteContrato, saldoContrato)
+      VALUES (?, ?, ?, ?);
+    `;
+
+    // 2. CORREÇÃO: Executa a query passando o array ordenado de variáveis.
+    // Usamos o personId que você já tem disponível no escopo do seu worker/serviço.
+    await db.run(query, [
+        ContaContratoData.cnpj,    // 1º ? (nome)
+        contratoId, // 2º ? (personId - ID gerado no criarPerson)
+        ContaContratoData.limiteContrato,
+        0
+    ]);
+    
+    console.log(`[Serviço] conta contrato (${ContaContratoData.contaContrato}) cadastrado com sucesso!`);
+ }
 }

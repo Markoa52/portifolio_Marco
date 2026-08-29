@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import { webhookPedagioService } from '../services/webhookGLPIService';
+import { webhookPedagioService } from '../services/webhookPedagioService';
 import { dashboardController } from '../controllers/dashboardController';
 
 const dadosService = new webhookPedagioService();

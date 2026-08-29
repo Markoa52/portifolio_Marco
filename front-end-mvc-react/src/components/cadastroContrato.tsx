@@ -12,7 +12,7 @@ import axios from "axios";
 
   const [formData, setFormData] = useState({ cnpj: "", nomeEmpresa: "", telefone: "", email: "", numero: "", 
     complemento: "", dataInicio: "", planoComercializadoTipo: "", valorMensalidade: "", valorTag: "", planoPagamentoTipo: "", 
-    corteFaturamentoTipo: "", diaFaturamento: "", prazoPagamento: "", resposavelLegalNome: "", diaSemanaCorte: ""
+    corteFaturamentoTipo: "", diaFaturamento: "", prazoPagamento: "", resposavelLegalNome: "", diaSemanaCorte: "", limite: ""
   });
 
   const [formDataCep, setformDataCep] = useState({cepExt: "", ruaExt: "", bairroExt: "", cidadeExt: "", estadoExt: ""});
@@ -61,7 +61,7 @@ async function enviarDadosCadastroContrato() {
 
     // Captura dados do formulário principal
     const { cnpj, nomeEmpresa, telefone, email, resposavelLegalNome, numero, complemento, dataInicio, corteFaturamentoTipo, 
-            planoComercializadoTipo, valorMensalidade, valorTag, planoPagamentoTipo, diaFaturamento, diaSemanaCorte, prazoPagamento } = formData;
+            planoComercializadoTipo, valorMensalidade, valorTag, planoPagamentoTipo, diaFaturamento, diaSemanaCorte, prazoPagamento, limite } = formData;
 
     // Captura dados do CEP já preenchidos no estado
     const { cepExt, ruaExt, bairroExt, cidadeExt, estadoExt } = formDataCep;
@@ -71,7 +71,7 @@ async function enviarDadosCadastroContrato() {
       metadata: {
         protocoloId: `PROT-${Date.now()}`, 
         acao: 'inserir', 
-        criadoEm: new Date().toISOString()
+        criadoEm: new Date()
       },
       contextoPerson: {
         cnpj: String(cnpj),
@@ -106,6 +106,10 @@ async function enviarDadosCadastroContrato() {
       contextoResposnsavelLegal: {
         responsavelLegal: String(resposavelLegalNome),
         documentNumber: String(cnpj)
+      },
+      contextoContaContrato:{
+        cnpj: String(cnpj),
+        limiteContrato: String(limite)
       }
     };
 
@@ -332,8 +336,13 @@ async function enviarDadosCadastroContrato() {
           </div>
 
             <div className="col-md-4 text-start">
-            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Praso para  Pagamento.</label>
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Praso para  Pagamento</label>
             <input type="number" name="prazoPagamento" placeholder="Prazo Fat." value={formData.prazoPagamento} onChange={handleChange} className="form-control form-input-atendimento" />
+          </div>
+
+          <div className="col-md-4 text-start">
+            <label className="text-muted mb-1" style={{ fontSize: '0.7rem' }}>Limite de utilização</label>
+            <input type="number" name="limite" placeholder="Limite Fat." value={formData.limite} onChange={handleChange} className="form-control form-input-atendimento" />
           </div>
 
           </div>

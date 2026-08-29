@@ -21,6 +21,8 @@ import gerarArquivoFilaRoutes from './src/routes/gerarArquivoFilaRoutes';
 import contratoRoutes from './src/routes/contratoRoutes';
 import parametrizacaoRoutes from './src/routes/parametrizacaoRoutes.js';
 import condicoesComerciaisRoutes from './src/routes/condicoesComerciaisRoutes.js'
+import veiculoRoutes from './src/routes/veiculoRoutes.js'
+import pedidoRoutes from './src/routes/pedidoRoutes.js'
 // ==========================================================================
 // INICIALIZAÇÃO CRÍTICA (DEVE SER A PRIMEIRA COISA)
 // ==========================================================================
@@ -84,6 +86,8 @@ app.use('/api', checarArquivoRoutes); // 🌟 Colocado junto com as outras usand
 app.use('/api', contratoRoutes);
 app.use('/api', parametrizacaoRoutes)
 app.use('/api', condicoesComerciaisRoutes)
+app.use('/api', veiculoRoutes)
+app.use('/api', pedidoRoutes)
 
 app.use(cors()); // 🌟 2. Ative o CORS antes de qualquer rota!
 app.use(express.json());

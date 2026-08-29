@@ -38,6 +38,7 @@
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",

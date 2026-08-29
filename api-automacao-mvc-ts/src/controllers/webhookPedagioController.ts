@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { webhookPedagioService } from '../services/webhookGLPIService';
+import { webhookPedagioService } from '../services/webhookPedagioService';
 
 export class webhookPedagioController{
      constructor(private webHook: webhookPedagioService){}

@@ -22,7 +22,8 @@ class CriarContratoService {
       contextoEndereco, 
       contextoContrato, 
       contextoContato, 
-      contextoResposnsavelLegal 
+      contextoResposnsavelLegal,
+      contextoContaContrato
     } = js;
     
     // Obtém o pool de conexão global do SQL Server
@@ -69,7 +70,11 @@ class CriarContratoService {
       contextoResposnsavelLegal.personId = personFaturamentoId;
       await contratoRepository.criarContato(contextoContato);
 
-      // 7. Se nenhuma tabela do fluxo falhou, confirma todas as inserções no disco de vez!
+      console.log('⏳ 6/7 Processando Conta contrato...');
+      // 7. Cria os contatos se existirem
+        await contratoRepository.criarContaContrato(contextoContaContrato, Number(contratoId) );
+
+      // 8. Se nenhuma tabela do fluxo falhou, confirma todas as inserções no disco de vez!
       await transacao.commit();
       
       console.log(`\n🚀 [Sucesso Total] Todo o ecossistema foi salvo no SQL Server para a Person ID: ${personId}`);
