@@ -51,10 +51,10 @@ export class Database {
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
 
-            //await this.instance.exec(`DROP TABLE pedidoTagRatreamento`);
+            //await this.instance.exec(`DROP TABLE tag`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo`);
             //await this.instance.exec(`DROP TABLE contaContrato`);
-            //await this.instance.exec(`INSERT INTO contaContrato (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
+            //await this.instance.exec(`INSERT INTO tag (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
 
             //await this.instance.exec(`INSERT INTO pedidoTagRastreamento (dataRegistro, statusPedidoId, pedidoTagId) VALUES ('2026-08-28', 3, 1)`);
             //await this.instance.exec(`UPDATE pedidoTagRastreamento set statusPedidoId=2 where id=3;`);
@@ -295,10 +295,16 @@ export class Database {
                 contratoId INTEGER,
                 pedidoTagId INTEGER,
                 serial TEXT,
-                FOREIGN KEY (contratoId) REFERENCES contrato(id),
-                FOREIGN KEY (pedidoTagId) REFERENCES pedidoTag(id)
+                disponivel INTEGER,
+                FOREIGN KEY (contratoId) REFERENCES contrato(id)
               );
             `);
+
+            //await this.instance.exec(`INSERT INTO tag (dataRegistro, contratoId, pedidoTagId, serial, disponivel) VALUES ('2026-08-31', 1, 1, '011111123654', 1)`);
+            //await this.instance.exec(`INSERT INTO tag (dataRegistro, contratoId, pedidoTagId, serial, disponivel) VALUES ('2026-08-31', 1, 1, '011111123655', 1)`);
+            //await this.instance.exec(`INSERT INTO tag (dataRegistro, contratoId, pedidoTagId, serial, disponivel) VALUES ('2026-08-31', 1, 1, '011111123656', 1)`);
+            //await this.instance.exec(`INSERT INTO tag (dataRegistro, contratoId, pedidoTagId, serial, disponivel) VALUES ('2026-08-31', 1, 1, '011111123657', 1)`);
+            //await this.instance.exec(`INSERT INTO tag (dataRegistro, contratoId, pedidoTagId, serial, disponivel) VALUES ('2026-08-31', 1, 1, '011111123658', 1)`);
 
           await this.instance.exec(`
               CREATE TABLE IF NOT EXISTS pedidoTag (

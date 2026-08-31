@@ -84,7 +84,24 @@ export class ContratoRepository {
       // db.get() busca apenas UM registro e retorna um objeto literal direto (ou undefined)
       // Tabela ajustada para 'contrato' conforme seu script de criação
       const resultado = await db.get(
-        'SELECT c.id, p.nomeEmpresa FROM contrato c left join person p on c.id=p.contractid WHERE c.id = ?', [contractId] );
+        `SELECT c.id, 
+        c.cnpj, 
+        c.dataInicio, 
+        c.contratoStatusId, 
+        c.diaSemanaCorte, 
+        c.prazoPagamento, 
+        c.diaFaturamento, 
+        c.planoPagamentoTipo, 
+        c.valorMensalidade, 
+        c.planoComercializadoTipo, 
+        c.corteFaturamentoTipo, 
+        ct.telefone,
+        ct.email,
+        p.nomeEmpresa FROM contrato c 
+        left join person p on c.id=p.contractid 
+        left join contato ct on p.id=ct.personId
+        WHERE c.id = ?`
+        , [contractId] );
     
       return resultado || null;
     } catch (erro) {

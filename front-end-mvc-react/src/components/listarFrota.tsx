@@ -18,6 +18,15 @@ export const ListarFrota: React.FC<IPropsFaturas> = ({contractId}) => {
   const [veiculoSelecionado, setVeiculoSelecionado] = useState<IVeiculo | null>(null);
   const [veiculoCriado, setveiculoCriado] = useState<any[]>([]);
 
+  // 💡 DEVE FICAR NO TOPO DO SEU COMPONENTE PAI (Junto com os outros useStates):
+const [tagsEstoque] = useState<any[]>([
+  // Dados simulados para você testar visualmente agora mesmo:
+  { id: 1, numeroSerie: "TAG-9981", modeloFabricante: "ConectCar RFID Standard" },
+  { id: 2, numeroSerie: "TAG-9982", modeloFabricante: "Sem Parar Slim" },
+  { id: 3, numeroSerie: "TAG-9983", modeloFabricante: "Veloe Track Pro" }
+]);
+const [tagSelecionada, setTagSelecionada] = useState<any>(null);
+
   const navegarPara = (tela: SubAbaFrota, veiculo: IVeiculo | null) => {
     setVeiculoSelecionado(veiculo);
     setSubAba(tela);
@@ -274,7 +283,7 @@ useEffect(() => {
     return (
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         {/* CARD BRANCO PADRÃO */}
-        <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
+        <div className="card p-3 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
           <h3 className="fs-5 fw-bold text-dark mb-1">➕ Cadastrar Novo Veículo</h3>
           <p className="text-muted small mb-4">Preencha os campos abaixo para inserir um veículo individualmente no sistema.</p>
@@ -434,29 +443,129 @@ useEffect(() => {
   // -------------------------------------------------------------
   // SUB-TELA 4: TELA DE ATIVAÇÃO
   // -------------------------------------------------------------
-  if (subAba === 'ativacao' && veiculoSelecionado) {
+    // -------------------------------------------------------------
+  // SUB-TELA 4: TELA DE ATIVAÇÃO COM ESTOQUE DE TAGS INTEGRADO
+  // -------------------------------------------------------------
+  if (subAba === 'ativacao' && veiculoSelecionado?.contratoId) {
+
     return (
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }} className="text-start">
+        <div className="row g-4 m-0">
           
-          <h3 className="fs-5 fw-bold text-dark mb-1">⚙️ Gerenciar Ativação</h3>
-          <p className="text-muted small mb-3">Alteração rápida de status para liberação ou bloqueio de passagem.</p>
-          
-          <div className="bg-light p-3 rounded-3 mb-4 d-flex justify-content-between align-items-center" style={{ maxWidth: '400px' }}>
-            <span className="text-secondary fw-semibold small">Veículo: <strong className="text-dark fs-6">{veiculoSelecionado.placa}</strong></span>
-            <span className="text-secondary fw-semibold small">Status Atual: <span className="badge bg-secondary px-2 py-1">{veiculoSelecionado.status}</span></span>
+          {/* COLUNA ESQUERDA: INFORMAÇÕES DO VEÍCULO E BOTÕES DE AÇÃO */}
+          <div className="col-12 col-md-6 p-0 pe-md-3">
+            <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h3 className="fs-5 fw-bold text-dark mb-1">⚙️ Gerenciar Ativação</h3>
+                <p className="text-muted small mb-1">Vincule um dispositivo físico disponível em seu estoque para ativar a frota.</p>
+                
+                {/* Detalhes do Carro */}
+                <div className="bg-light p-3 rounded-3 mb-3 border">
+                  <span className="text-muted small d-block uppercase fw-bold" style={{ fontSize: '0.65rem' }}>VEÍCULO SELECIONADO</span>
+                  <div className="d-flex justify-content-between align-items-center mt-1.5">
+                    <span className="font-monospace fw-bold bg-dark text-white px-2 py-0.5 rounded border border-secondary" style={{ fontSize: '0.8rem' }}>
+                      {veiculoSelecionado.placa}
+                    </span>
+                    <span className={`badge px-2.5 py-1.5 fw-bold ${
+                      veiculoSelecionado.status === 'Ativo' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning-emphasis'
+                    }`}>
+                      {veiculoSelecionado.status?.toUpperCase()}
+                    </span>
+                  </div>
+                  <strong className="text-dark d-block mt-2 small">{veiculoSelecionado.modelo || "Modelo não informado"}</strong>
+                </div>
+
+                {/* TAG que o operador escolheu da lista ao lado */}
+                <div className="p-3 rounded-3 border mb-3 text-start bg-white">
+                  <span className="text-muted small d-block uppercase fw-bold" style={{ fontSize: '0.65rem' }}>DISPOSITIVO A VINCULAR</span>
+                  {tagSelecionada ? (
+                    <div className="d-flex align-items-center gap-2 mt-2 text-primary fw-bold font-monospace fs-6">
+                      🏷️ {tagSelecionada.numeroSerie || tagSelecionada.epc}
+                    </div>
+                  ) : (
+                    <div className="text-muted small mt-2 italic text-secondary">
+                      ⚠️ Selecione uma TAG disponível na grade ao lado...
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Botões de Escape e Ação */}
+              <div className="d-flex flex-column flex-sm-row gap-2 border-top pt-3 mt-4">
+                <button 
+                  className="btn btn-success btn-sm fw-semibold py-2 px-4 order-1 order-sm-3" 
+                  disabled={!tagSelecionada || veiculoSelecionado.status === 'Ativo'}
+                  onClick={() => alert(`Tag ${tagSelecionada.numeroSerie} vinculada ao veículo ${veiculoSelecionado.placa}!`)}
+                >
+                  Confirmar Vínculo e Ativar
+                </button>
+                <button 
+                  className="btn btn-danger btn-sm fw-semibold py-2 px-4 order-2 order-sm-2"
+                  disabled={veiculoSelecionado.status !== 'Ativo'}
+                  onClick={() => alert('Veículo Inativado!')}
+                >
+                  Bloquear/Inativar
+                </button>
+                <button 
+                  className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-3 order-sm-1" 
+                  onClick={() => { setSubAba('lista'); setTagSelecionada(null); }}
+                >
+                  Voltar
+                </button>
+              </div>
+
+            </div>
           </div>
 
-          <div className="d-flex flex-column flex-sm-row gap-2 border-top pt-3">
-            <button className="btn btn-success btn-sm fw-semibold py-2 px-4 order-1 order-sm-3" onClick={() => alert('Veículo Ativado!')}>Ativar Veículo</button>
-            <button className="btn btn-danger btn-sm fw-semibold py-2 px-4 order-2 order-sm-2" onClick={() => alert('Veículo Inativado!')}>Inativar Veículo</button>
-            <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-3 order-sm-1" onClick={() => setSubAba('lista')}>Voltar</button>
+          {/* COLUNA DIREITA: LISTAGEM DE TAGS DISPONÍVEIS NO ESTOQUE */}
+          <div className="col-12 col-md-6 p-0 ps-md-2">
+            <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 h-100">
+              <h4 className="fs-6 fw-bold text-dark mb-1">🏷️ TAGs Disponíveis em Estoque</h4>
+              <p className="text-muted small mb-1">Dispositivos RFID em posse do cliente prontos para homologação.</p>
+
+              {tagsEstoque && tagsEstoque.length > 0 ? (
+                /* Lista Rolável Inteligente */
+                <div className="d-flex flex-column gap-2" style={{ maxHeight: '280px', overflowY: 'auto', paddingRight: '4px' }}>
+                  {tagsEstoque.map((tag: any) => (
+                    <div
+                      key={tag.id}
+                      onClick={() => setTagSelecionada(tag)}
+                      className="p-2.5 rounded-3 border text-start d-flex justify-content-between align-items-center transition-all"
+                      style={{
+                        cursor: 'pointer',
+                        backgroundColor: tagSelecionada?.id === tag.id ? '#eef2ff' : '#ffffff',
+                        borderLeft: tagSelecionada?.id === tag.id ? '4px solid #4f46e5' : '1px solid #dee2e6'
+                      }}
+                    >
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="text-secondary" style={{ fontSize: '1rem' }}>🏷️</span>
+                        <div>
+                          <strong className="text-dark font-monospace" style={{ fontSize: '0.85rem' }}>{tag.numeroSerie}</strong>
+                          <small className="text-muted d-block" style={{ fontSize: '0.68rem' }}>Fabricante: {tag.modeloFabricante || "RFID Standard"}</small>
+                        </div>
+                      </div>
+                      <span className="badge bg-success-subtle text-success border border-success-subtle fw-bold" style={{ fontSize: '0.65rem' }}>
+                        EM ESTOQUE
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                /* Estado Vazio de Estoque */
+                <div className="text-center py-5 text-muted border border-dashed rounded-3 bg-light my-auto">
+                  <span className="d-block fs-4 mb-1">📦</span>
+                  <h6 className="fw-bold mb-1" style={{ fontSize: '0.85rem' }}>Estoque Zerado</h6>
+                  <p className="text-muted mb-0 mx-auto small" style={{ maxWidth: '280px' }}>Este cliente não possui dispositivos avulsos. Solicite novas TAGs no painel comercial.</p>
+                </div>
+              )}
+            </div>
           </div>
 
-        </div>
-      </div>
+        </div> {/* Fecha row */}
+      </div> /* Fecha container */
     );
   }
+
 
   // -------------------------------------------------------------
   // SUB-TELA 5: TELA DE DETALHES

@@ -9,22 +9,26 @@ import { ListarFrota } from './listarFrota';
 import { RelatorioPassagens } from './relatorioPassagem';
 import { RelatorioExtrato } from './relatorioExtrato';
 import { ConsultaPedidosCards } from './consultaPedidosCards';
-import {SolicitacaoPedido} from './solicitacaoPedido'
+import {SolicitacaoPedido} from './solicitacaoPedido';
+import {AtivacaoTagVeiculo} from './tag';
+import {DetalhesContrato} from './contratoDetalhes';
+import { Menu, X, Landmark } from 'lucide-react';
 
 //import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
 
-export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido';
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag';
 
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag';
 
 import type { IContratoProps } from '../types/IContratoProps';
-import type { IDetalhesContrato } from '../types/IDetalhesContrato';
+//import type { IDetalhesContrato } from '../types/IDetalhesContrato';
 import { EditarUsuario } from './editarUsuario';
 import { Usuario } from './usuario';
 import axios from 'axios';
+import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
 export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiva }) => {
@@ -46,7 +50,7 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
     }
   };
 
-  const [dados, setDados] = useState<any>(null);
+  //const [dados, setDados] = useState<any>(null);
   const [contratoCriado, setContratoCriado] = useState<any>(null);
   const [faturaCriado, setFaturaCriado] = useState<any>(null);
   const [gastosAtuais, setGastosAtuais] = useState<any>(null);
@@ -54,6 +58,7 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
   const [veiculoContaVPR, setVeiculoContaVPR] = useState<any>(null);
   const [limiteContrato, setlimiteContrato] = useState<any>(null);
   const [pedidoRastreamento, setPedidoRastreamento] = useState<any>(null);
+  const [tagContrato, setTagContrato] = useState<any>(null);
 
   const formatarDataBr = (dataBruta: any) => {
     if (!dataBruta) return "---";
@@ -102,14 +107,15 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         // B) DISPARA A CONSULTA DIRETA: Consome a sua rota GET que lê direto do SQL Server
         //const respostaDados = await axios.get(`http://localhost:3000/api/contrato/${idContrato}`);
 
-        const [respostaDados, respostaFaturas, respostaGastosAtuais, respostaVeiculo, respostaContaVeiculoVPR, respostaLimiteContrato, respostaPedidoRastreamento ] = await Promise.all([
+        const [respostaDados, respostaFaturas, respostaGastosAtuais, respostaVeiculo, respostaContaVeiculoVPR, respostaLimiteContrato, respostaPedidoRastreamento, repostaTag ] = await Promise.all([
           axios.get(`http://localhost:3000/api/contrato/${idContrato}`),        
           axios.get(`http://localhost:3000/api/contrato/fatura/${idContrato}`),  
           axios.get(`http://localhost:3000/api/fatura/saldo/${idContrato}`),
           axios.get(`http://localhost:3000/api/veiculo/${idContrato}`),
           axios.get(`http://localhost:3000/api/veiculo/saldoVPR/${idContrato}`),
           axios.get(`http://localhost:3000/api/contrato/limite/${idContrato}`),    
-          axios.get(`http://localhost:3000/api/pedido/rastreamento/${idContrato}`)
+          axios.get(`http://localhost:3000/api/pedido/rastreamento/${idContrato}`),
+          axios.get(`http://localhost:3000/api/tag/estoque/${idContrato}`)
         ]);
 
           // 3. CORREÇÃO: Alimenta o contratoCriado lendo direto as colunas do SQLite (id e nomeEmpresa)
@@ -119,7 +125,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           setVeiculoContrato(respostaVeiculo.data);
           setVeiculoContaVPR(respostaContaVeiculoVPR.data);
           setlimiteContrato(respostaLimiteContrato.data);
-          setPedidoRastreamento(respostaPedidoRastreamento.data[0]);
+          setPedidoRastreamento(respostaPedidoRastreamento.data);
+          setTagContrato(repostaTag.data);
 
           const dadosRastreamento = respostaPedidoRastreamento.data;
           setPedidoRastreamento(dadosRastreamento);
@@ -129,13 +136,10 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           console.log('3. [Sucesso] Dados do SQLite recebidos para a tela:', resultado);
 
           // 1. Define qual é o objeto com os dados reais (trata se veio array ou objeto direto)
-          const dadosDoContrato = Array.isArray(resultado) && resultado.length > 0 
-            ? resultado[0] 
-            : resultado;
+          //const dadosDoContrato = Array.isArray(resultado) && resultado.length > 0 ? resultado[0] : resultado;
 
           // 2. Salva no estado geral
-          setDados(dadosDoContrato);
-
+          //setDados(dadosDoContrato);
 
         } else {
           throw new Error("A rota de consulta não retornou dados para este ID.");
@@ -169,11 +173,11 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         1. CABEÇALHO PRINCIPAL (FLEXBOX FLUIDO E TOTALMENTE RESPONSIVO)
         ========================================================================== */}
     {/* 🌟 CALIBRAÇÃO FINAL DO TAMANHO DO HEADER */}
-    <header 
+    <header
       className="navbar navbar-light bg-white py-3 shadow-sm mx-auto"  
       style={{ 
-        width: 'calc(100% - 33px)', // Ajustado de 32px para 24px para expandir o cabeçalho no celular
-        maxWidth: "1200px",          // Ajustado de 1152px para 1176px para alinhar de ponta a ponta no notebook
+        width: 'calc(100% - 50px)', // Ajustado de 32px para 24px para expandir o cabeçalho no celular
+        maxWidth: "1187px",          // Ajustado de 1152px para 1176px para alinhar de ponta a ponta no notebook
         margin: "0 auto", 
         borderRadius: "0 0 12px 12px", 
         borderBottom: "1px solid #e2e8f0",
@@ -342,17 +346,18 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
           <div className="row g-3">
       
         {/* CARD 1: Fatura (Esquerda Superior) */}
-         <div className="col-md-6 p-1">
-          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+         <div className="col-md-6 p-3">
+          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Fatura</h3>
               <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
                 Consultar faturas →
               </button>
             </div>
-            
-            <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3">
-      <h5 className="text-start m-0">{faturaCriado?.billId}</h5>
+
+             <strong className="text-dark fs-5 text-start m-0">{faturaCriado?.billId}</strong>
+            <div>
+           
       {/* 1. TEXTO DO STATUS: Aplica a cor dinâmica (Vermelho, Amarelo, Verde, Roxo ou Azul) */}
       <h1 
         className={`fs-4 mb-0 fw-bold ${coresStatus.texto}`}
@@ -404,27 +409,27 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         </div>
 
         {/* CARD 2: Últimos Pedidos (Direita Superior) */}
-        <div className="col-md-6 p-1">
-        <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+        <div className="col-md-6 p-3">
+        <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
 
         <div className="d-flex justify-content-between align-items-center mb-2">
-          <h3 className="fs-6 mb-0 fw-bold text-dark">Últimos pedidos</h3>
+          <h3 className="fs-6 mb-0 fw-bold text-dark">Último pedido</h3>
           <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem' }} onClick={() => setAbaAtiva('consultaPedidosCards')}>
             Consultar pedidos →
           </button>
         </div>
 
-        <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3">
+        <div>
   
        {/* Cabeçalho do Bloco com o Código do Pedido */}
         <div className="d-flex justify-content-between align-items-center mb-3">
          <div>
         {/* 1. Cabeçalho Corrigido (Tenta ler das duas formas para não virar "---") */}
          <strong className="text-dark fs-6">
-           PED-{pedidoRastreamento?.[0]?.pedidoTagId || "---"} : {
-             Number(pedidoRastreamento?.[0]?.statusPedidoId) === 1 ? "Realizado" :
-             Number(pedidoRastreamento?.[0]?.statusPedidoId) === 2 ? "Em Separação" :
-             Number(pedidoRastreamento?.[0]?.statusPedidoId) === 3 ? "Concluído" : 
+           PED-{pedidoRastreamento?.pedidoTagId || "---"} : {
+             Number(pedidoRastreamento?.statusPedidoId) === 1 ? "Realizado" :
+             Number(pedidoRastreamento?.statusPedidoId) === 2 ? "Em Separação" :
+             Number(pedidoRastreamento?.statusPedidoId) === 3 ? "Concluído" : 
              "Aguardando..."
            }
          </strong>
@@ -449,15 +454,15 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
             <div style={{ width: '30%' }}>
               <span 
                 className={`rounded-circle d-inline-flex align-items-center justify-content-center fw-bold lh-1 ${
-                  Number(pedidoRastreamento?.[0]?.statusPedidoId) > 2 
+                  Number(pedidoRastreamento?.statusPedidoId) > 2 
                     ? 'bg-success text-white' 
-                    : Number(pedidoRastreamento?.[0]?.statusPedidoId) === 2 
+                    : Number(pedidoRastreamento?.statusPedidoId) === 2 
                       ? 'bg-warning text-dark' 
                       : 'bg-secondary-subtle text-secondary border'
                 }`} 
                 style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}
               >
-                {Number(pedidoRastreamento?.[0]?.statusPedidoId) > 2 ? '✓' : '2'}
+                {Number(pedidoRastreamento?.statusPedidoId) > 2 ? '✓' : '2'}
               </span>
             </div>
         
@@ -465,13 +470,13 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
             <div style={{ width: '30%' }}>
               <span 
                 className={`rounded-circle d-inline-flex align-items-center justify-content-center fw-bold lh-1 ${
-                  Number(pedidoRastreamento?.[0]?.statusPedidoId) === 3 
+                  Number(pedidoRastreamento?.statusPedidoId) === 3 
                     ? 'bg-success text-white' 
                     : 'bg-secondary-subtle text-secondary border'
                 }`} 
                 style={{ width: '20px', height: '20px', fontSize: '0.7rem' }}
               >
-                {Number(pedidoRastreamento?.[0]?.statusPedidoId) === 3 ? '✓' : '3'}
+                {Number(pedidoRastreamento?.statusPedidoId) === 3 ? '✓' : '3'}
               </span>
             </div>
           </div>
@@ -483,8 +488,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
             <div style={{ width: '30%' }}>
               <p className="fw-bold text-success mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Realizado</p>
               <span className="text-muted d-block small mt-1" style={{ fontSize: '0.6rem' }}>
-                {Number(pedidoRastreamento?.[0]?.statusPedidoId) === 1 
-                  ? formatarDataBr(pedidoRastreamento?.[0]?.dataRegistro) 
+                {Number(pedidoRastreamento?.statusPedidoId) === 1 
+                  ? formatarDataBr(pedidoRastreamento?.dataRegistro) 
                   : "✓ Concluído"}
               </span>
             </div>
@@ -492,17 +497,17 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
             {/* Etapa 2: Em separação */}
             <div style={{ width: '30%' }}>
               <p className={`fw-bold mb-0 ${
-                Number(pedidoRastreamento?.[0]?.statusPedidoId) === 2 
+                Number(pedidoRastreamento?.statusPedidoId) === 2 
                   ? 'text-warning' 
-                  : Number(pedidoRastreamento?.[0]?.statusPedidoId) > 2 
+                  : Number(pedidoRastreamento?.statusPedidoId) > 2 
                     ? 'text-success' 
                     : 'text-muted'
               }`} style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Em separação</p>
               
               <span className="text-muted d-block small mt-1" style={{ fontSize: '0.6rem' }}>
-                {Number(pedidoRastreamento?.[0]?.statusPedidoId) === 2 
-                  ? formatarDataBr(pedidoRastreamento?.[0]?.dataRegistro) 
-                  : Number(pedidoRastreamento?.[0]?.statusPedidoId) > 2 
+                {Number(pedidoRastreamento?.statusPedidoId) === 2 
+                  ? formatarDataBr(pedidoRastreamento?.dataRegistro) 
+                  : Number(pedidoRastreamento?.statusPedidoId) > 2 
                     ? "✓ Concluído" 
                     : "---"}
               </span>
@@ -510,10 +515,10 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         
             {/* Etapa 3: Enviado */}
             <div style={{ width: '30%' }}>
-              <p className={`fw-bold mb-0 ${Number(pedidoRastreamento?.[0]?.statusPedidoId) === 3 ? 'text-success' : 'text-muted'}`} style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Enviado</p>
+              <p className={`fw-bold mb-0 ${Number(pedidoRastreamento?.statusPedidoId) === 3 ? 'text-success' : 'text-muted'}`} style={{ fontSize: '0.75rem', lineHeight: '1.1' }}>Enviado</p>
               <span className="text-muted d-block small mt-1" style={{ fontSize: '0.6rem' }}>
-                {Number(pedidoRastreamento?.[0]?.statusPedidoId) === 3 
-                  ? formatarDataBr(pedidoRastreamento?.[0]?.dataRegistro) 
+                {Number(pedidoRastreamento?.statusPedidoId) === 3 
+                  ? formatarDataBr(pedidoRastreamento?.dataRegistro) 
                   : "---"}
               </span>
             </div>
@@ -527,8 +532,8 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
         </div>
    
         {/* CARD 3: Veículos (Esquerda Inferior) */}
-         <div className="col-md-6 p-1">
-          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+         <div className="col-md-6 ps-3 pe-3 pt-0">
+          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Veículos</h3>
               <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('listar-frota')}>
@@ -536,38 +541,106 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
               </button>
             </div>
 
-            <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3">
-              <h2 className="fs-2 mb-0 fw-bold text-dark">{veiculoContrato?.length || 0}
-              <span className="d-block mb-2 text-muted" style={{ fontSize: '0.75rem' }}>Veículos cadastrados</span>
+            <div>
+              
+              {/* NÚMERO PRINCIPAL: TOTALIZADOR MESTRE */}
+              <h2 className="text-dark fs-4 text-start m-0">
+                {veiculoContrato?.length || 0}
+                <span className="d-block mb-3 text-muted fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                  VEÍCULOS CADASTRADOS
+                </span>
               </h2>
-      
-              <div className="text-end fw-semibold text-secondary" style={{ fontSize: '0.8rem' }}>
-                <span className="badge bg-success mb-1" style={{ fontSize: '0.7rem' }}>{veiculoContrato?.every((item: any) => item.status !== 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}</span>
-                <span className="d-block mb-2 text-muted" style={{ fontSize: '0.75rem' }}>Com tag ativa</span>
-                <span className="badge bg-secondary mb-1" style={{ fontSize: '0.7rem' }}>{veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}</span>
-                <span className="d-block text-muted" style={{ fontSize: '0.75rem' }}>Sem tag</span>
+            
+              {/* 📊 SEÇÃO DE SUB-INDICADORES (Empilhados na vertical e alinhados à direita) */}
+              <div className="d-flex flex-column align-items-end pt-0">
+                
+                {/* BLOCO 1: COM TAG ATIVA */}
+                <div className="text-end mb-3">
+                  <span className="badge bg-success mb-1" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    {veiculoContrato?.every((item: any) => item.status !== 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+                  </span>
+                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>
+                    Com tag ativa
+                  </span>
+                </div>
+            
+                {/* BLOCO 2: SEM TAG */}
+                <div className="text-end">
+                  <span className="badge bg-secondary mb-1" style={{ fontSize: '0.75rem', padding: '0.35em 0.65em' }}>
+                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+                  </span>
+                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>
+                    Sem tag
+                  </span>
+                </div>
+            
               </div>
-
             </div>
+            
           </div>
         </div>
 
         {/* CARD 4: Tag (Direita Inferior) */}
-         <div className="col-md-6 p-1">
-          <div className="card p-3 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+         <div className="col-md-6 ps-3 pe-3 pt-0">
+          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Tag</h3>
-              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
+              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('tag')}>
                 Ativar tags →
               </button>
             </div>
-            <div className="card p-3 border border-light-subtle shadow-sm bg-white rounded-3" role="alert" style={{ fontSize: '0.8rem' }}>
-              🛠️ Conteúdo em construção
+
+            <div>
+              {/* NÚMERO PRINCIPAL: TOTALIZADOR GERAL */}
+              <h2 className="text-dark fs-4 text-start m-0">
+                {veiculoContrato?.length || 0}
+                <span className="d-block mb-0 text-muted fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                  TOTAL DE TAGS
+                </span>
+              </h2>
+            
+              {/* 📊 INDICADORES PARALELOS: 2 na esquerda e 2 na direita perfeitamente alinhados */}
+              <div className="row row-cols-2 g-x-3 g-y-2 pt-0">
+                
+                {/* ESQUERDA - CIMA: EM ESTOQUE */}
+                <div className="text-end mb-3">
+                  <span className="badge bg-success mb-1" style={{ fontSize: '0.7rem' }}>
+                    {veiculoContrato?.every((item: any) => item.status !== 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+                  </span>
+                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Em estoque</span>
+                </div>
+            
+                {/* DIREITA - CIMA: BONIFICADAS */}
+                <div className="text-end mb-3">
+                  <span className="badge bg-secondary mb-1" style={{ fontSize: '0.7rem' }}>
+                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+                  </span>
+                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Bonificadas</span>
+                </div>
+            
+                {/* ESQUERDA - BAIXO: ATIVAS */}
+                <div className="text-end mb-3">
+                  <span className="badge bg-primary mb-1" style={{ fontSize: '0.7rem' }}>
+                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+                  </span>
+                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Ativas</span>
+                </div>
+            
+                {/* DIREITA - BAIXO: BLOQUEADAS */}
+                <div className="text-end mb-3">
+                  <span className="badge bg-danger mb-1" style={{ fontSize: '0.7rem' }}>
+                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+                  </span>
+                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Bloqueadas</span>
+                </div>
+            
+               </div> {/* Fecha row */}
+              </div> {/* Fecha card mestre */}
+
             </div>
           </div>
         </div>
 
-      </div>
     )}
 
      {/* ==========================================
@@ -622,99 +695,102 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
          />
         )}
 
+        
+        {abaAtiva === 'tag' && (
+          <AtivacaoTagVeiculo contractId={Number(payloadEnvio.dadosLimpos.id)} onVoltar={() => setAbaAtiva('cards-gerais')} />
+        )}
+
        </main>
 
         {abaAtiva === 'contrato-detalhe' && (
-          <ContratoDetailComponent dados={dados} />
+          <DetalhesContrato contractId={Number(payloadEnvio.dadosLimpos.id)} onVoltar={() => setAbaAtiva('cards-gerais')}/>
         )}
 
        </div>
 
-       
-  
       );
      };
 
     // Componente auxiliar local para exibir os dados textuais do contrato sem loop de importação
-    const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = ({ dados }) => {
-    if (!dados) return <p>Nenhum dado de contrato carregado.</p>;
-        return (
-     // 🛠️ ALINHAMENTO GÊMEO: Copiado o exato padrão de tamanho, centralização e bordas do seu Header
-     <div 
-      className="card bg-white text-dark p-4 border-0 shadow-sm my-3" 
-      style={{ 
-        width: "100%",
-        maxWidth: "1200px",       /* 👈 Espelha o tamanho do header */
-        margin: "0 auto",         /* 👈 Garante a mesma centralização no PC */
-        borderRadius: "12px",     /* Arredondamento suave combinando com o topo */
-        boxSizing: "border-box"
-      }}
-     >
+//     const ContratoDetailComponent: React.FC<{ dados: IDetalhesContrato | null }> = ({ dados }) => {
+//     if (!dados) return <p>Nenhum dado de contrato carregado.</p>;
+//         return (
+//      // 🛠️ ALINHAMENTO GÊMEO: Copiado o exato padrão de tamanho, centralização e bordas do seu Header
+//      <div 
+//       className="card bg-white text-dark p-4 border-0 shadow-sm my-3" 
+//       style={{ 
+//         width: "100%",
+//         maxWidth: "1200px",       /* 👈 Espelha o tamanho do header */
+//         margin: "0 auto",         /* 👈 Garante a mesma centralização no PC */
+//         borderRadius: "12px",     /* Arredondamento suave combinando com o topo */
+//         boxSizing: "border-box"
+//       }}
+//      >
       
-      {/* Título interno minimalista escuro */}
-      <h3 className="fs-6 fw-bold text-dark opacity-75 border-bottom border-light pb-2 mb-4 text-start text-uppercase" style={{ letterSpacing: '0.5px' }}>
-        Informações Contratuais
-      </h3>
+//       {/* Título interno minimalista escuro */}
+//       <h3 className="fs-6 fw-bold text-dark opacity-75 border-bottom border-light pb-2 mb-4 text-start text-uppercase" style={{ letterSpacing: '0.5px' }}>
+//         Informações Contratuais
+//       </h3>
 
-      {/* Estrutura de grid compacta */}
-      <div className="container-fluid p-0 text-start">
+//       {/* Estrutura de grid compacta */}
+//       <div className="container-fluid p-0 text-start">
         
-        {/* row-cols-md-4 divide os itens em 4 colunas horizontais limpas no PC */}
-        <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 m-0 p-0">
+//         {/* row-cols-md-4 divide os itens em 4 colunas horizontais limpas no PC */}
+//         <div className="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 m-0 p-0">
           
-          {/* Item 1: Data de Início */}
-          <div className="col ps-0"> {/* ps-0 cola o primeiro item perfeitamente no alinhamento esquerdo */}
-            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-              Data de Início
-            </span>
-            <span className="d-block fs-6 fw-bold text-dark mt-1">
-              {dados.StartDate || dados.StartDate ? new Date(dados.StartDate || dados.StartDate).toLocaleDateString('pt-BR') : '-'}
-            </span>
-          </div>
+//           {/* Item 1: Data de Início */}
+//           <div className="col ps-0"> {/* ps-0 cola o primeiro item perfeitamente no alinhamento esquerdo */}
+//             <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+//               Data de Início
+//             </span>
+//             <span className="d-block fs-6 fw-bold text-dark mt-1">
+//               {dados.StartDate || dados.StartDate ? new Date(dados.StartDate || dados.StartDate).toLocaleDateString('pt-BR') : '-'}
+//             </span>
+//           </div>
 
-          {/* Item 2: Data de Encerramento */}
-          <div className="col">
-            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-              Data de Encerramento
-            </span>
-            <span className="d-block fs-6 fw-bold text-dark mt-1">
-              {dados.EndDate || dados.EndDate ? new Date(dados.EndDate || dados.EndDate).toLocaleDateString('pt-BR') : 'Vigente'}
-            </span>
-          </div>
+//           {/* Item 2: Data de Encerramento */}
+//           <div className="col">
+//             <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+//               Data de Encerramento
+//             </span>
+//             <span className="d-block fs-6 fw-bold text-dark mt-1">
+//               {dados.EndDate || dados.EndDate ? new Date(dados.EndDate || dados.EndDate).toLocaleDateString('pt-BR') : 'Vigente'}
+//             </span>
+//           </div>
 
-          {/* Item 3: Código de Faturamento */}
-          <div className="col">
-            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-              Código de Faturamento
-            </span>
-            <span className="d-block fs-6 fw-bold text-dark mt-1">
-              {dados.BillingCode || dados.BillingCode || '-'}
-            </span>
-          </div>
+//           {/* Item 3: Código de Faturamento */}
+//           <div className="col">
+//             <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+//               Código de Faturamento
+//             </span>
+//             <span className="d-block fs-6 fw-bold text-dark mt-1">
+//               {dados.BillingCode || dados.BillingCode || '-'}
+//             </span>
+//           </div>
 
-          {/* Item 4: Prazo de Pagamento */}
-          <div className="col pe-0"> {/* pe-0 cola o último item na borda direita */}
-            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-              Prazo de Pagamento
-            </span>
-            <span className="d-block fs-6 fw-bold text-dark mt-1">
-              {dados.PaymentTerm || dados.PaymentTerm ? `${dados.PaymentTerm || dados.PaymentTerm} dias` : '-'}
-            </span>
-          </div>
+//           {/* Item 4: Prazo de Pagamento */}
+//           <div className="col pe-0"> {/* pe-0 cola o último item na borda direita */}
+//             <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+//               Prazo de Pagamento
+//             </span>
+//             <span className="d-block fs-6 fw-bold text-dark mt-1">
+//               {dados.PaymentTerm || dados.PaymentTerm ? `${dados.PaymentTerm || dados.PaymentTerm} dias` : '-'}
+//             </span>
+//           </div>
 
-          {/* Item 5: Valor Mensalidade */}
-          <div className="col-12 mt-3 pt-3 border-top border-light ps-0">
-            <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
-              Valor Mensalidade Tag
-            </span>
-            <span className="d-block fs-5 fw-bold mt-1" style={{ color: '#4f46e5' }}>
-              R$ {dados.TagMonthlyFeeUnitValue || dados.TagMonthlyFeeUnitValue || '0,00'}
-            </span>
-          </div>
+//           {/* Item 5: Valor Mensalidade */}
+//           <div className="col-12 mt-3 pt-3 border-top border-light ps-0">
+//             <span className="d-block fw-semibold text-uppercase text-muted" style={{ fontSize: '0.62rem', letterSpacing: '0.5px' }}>
+//               Valor Mensalidade Tag
+//             </span>
+//             <span className="d-block fs-5 fw-bold mt-1" style={{ color: '#4f46e5' }}>
+//               R$ {dados.TagMonthlyFeeUnitValue || dados.TagMonthlyFeeUnitValue || '0,00'}
+//             </span>
+//           </div>
 
-        </div>
+//         </div>
 
-      </div>
-    </div>
-  );
-};
+//       </div>
+//     </div>
+//   );
+// };

@@ -38,7 +38,7 @@ export const MenuHamburguer: React.FC<IMenuHumProps> = ({ setAbaAtiva, setPagina
           <div className="menu-dropdown-secao-grupo">
             <p className="menu-dropdown-secao-titulo"><ReceiptText size={22} className="text-dark" />Contrato</p>
             <ul>
-              <li onClick={() => { setAbaAtiva('faturas-abertas'); setMenuGeralAberto(false); }}>
+              <li onClick={() => { setAbaAtiva('contrato-detalhe'); setMenuGeralAberto(false); }}>
                 Detalhes do Contrato
               </li>
             </ul>

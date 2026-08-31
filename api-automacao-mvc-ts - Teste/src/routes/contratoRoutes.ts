@@ -36,7 +36,7 @@ router.get('/contratos', (req, res) => geradorController.contrato(req, res));
 
 /**
  * @openapi
- * /api/contrato{id}:
+ * /api/contrato/{id}:
  *   get:
  *     tags:
  *       - Contrato
@@ -144,10 +144,10 @@ router.get('/contrato/faturas/:id', (req, res) => geradorController.buscarFatura
 
 /**
  * @openapi
- * /api/contrato/saldo{id}:
+ * /api/fatura/saldo{id}:
  *   get:
  *     tags:
- *       - Contrato
+ *       - Fatura
  *     summary: Traz os dados do contrato pelo seu Id
  *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
  *     parameters:
@@ -167,7 +167,7 @@ router.get('/contrato/faturas/:id', (req, res) => geradorController.buscarFatura
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/contrato/saldo/:id', (req, res) => geradorController.buscarSaldoFaturaId(req, res));
+router.get('/fatura/saldo/:id', (req, res) => geradorController.buscarSaldoFaturaId(req, res));
 
 /**
  * @openapi

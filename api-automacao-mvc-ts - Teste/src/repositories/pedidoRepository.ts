@@ -26,6 +26,7 @@ export class pedidoRepository {
     // 2. CORREÇÃO: Especificamos 'ptr.pedidoTagId' no ORDER BY para remover a ambiguidade
     const resultado = await db.get(`
       SELECT 
+        ptr.id,
         ptr.pedidoTagId, 
         ptr.dataRegistro, 
         ptr.statusPedidoId 
