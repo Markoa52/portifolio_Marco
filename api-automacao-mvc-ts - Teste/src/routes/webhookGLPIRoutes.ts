@@ -1,6 +1,9 @@
 import express from 'express';
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 import { webhookGLPIService } from '../services/webhookGLPIService';
 import { webhookGLPIController } from '../controllers/webhookGLPIController'; 
 
@@ -39,7 +42,7 @@ const webhook = new webhookGLPIController(chamado);
  *       200:
  *         description: Notificacao recebida com sucesso.
  */
-router.post('/webhook', (req, res) => webhook.processarWebhook(req, res));
+router.post('/webhook', authMiddlewareInstance.verificarJWT,(req, res) => webhook.processarWebhook(req, res));
 
 
 export default router;

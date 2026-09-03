@@ -2,6 +2,9 @@ import express from 'express';
 
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
 import { RabbitMqPublisher } from '../queue/publisher'; // Ajuste o caminho real se necessário
 import { veiculoRepository } from '../repositories/veiculoRepository';
@@ -59,7 +62,7 @@ router.get('/veiculo/lookups', (req, res) => geradorVeiculoController.veiculosCo
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/:id', (req, res) => geradorVeiculoController.veiculosId(req, res));
+router.get('/veiculo/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculosId(req, res));
 
 /**
  * @openapi
@@ -86,7 +89,7 @@ router.get('/veiculo/:id', (req, res) => geradorVeiculoController.veiculosId(req
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/saldoVPR/:id', (req, res) => geradorVeiculoController.saldoId(req, res));
+router.get('/veiculo/saldoVPR/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.saldoId(req, res));
 
 /**
  * @openapi
@@ -113,7 +116,7 @@ router.get('/veiculo/saldoVPR/:id', (req, res) => geradorVeiculoController.saldo
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/VPR/:id', (req, res) => geradorVeiculoController.veiculosSaldoVPR(req, res));
+router.get('/veiculo/VPR/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculosSaldoVPR(req, res));
 
 /**
  * @openapi
@@ -140,7 +143,7 @@ router.get('/veiculo/VPR/:id', (req, res) => geradorVeiculoController.veiculosSa
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/vincular-tag/:id', (req, res) => geradorVeiculoController.veiculosId(req, res));
+router.get('/veiculo/vincular-tag/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculosId(req, res));
 
 /**
  * @openapi
@@ -171,6 +174,6 @@ router.get('/veiculo/vincular-tag/:id', (req, res) => geradorVeiculoController.v
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/veiculo/acoes', (req, res) => geradorVeiculoController.veiculoAcoes(req, res));
+router.post('/veiculo/acoes', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculoAcoes(req, res));
 
 export default router;

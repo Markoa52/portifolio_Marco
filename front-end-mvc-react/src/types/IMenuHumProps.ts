@@ -1,6 +1,12 @@
 import type { PaginaTipo } from "../components/contrato";
 
+
 export interface IMenuHumProps {
-    setAbaAtiva: (aba: any) => void;
-    setPaginaAtiva: (pagina: PaginaTipo) => void; // <-- Modifique para 'any' aqui
+  setIdContratoSelecionado: (id: number) => void;
+  setAbaAtiva: (aba: any) => void;
+  setPayloadGlobal: (payload: any) => void;
+  setPaginaAtiva: (pagina: PaginaTipo) => void; // <-- Modifique para 'any' aqui
+  usuario: any;
+  onLogoff:() =>void;
+  usuarioLogado: any
 }

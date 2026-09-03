@@ -17,6 +17,7 @@ export class Database {
             }
 
             // 3. Monta o caminho dos dois arquivos de banco dentro da pasta escolhida
+            const caminhoUsuario= path.join(pastaCompartilhada, 'Usuario.db');
             const caminhoFaturamento = path.join(pastaCompartilhada, 'FinancialBilling.db');
             const caminhoPrincipal = path.join(pastaCompartilhada, 'TollManagement.db');
 
@@ -26,6 +27,12 @@ export class Database {
                 driver: sqlite3.Database
             });
             await dbFatProvisorio.close();
+
+            const dbUserProvisorio = await open({
+                filename: caminhoUsuario,
+                driver: sqlite3.Database
+            });
+            await dbUserProvisorio.close();
 
             // 5. Abre o banco principal na pasta central
             this.instance = await open({
@@ -37,13 +44,14 @@ export class Database {
 
             // 6. Anexa usando o caminho absoluto correto
             await this.instance.exec(`ATTACH DATABASE '${caminhoFaturamento}' AS banco_fat`);
+            await this.instance.exec(`ATTACH DATABASE '${caminhoUsuario}' AS banco_user`);
             
             // ... Seus comandos CREATE TABLE continuam exatamente iguais abaixo ...
 
             
             // ... Seus comandos CREATE TABLE continuam exatamente iguais abaixo ...
 
-            console.log(' Banco FinancialBilling.db anexado com sucesso!');
+            console.log(' Banco FinancialBilling.db e Usuario.db anexado com sucesso!');
 
             // 4. CRIAÇÃO DAS TABELAS (Garantindo a execução síncrona dos blocos)
             console.log('Criando tabelas no banco de dados...');
@@ -51,7 +59,9 @@ export class Database {
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
 
-            //await this.instance.exec(`DROP TABLE tag`);
+            //await this.instance.exec(`UPDATE banco_user.usuario set perfil='atendimento' where id=3;`);
+            //await this.instance.exec(`UPDATE banco_user.usuario set perfil='admin' where id=1;`);
+            //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo`);
             //await this.instance.exec(`DROP TABLE contaContrato`);
             //await this.instance.exec(`INSERT INTO tag (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
@@ -59,7 +69,7 @@ export class Database {
             //await this.instance.exec(`INSERT INTO pedidoTagRastreamento (dataRegistro, statusPedidoId, pedidoTagId) VALUES ('2026-08-28', 3, 1)`);
             //await this.instance.exec(`UPDATE pedidoTagRastreamento set statusPedidoId=2 where id=3;`);
           
-            //await this.instance.exec(` ALTER TABLE veiculo ADD COLUMN contratoId;`);
+            //await this.instance.exec(` ALTER TABLE banco_user.usuario ADD COLUMN perfil;`);
 
             //   await this.instance.exec(`
             //   ALTER TABLE contrato ADD COLUMN diaSemanaCorte;
@@ -467,6 +477,38 @@ export class Database {
             //await this.instance.exec(`INSERT INTO banco_fat.bill (contractId, dataAbertura, dataFechamento, dataVencimento, status) VALUES (1, '2026-07-14', '2026-08-14', '2026-08-26', 4);`);
 
             //await this.instance.exec(`UPDATE banco_fat.bill set status=3 where id=3`);
+
+
+            // TABELAS NO BANCO DE USUARIO (banco_user)
+            await this.instance.exec(`
+              CREATE TABLE IF NOT EXISTS banco_user.usuario (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT,
+                usuario TEXT,
+                email TEXT,
+                senha TEXT,
+                ativo INTEGER,
+                dataCriacao TEXT,
+                perfil TEXT
+              );
+            `);
+
+            await this.instance.exec(`
+               CREATE TABLE IF NOT EXISTS banco_user.usuarioContrato (
+               id INTEGER PRIMARY KEY AUTOINCREMENT,
+               usuarioId INTEGER NOT NULL,
+               contratoId INTEGER NOT NULL, -- Mantemos o ID do contrato guardado aqui
+               vinculadoEm DATETIME DEFAULT CURRENT_TIMESTAMP,
+               
+               -- CHAVE ESTRANGEIRA LOCAL: Funciona perfeitamente porque 'usuarios' está no mesmo arquivo
+               FOREIGN KEY (usuarioId) REFERENCES usuario(id) ON DELETE CASCADE,
+               
+               -- REMOVIDO: FOREIGN KEY (contratoId) REFERENCES contrato(id)
+               
+               -- TRAVA DE DUPLICIDADE: Continua a impedir o mesmo vínculo repetido
+               UNIQUE(usuarioId, contratoId)
+               );
+            `);
 
             console.log('[Sucesso] Todas as tabelas relacionais foram geradas e persistidas!');
         }

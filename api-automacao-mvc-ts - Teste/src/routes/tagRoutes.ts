@@ -2,6 +2,9 @@ import express from 'express';
 
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
 import { RabbitMqPublisher } from '../queue/publisher'; // Ajuste o caminho real se necessário
 import { tagRepository } from '../repositories/tagRepository';
@@ -39,7 +42,7 @@ const geradorTagController = new tagController(geradorTagService); // Passa o se
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/tag/ativas/:id', (req, res) => geradorTagController.tagEstoqueId(req, res));
+router.get('/tag/ativas/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorTagController.tagEstoqueId(req, res));
 
 /**
  * @openapi
@@ -66,7 +69,7 @@ router.get('/tag/ativas/:id', (req, res) => geradorTagController.tagEstoqueId(re
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/tag/estoque/:id', (req, res) => geradorTagController.tagEstoqueId(req, res));
+router.get('/tag/estoque/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorTagController.tagEstoqueId(req, res));
 
 /**
  * @openapi
@@ -93,7 +96,7 @@ router.get('/tag/estoque/:id', (req, res) => geradorTagController.tagEstoqueId(r
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-//router.get('/tag/vinculartag/:id', (req, res) => geradorTagController.veiculosId(req, res));
+//router.get('/tag/vinculartag/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorTagController.veiculosId(req, res));
 
 /**
  * @openapi
@@ -120,7 +123,7 @@ router.get('/tag/estoque/:id', (req, res) => geradorTagController.tagEstoqueId(r
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-//router.get('/tag/bonificadas/:id', (req, res) => geradorTagController.veiculosId(req, res));
+//router.get('/tag/bonificadas/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorTagController.veiculosId(req, res));
 
 /**
  * @openapi
@@ -151,6 +154,6 @@ router.get('/tag/estoque/:id', (req, res) => geradorTagController.tagEstoqueId(r
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/tag/acoes', (req, res) => geradorTagController.tagAcoes(req, res));
+router.post('/tag/acoes', authMiddlewareInstance.verificarJWT,(req, res) => geradorTagController.tagAcoes(req, res));
 
 export default router;

@@ -4,12 +4,15 @@ import { PesquisarContrato } from './pesquisarContrato';
 import { EditarUsuario } from './editarUsuario';
 import { CadastroContrato } from './cadastroContrato';
 import {ConfiguracaoSistema} from './configuracaoSistema';
+import {MenuHamburguer} from './menuHumburguer';
+import {GestaoUsuarios} from './gestaoUsuario';
 
 // 1. Garanta que a interface do arquivo receba todas as propriedades necessárias
 import type { IMenuProps } from '../types/IMenuProps';
 
 // 2. CORREÇÃO 1: Você PRECISA extrair as funções aqui dentro dos parênteses do componente!
-export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal }) => {
+export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal, usuario, onLogoff }) => {
+
   const [abaAtiva, setAbaAtiva] = useState<string>('cards-gerais');
   const [titulo, setTitulo] = useState<string>('Módulos de Atendimento');
 
@@ -43,13 +46,13 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
 
       {/* TRAVA 2: Força o <main> a limpar displays antigos (como flex/grid manuais) e ocupar a largura inteira */}
       {/* CONTEÚDO PRINCIPAL (Trocamos a classe antiga 'conteudo-principal-abaixo-a' por 'w-100') */}
-<main className="w-100 text-start mt-2">
+      <main className="w-100 text-start mt-2">
   
-  {/* ABA PRINCIPAL: MENU DE SEÇÕES */}
-  {abaAtiva === 'cards-gerais' && (
-    /* CORREÇÃO CHAVE: Removemos a div '.novos-cards-grid' antiga que quebrava o layout */
-    /* A 'row' agora fica livre e comanda as colunas perfeitamente */
-    <div className="row g-3 g-md-4 m-0 w-100">
+      {/* ABA PRINCIPAL: MENU DE SEÇÕES */}
+      {abaAtiva === 'cards-gerais' && (
+      /* CORREÇÃO CHAVE: Removemos a div '.novos-cards-grid' antiga que quebrava o layout */
+      /* A 'row' agora fica livre e comanda as colunas perfeitamente */
+      <div className="row g-3 g-md-4 m-0 w-100">
       
       {/* GRUPO 1: Atendimento */}
       {/* No celular (col-12) ocupa a tela cheia. No notebook (col-md-6 col-lg-4) divide em 3 colunas */}
@@ -119,13 +122,17 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
             <Users size={18} className="text-secondary" />
             <h4 className="fs-6 fw-bold text-secondary m-0">Usuários</h4>
           </div>
-          <p className="text-muted small mb-0 p-2 bg-light border rounded text-center">
-            🛠️ Módulo em desenvolvimento
-          </p>
+          <ul className="list-unstyled mb-0">
+            <li className="btn btn btn-light border btn-sm text-secondary fw-semibold border-0 text-start w-100 py-2 px-3 fw-semibold rounded-2 d-flex align-items-center justify-content-between cp" 
+                onClick={() => { setAbaAtiva('gestao-usuarios'); alterarTexto('Gestão de usuarios'); }}>
+              <span style={{ fontSize: '0.9rem' }}>➕ Parametrizar usuarios</span>
+              <span className="text-muted">➔</span>
+            </li>
+          </ul>
         </div>
       </div>
 
-            {/* GRUPO 5: Usuários (Em Construção) */}
+      {/* GRUPO 5: Usuários (Em Construção) */}
       <div className="col-12 col-md-6 col-lg-4">
         <div className="card p-3 p-md-4 h-100 shadow-sm border border-light-subtle bg-white rounded-3 opacity-75">
           <div className="d-flex align-items-center gap-2 mb-3 border-bottom pb-2">
@@ -140,12 +147,10 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
             </li>
           </ul>
         </div>
+       </div>
+
       </div>
-
-    </div>
-
-    
-  )}
+     )}
     
         {/* SUB-ABAS DINÂMICAS */}
         <div className="w-100 m-0 p-0">
@@ -168,7 +173,6 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
 
           {abaAtiva === 'cadastro-contrato' && (
             <CadastroContrato 
-
             />
           )}
 
@@ -177,7 +181,24 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
              <ConfiguracaoSistema />
            )}
 
-        </div>
+           {/* 💡 Exemplo de como deve estar a chamada do menu dentro do componente pai (Atendimento) */}
+           {Number(localStorage.getItem('@TollManagement:idContratoSelecionado')) > 0 && abaAtiva !== 'lista' && (
+             <MenuHamburguer 
+               setPaginaAtiva={setPaginaAtiva}
+               setAbaAtiva={setAbaAtiva}
+               setIdContratoSelecionado={setIdContratoSelecionado}
+               setPayloadGlobal={setPayloadGlobal}
+               usuario={usuario}
+               onLogoff={onLogoff}
+             />
+           )}
+
+          {/* CHAMADA DA NOVA TELA DE CONFIGURAÇÃO */}
+           {abaAtiva === 'gestao-usuarios' && (
+             <GestaoUsuarios />
+           )}
+
+            </div>
       </main>
     </div>
   );

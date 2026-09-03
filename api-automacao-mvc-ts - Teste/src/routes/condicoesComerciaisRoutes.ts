@@ -2,6 +2,9 @@ import express from 'express';
 
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
 import { ContratoRepository } from '../repositories/contratoRepository';
 import { condicoesComerciaisServices } from '../services/condicoesComerciaisServices';
@@ -30,6 +33,6 @@ const geradorController = new condicoesComerciaisController(geradorService); // 
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/configuracao/lookups', (req, res) => geradorController.condicoesComer(req, res));
+router.get('/configuracao/lookups', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.condicoesComer(req, res));
 
 export default router;

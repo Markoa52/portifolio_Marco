@@ -6,4 +6,7 @@ export interface IContratoProps {
   payloadEnvio: any; // 👈 Adicione esta linha exata!
   setPaginaAtiva: (pagina: any) => void;
   paginaAtiva: string;
+  setIdContratoSelecionado: (id: number) => void;
+  setPayloadGlobal: (payload: any) => void;
+  usuarioLogado: any
 }

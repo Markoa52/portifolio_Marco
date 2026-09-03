@@ -12,26 +12,26 @@ import { ConsultaPedidosCards } from './consultaPedidosCards';
 import {SolicitacaoPedido} from './solicitacaoPedido';
 import {AtivacaoTagVeiculo} from './tag';
 import {DetalhesContrato} from './contratoDetalhes';
-import { Menu, X, Landmark } from 'lucide-react';
+//import { Menu, X, Landmark } from 'lucide-react';
 
 //import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
 
-export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag';
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login';
 
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login';
 
 import type { IContratoProps } from '../types/IContratoProps';
 //import type { IDetalhesContrato } from '../types/IDetalhesContrato';
 import { EditarUsuario } from './editarUsuario';
 import { Usuario } from './usuario';
 import axios from 'axios';
-import { MenuMobileModulos } from './menuHumbugerMobile';
+//import { MenuMobileModulos } from './menuHumbugerMobile';
 
 // CORREÇÃO 1: Adicionado o parâmetro desestruturado correto para sumir com o erro de compilação
-export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiva }) => {
+export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio, setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal }) => {
 
   const mapearStatusCor = (status: number) => {
   switch (status) {
@@ -199,7 +199,16 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
 
           {/* MENU HAMBÚRGUER DESKTOP */}
           <div className="d-none d-md-block mx-2 mx-md-3">
-            <MenuHamburguer setAbaAtiva={setAbaAtiva} setPaginaAtiva={setPaginaAtiva} />
+            <MenuHamburguer 
+               usuarioLogado={usuarioLogado}
+               setAbaAtiva={setAbaAtiva} 
+               setPaginaAtiva={setPaginaAtiva} 
+               setIdContratoSelecionado={setIdContratoSelecionado} 
+               setPayloadGlobal={setPayloadGlobal} 
+                usuario={undefined} 
+                onLogoff={function (): void {
+                throw new Error('Function not implemented.');
+              } } />
           </div>
 
           {/* ITEM 1: INÍCIO */}
@@ -673,13 +682,20 @@ export const Contrato: React.FC<IContratoProps> = ({ payloadEnvio, setPaginaAtiv
 
         {abaAtiva === 'editar-usuario' && (
           <EditarUsuario 
-            setPaginaAtiva={setPaginaAtiva} 
-            setAbaAtiva={setAbaAtiva} 
-          />
+            contractId={Number(payloadEnvio.dadosLimpos.id)}
+            setPaginaAtiva={setPaginaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setIdContratoSelecionado={setIdContratoSelecionado}
+            setPayloadGlobal={setPayloadGlobal} payloadEnvio={payloadEnvio} />
         )}
 
         {(abaAtiva === 'usuario') && (
-          <Usuario setPaginaAtiva={setPaginaAtiva} />
+          <Usuario             
+            contractId={Number(payloadEnvio.dadosLimpos.id)}
+            setPaginaAtiva={setPaginaAtiva}
+            setAbaAtiva={setAbaAtiva}
+            setIdContratoSelecionado={setIdContratoSelecionado}
+            setPayloadGlobal={setPayloadGlobal} payloadEnvio={payloadEnvio} />
         )}
 
         {(abaAtiva === 'consultaPedidosCards') && (

@@ -1,76 +1,75 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import '../styles/usuario.css';
-import type { IEmailRegistro } from '../types/index.ts';
+import type { IEmailRegistro2 } from '../types/index.ts';
 import axios from 'axios';
 import { Search } from 'lucide-react';
 import type { IVisaoGeralProps } from '../types/IVisaoGeralProps.ts';
 
-export const Usuario: React.FC<IVisaoGeralProps> = ({ }) => {
+export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
 
   // ==========================================================================
-  // 🌟 1. TODOS OS ESTADOS NO TOPO (ESSENCIAL PARA NÃO TRAVAR O COMPONENTE)
+  // 1. TODOS OS ESTADOS NO TOPO (ESSENCIAL PARA NÃO TRAVAR O COMPONENTE)
   // ==========================================================================
-  const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
+  const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro2[]>([]);
   const [carregando, setCarregando] = useState<boolean>(false); // 🛠️ Movido para o topo!
   const [pesquisa, setPesquisa] = useState<string>(''); // 🛠️ Movido para o topo!
   const [paginaAtual, setPaginaAtual] = useState<number>(1); // 🛠️ Movido para o topo!
-  
-  const [, setErro] = useState<string | null>(null);
-  const [larguraJanela, setLarguraJanela] = useState<number>(window.innerWidth);
+  const [, setUsuarios] = useState<any[]>([]);
+  const [, setLarguraJanela] = useState<number>(window.innerWidth);
 
   const registrosPorPagina = 5;
 
   // ==========================================================================
-  // ✈️ 2. CICLO DE VIDA (Agora ele enxerga todos os setEstados perfeitamente)
+  // 2. CICLO DE VIDA (Agora ele enxerga todos os setEstados perfeitamente)
   // ==========================================================================
 
   useEffect(() => {
-  async function puxarDadosDoExpress(){
-
     const tratarRedimensionamento = () => setLarguraJanela(window.innerWidth);
     window.addEventListener('resize', tratarRedimensionamento);
 
-      try {
-        setCarregando(true);
-        console.log("✈️ Tentando disparar requisição para a API...");
-
-        const resposta = await fetch('http://localhost:3000/api/dados', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!resposta.ok) throw new Error(`Erro no servidor: Status ${resposta.status}`);
-        const resultado = await resposta.json();
-
-        const dadosNormalizados: IEmailRegistro[] = resultado.map((item: any) => ({
-          data: item.Data || item.data || '-',
-          assunto: item.Assunto || item.assunto || '-',
-          email: item.Email || item.email || '-',
-          acoes: item.Acoes || item.acoes || '-'
-        }));
-
-        setDadosSharePoint(dadosNormalizados);
-        console.log("✅ Dados recebidos e salvos no estado!");
-      } catch (err: any) {
-        console.error("❌ Erro ao puxar dados:", err);
-        setErro(err.message || "Falha na conexão.");
-      } finally {
-        setCarregando(false);
-      }
-    }
-
-    const tratarRedimensionamento = () => setLarguraJanela(window.innerWidth);
-    window.addEventListener('resize', tratarRedimensionamento);
+    //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
+    async function carregarUsuarios() {
+    // 1. Extrai o ID do contrato
+    const idContrato = payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id;
     
-    // Força a execução da função livre
-    puxarDadosDoExpress();
+    // Trava de segurança: Se o ID ainda não existir na montagem do ecrã, não faz a requisição
+    if (!idContrato) return;
 
-    return () => window.removeEventListener('resize', tratarRedimensionamento);
-  }, []);
+    try {
+      setCarregando(true);
 
-      //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
+      const resposta = await axios.get(`http://localhost:3000/api/auth/usuarios/contrato/${idContrato}`);
+      const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
+
+      // CORREÇÃO 1: Mapeia diretamente a resposta vinda do Axios (dadosServidor)
+      const dadosNormalizados: IEmailRegistro2[] = dadosServidor.map((item: any) => ({
+        id: item.Id || item.id || '-',
+        nome: item.Nome || item.nome || '-',
+        usuario: item.Usuario || item.usuario || '-',
+        email: item.Email || item.email || '-',
+        status: item.Ativo || item.ativo || '-',
+        data: item.DataCriacao || item.dataCriacao || '-',
+        perfil: item.Perfil || item.perfil || '-'
+      }));
+
+      // CORREÇÃO 2: Atualiza os estados na ordem correta
+      setDadosSharePoint(dadosNormalizados);
+      setUsuarios(dadosServidor);
+
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      setUsuarios([]);
+      setDadosSharePoint([]);
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+       carregarUsuarios();
+
+    }, [payloadEnvio]);
+
+    //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
    //const isMobile = larguraJanela <= 1024;
 
   // ==========================================================================
@@ -79,16 +78,16 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({ }) => {
   const dadosFiltrados = useMemo(() => {
     return dadosSharePoint.filter((item) => {
       return (
-        item.assunto?.toLowerCase().includes(pesquisa.toLowerCase()) ||
-        item.email?.toLowerCase().includes(pesquisa.toLowerCase())
+        item.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+        item.usuario?.toLowerCase().includes(pesquisa.toLowerCase())
       );
     });
   }, [dadosSharePoint, pesquisa]);
 
   // Resetar a paginação se o usuário começar a pesquisar
-useEffect(() => {
-  setPaginaAtual(1);
-}, [pesquisa]);
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [pesquisa]);
 
   // 3. MATEMÁTICA DA PAGINAÇÃO
   const totalPaginas = Math.ceil(dadosFiltrados.length / registrosPorPagina);
@@ -217,20 +216,24 @@ useEffect(() => {
 
       {/* FEEDBACK DE CARREGAMENTO */}
       {carregando ? (
-        <div className="text-center py-5">
-          <div className="spinner-border text-secondary mb-2" role="status" style={{ width: '1.5rem', height: '1.5rem' }}></div>
+        <div id="containerTabelaCrud" className="mt-2">
+      
           <p className="text-muted small my-0">Carregando dados dos usuários...</p>
         </div>
       ) : (
         <>
           {/* TABELA DE CONSULTA RESTRUTURADA */}
-          <div className="table-responsive border rounded-3 bg-white mt-2">
-            <table className="table table-hover align-middle mb-0 text-start" style={{ fontSize: '0.875rem' }}>
-              <thead className="table-light text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+            <div className="table-responsive border rounded-3 bg-white">
+              <table className="table table-hover align-middle mb-0 text-start" style={{ fontSize: '0.875rem' }}>
+                <thead className="table-light text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
                 <tr>
-                  <th style={{ width: '20%' }}>Data</th>
-                  <th style={{ width: '45%' }}>Assunto</th>
-                  <th style={{ width: '35%' }}>Email</th>
+                  <th style={{ width: '10%' }}>Id</th>
+                  <th style={{ width: '10%' }}>Nome</th>
+                  <th style={{ width: '10%' }}>Usuario</th>
+                  <th style={{ width: '10%' }}>Email</th>
+                  <th style={{ width: '10%' }}>Status</th>
+                  <th style={{ width: '10%' }}>Data</th>
+                  <th style={{ width: '1%' }}>Perfil</th>
                 </tr>
               </thead>
               <tbody>
@@ -240,10 +243,14 @@ useEffect(() => {
                   </tr>
                 ) : (
                   itensDaPagina.map((item, index) => (
-                    <tr key={index}>
-                      <td className="text-dark fw-medium">{item.data}</td>
-                      <td className="text-secondary">{item.assunto}</td>
+                    <tr key={item.id || index}>
+                      <td className="text-dark fw-medium">{item.id}</td>
+                      <td className="text-secondary">{item.nome}</td>
+                      <td className="text-secondary">{item.usuario}</td>
                       <td className="text-secondary">{item.email}</td>
+                      <td className="text-secondary">{item.status}</td>
+                      <td className="text-secondary">{item.data}</td>
+                      <td className="text-secondary">{item.perfil}</td>
                     </tr>
                   ))
                 )}

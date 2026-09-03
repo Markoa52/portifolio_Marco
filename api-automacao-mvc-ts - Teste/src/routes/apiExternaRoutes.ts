@@ -1,6 +1,9 @@
 import express from 'express';
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 import {ApiExternaServices} from '../services/apiExternaServices'
 import { ApiExternaController } from '../controllers/apiExternaController';
 
@@ -28,6 +31,6 @@ const api = new ApiExternaController(dadosApi)
  *       400:
  *         description: CEP inválido ou erro na requisição.
  */
-router.get('/externa/:cep', (req, res) => api.obterDadosAPIExterna(req, res));
+router.get('/externa/:cep', authMiddlewareInstance.verificarJWT,(req, res) => api.obterDadosAPIExterna(req, res));
 
 export default router;

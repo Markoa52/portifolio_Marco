@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { IEmailRegistro } from '../types/index.ts';
 import '../styles/editarUsuario.css';
-import { ArrowLeft, Eye, Info, Pencil, Search, Trash2 } from 'lucide-react';
+import { ArrowLeft, Eye, Info, Pencil, Search, Trash2, UserRound } from 'lucide-react';
 import type { IGerenciadorProps } from '../types/IGerenciadorProps.ts';
+import axios from 'axios';
 
-export const EditarUsuario: React.FC<IGerenciadorProps> = ({ setAbaAtiva, dadosIniciais }) => {
+export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAbaAtiva, dadosIniciais}) => {
 
 // 2. A função que o seu botão "Listar usuários" vai disparar
 const listarUsuarios = () => {
@@ -12,68 +13,123 @@ const listarUsuarios = () => {
   
   // O TypeScript agora aceita perfeitamente porque 'usuario' faz parte do tipo oficial AbaInferior!
   setAbaAtiva && setAbaAtiva('usuario');  
-};
+  };
+
+async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
+  console.log("Enviando dados para fila de Ativação/Inativação usuário...");
+
+  try {
+
+    let status = 0;
+    
+    // CORREÇÃO 1: Usar apenas um '=' para alterar o valor da variável
+    if (statusUsuario === 1) {
+      status = 0; // Desativa
+    } else {
+      status = 1; // Ativa
+    }
+    
+    const payload = {
+      metadata: {
+        protocoloId: `PROT-${Date.now()}`, 
+        acao: 'atualizar', 
+        criadoEm: new Date().toISOString(), // 💡 DICA: Enviar como string ISO para o banco/worker evitar problemas
+      },
+      contextoUsuario: {
+        idUsuario: usuarioId,
+        tipoAcao: 'ativarInativar',
+        status // 🚀 Agora vai com o valor correto (0 ou 1)
+      }
+    };
+
+    const resposta = await axios.post('http://localhost:3000/api/auth/usuario/inativarAtivar', payload);
+
+    const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
+  
+
+  }catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      setUsuarios([]);
+      setDadosSharePoint([]);
+    } finally {
+      // O TypeScript agora aceita perfeitamente porque 'usuario' faz parte do tipo oficial AbaInferior!
+      setAbaAtiva && setAbaAtiva('usuario');  
+    }
+  };
+
   const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
   const [, setCarregando] = useState<boolean>(true);
-  const [, setErro] = useState<string | null>(null);
-// MONITOR DE ÁREA ÚTIL: O React descobre o tamanho real do ecrã a cada milissegundo!
+  const [, setUsuarios] = useState<any[]>([]);
+  
+  // MONITOR DE ÁREA ÚTIL: O React descobre o tamanho real do ecrã a cada milissegundo!
 
   const [larguraJanela, setLarguraJanela] = useState<number>(window.innerWidth);
 
   useEffect(() => {
     const tratarRedimensionamento = () => setLarguraJanela(window.innerWidth);
     window.addEventListener('resize', tratarRedimensionamento);
+
+    //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
+    async function carregarUsuarios() {
+    // 1. Extrai o ID do contrato
+    const idContrato = payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id;
     
-    async function puxarDadosDoExpress() {
-      try {
-        setCarregando(true);
+    // Trava de segurança: Se o ID ainda não existir na montagem do ecrã, não faz a requisição
+    if (!idContrato) return;
 
-        //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
-        const resposta = await fetch('http://localhost:3000/api/dados', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-        });
+    try {
+      setCarregando(true);
 
-        if (!resposta.ok) throw new Error(`Erro no servidor: Status ${resposta.status}`);
-        const resultado = await resposta.json();
+      const resposta = await axios.get(`http://localhost:3000/api/auth/usuarios/contrato/${idContrato}`);
+      const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
 
-        //Nesse ponto popula a interface com os dados que retornaram da rota da API(back-end)
-        const dadosNormalizados: IEmailRegistro[] = resultado.map((item: any) => ({
-          data: item.Data || item.data || '-',
-          assunto: item.Assunto || item.assunto || '-',
-          email: item.Email || item.email || '-',
-          acoes: item.Acoes || item.acoes || '-'
-        }));
-        setDadosSharePoint(dadosNormalizados);
-      } catch (err: any) {
-        console.error(err);
-        setErro(err.message || "Falha na conexão.");
-      } finally {
-        setCarregando(false);
-      }
+      // CORREÇÃO 1: Mapeia diretamente a resposta vinda do Axios (dadosServidor)
+      const dadosNormalizados: IEmailRegistro[] = dadosServidor.map((item: any) => ({
+        id: item.Id || item.id || '-',
+        nome: item.Nome || item.nome || '-',
+        usuario: item.Usuario || item.usuario || '-',
+        email: item.Email || item.email || '-',
+        status: item.Ativo || item.ativo || '-',
+        data: item.DataCriacao || item.dataCriacao || '-',
+        perfil: item.Perfil || item.perfil || '-'
+        
+      }));
+
+      // CORREÇÃO 2: Atualiza os estados na ordem correta
+      setDadosSharePoint(dadosNormalizados);
+      setUsuarios(dadosServidor);
+
+    } catch (error) {
+      console.error('Erro ao buscar usuários:', error);
+      setUsuarios([]);
+      setDadosSharePoint([]);
+    } finally {
+      setCarregando(false);
     }
+  }
 
-    puxarDadosDoExpress();
+       carregarUsuarios();
 
-    return () => window.removeEventListener('resize', tratarRedimensionamento);
-  }, []);
+    }, [payloadEnvio]);
 
+  
     //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
    const isMobile = larguraJanela <= 1024;
 
   const [dadosLocais, setDadosLocais] = useState<IEmailRegistro[]>(dadosIniciais ?? []);
   const [pesquisa, setPesquisa] = useState<string>('');
-  const [modalAberto, setModalFormulario] = useState<boolean>(false);
+  const [modalAberto, setModalAberto] = useState<boolean>(false);
   const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
   const [registroSelecionado, setRegistroSelecionado] = useState<IEmailRegistro | null>(null);
   
   const [indexEdicao, setIndexEdicao] = useState<number>(-1);
-  const [inputData, setInputData] = useState<string>('');
-  const [inputAssunto, setInputAssunto] = useState<string>('');
-  const [inputEmail, setInputEmail] = useState<string>('');
-  const [inputAcoes, setInputAcoes] = useState<string>('');
+  //const [inputData, setInputData] = useState<string>('');
+  const [inputNome, setInputNome] = useState<string>('');
+  const [inputUsuario, setInputUsuario] = useState<string>('');
+  const [inputPerfil, setInputPerfil] = useState<string>('');
+  const [inputStatus, setInputStatus] = useState<string>('');
+  const [inputEmail] = useState<string>('');
+  const [inputData] = useState<string>('');
 
   const [salvando, setSalvando] = useState<boolean>(false);
   const [paginaAtualCRUD, setPaginaAtualCRUD] = useState<number>(1);
@@ -93,8 +149,8 @@ const listarUsuarios = () => {
     // Se você salvou em dadosSharePoint, ele deve filtrar em cima de dadosSharePoint!
     return dadosSharePoint.filter((item) => {
       return (
-        item.assunto?.toLowerCase().includes(pesquisa.toLowerCase()) ||
-        item.email?.toLowerCase().includes(pesquisa.toLowerCase())
+        item.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+        item.usuario?.toLowerCase().includes(pesquisa.toLowerCase())
       );
     });
   }, [dadosSharePoint, pesquisa]);
@@ -107,21 +163,32 @@ const listarUsuarios = () => {
   }, [dadosFiltrados, paginaAtualCRUD]);
 
   const abrirInclusao = () => {
-    setIndexEdicao(-1); setInputData(''); setInputAssunto(''); setInputEmail(''); setInputAcoes('');
-    setModalFormulario(true);
+    setIndexEdicao(-1); setInputNome(''); setInputUsuario(''); setInputPerfil(''); setInputStatus('');
+    setModalAberto(true);
   };
 
-  const abrirEdicao = (idxReal: number) => {
-    const item = dadosLocais[idxReal];
-    setIndexEdicao(idxReal); setInputData(item.data); setInputAssunto(item.assunto); setInputEmail(item.email); setInputAcoes(item.acoes);
-    setModalFormulario(true);
+  const abrirEdicao = (item: any) => {
+
+    if (!item) return;
+
+   const idxReal = dadosLocais.findIndex((o: any) => o.id === item.id);
+   setIndexEdicao(idxReal); 
+    
+   setInputNome(item.nome || item.Nome || ''); 
+   setInputUsuario(item.usuario || item.Usuario || ''); 
+   setInputPerfil(item.perfil || item.Perfil || ''); 
+   setInputStatus(item.status || item.Status || '');
+    
+    setModalAberto(true);
   };
 
-  const fecharFormulario = () => { setModalFormulario(false); };
+  const fecharFormulario = () => { setModalAberto(false); };
 
   const confirmarAcaoFormulario = (e: React.FormEvent) => {
     e.preventDefault();
-    const novoRegistro: IEmailRegistro = { data: inputData, assunto: inputAssunto, email: inputEmail, acoes: inputAcoes };
+    const novoRegistro: IEmailRegistro = {
+      id: 0, nome: inputNome, usuario: inputUsuario, perfil: inputPerfil, status: inputStatus, email: inputEmail, data: inputData 
+    };
     if (indexEdicao === -1) {
       setDadosLocais([...dadosLocais, novoRegistro]);
     } else {
@@ -132,16 +199,16 @@ const listarUsuarios = () => {
     fecharFormulario();
   };
 
-  const removerLinha = (idxReal: number) => {
+  const removerLinha = (item: any) => {
     if (window.confirm("Deseja remover este registro?")) {
-      setDadosLocais(dadosLocais.filter((_, i) => i !== idxReal));
+      setDadosLocais(dadosLocais.filter((_, i) => i !== item));
     }
   };
 
   const enviarDadosParaServidor = async () => {
     try {
       setSalvando(true);
-      const payload = dadosLocais.map(item => ({ Data: item.data, Assunto: item.assunto, Email: item.email, Acoes: item.acoes }));
+      const payload = dadosLocais.map(item => ({ Nome: item.nome, Usuario: item.usuario, Perfil: item.perfil, Status: item.status }));
 
       //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
       await fetch('/api/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -185,7 +252,7 @@ const listarUsuarios = () => {
         <Info size={18} className="text-primary" /> Informações Estruturadas
       </h3>
       
-            {/* LISTA CHAVE-VALOR: TODOS OS TEXTOS ALINHADOS À ESQUERDA */}
+      {/* LISTA CHAVE-VALOR: TODOS OS TEXTOS ALINHADOS À ESQUERDA */}
       <div className="w-100 d-flex flex-column gap-2" style={{ maxWidth: "1200px" }}>
         
         {/* Bloco 1: Assunto */}
@@ -193,24 +260,68 @@ const listarUsuarios = () => {
         <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
           {/* MUDANÇA: 'd-block mb-1' faz a etiqueta ficar no topo, alinhada à esquerda */}
           <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
-            Assunto:
+            Id:
           </strong>
           {/* O dado real nasce colado na borda esquerda logo abaixo */}
-          <span className="text-dark fw-bold fs-6 d-block">{registroSelecionado.assunto}</span>
+          <span className="text-dark fw-bold fs-6 d-block">{registroSelecionado.id}</span>
+        </div>
+
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+          {/* MUDANÇA: 'd-block mb-1' faz a etiqueta ficar no topo, alinhada à esquerda */}
+          <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+            Nome:
+          </strong>
+          {/* O dado real nasce colado na borda esquerda logo abaixo */}
+          <span className="text-dark fw-bold fs-6 d-block">{registroSelecionado.nome}</span>
         </div>
 
         {/* Bloco 2: Remetente */}
         <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
           <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
-            Remetente:
+            Usuario:
           </strong>
-          <span className="text-dark fw-medium fs-6 d-block text-break">{registroSelecionado.email}</span>
+          <span className="text-dark fw-medium fs-6 d-block text-break">{registroSelecionado.usuario}</span>
         </div>
 
         {/* Bloco 3: Data de Processamento */}
         <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
           <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
-            Data de Processamento:
+            E-mail:
+          </strong>
+          <span className="text-secondary fs-6 d-block">{registroSelecionado.email}</span>
+        </div>
+
+        {/* Bloco 3: Data de Processamento */}
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+          <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+            Perfil:
+          </strong>
+          <span className="text-secondary fs-6 d-block">{registroSelecionado.perfil}</span>
+        </div>
+
+        {/* Bloco 3: Data de Processamento */}
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+         <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+           Status:
+         </strong>
+        <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 my-2">
+  
+        {/* Texto do Status */}
+        <span className="text-secondary fs-6 fw-semibold">{Number(registroSelecionado.status) === 1 ? 'Ativo' : 'Inativo'}</span>
+
+        {/* Botão alinhado perfeitamente na mesma linha */}
+        <button className={`btn btn-sm fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0 ${
+          Number(registroSelecionado.status) === 1 ? 'btn-danger text-white' : 'btn-success text-white'}`}  onClick={() => InativarAtivarUsuarios(registroSelecionado.id, Number(registroSelecionado.status))} >
+          📋 {Number(registroSelecionado.status) === 1 ? 'Inativar usuários' : 'Ativar usuários'}
+        </button>
+
+        </div>
+      </div>
+
+        {/* Bloco 3: Data de Processamento */}
+        <div className="py-2 px-3 border border-light-subtle rounded-3 text-start" style={{ backgroundColor: '#fafafa' }}>
+          <strong className="text-secondary text-uppercase d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
+            Data de criação:
           </strong>
           <span className="text-secondary fs-6 d-block">{registroSelecionado.data}</span>
         </div>
@@ -218,7 +329,7 @@ const listarUsuarios = () => {
       </div>
     </div>
   </div>
-);
+   );
   }
 
   return (
@@ -288,30 +399,29 @@ const listarUsuarios = () => {
               <table className="table table-hover align-middle mb-0 text-start" style={{ fontSize: '0.875rem' }}>
                 <thead className="table-light text-secondary text-uppercase" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
                   <tr>
-                    <th style={{ width: '15%' }}>Data</th>
-                    <th style={{ width: '30%' }}>Assunto</th>
-                    <th style={{ width: '25%' }}>Email</th>
-                    <th style={{ width: '15%' }}>Ação</th>
-                    <th className="text-center" style={{ width: '15%' }}>Operações</th>
+                    <th style={{ width: '10%' }}>Nome</th>
+                    <th style={{ width: '10%' }}>Usuario</th>
+                    <th style={{ width: '10%' }}>Perfil</th>
+                    <th style={{ width: '10%' }}>Status</th>
+                    <th className="text-center" style={{ width: '1%' }}>Operações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {itensDaPaginaCRUD.map((item, index) => {
-                    const indiceRealAbsoluto = dadosLocais.indexOf(item) !== -1 ? dadosLocais.indexOf(item) : index;
+                    //const indiceRealAbsoluto = dadosLocais.indexOf(item) !== -1 ? dadosLocais.indexOf(item) : index;
                     return (
-                      <tr key={indiceRealAbsoluto}>
-                        <td className="text-dark fw-medium">{item.data}</td>
-                        <td className="text-secondary">{item.assunto}</td>
-                        <td className="text-secondary">{item.email}</td>
-                        <td>
-                          <span className="badge bg-light border text-dark fw-normal">{item.acoes}</span>
-                        </td>
+                      <tr key={item.id || index}>
+                        <td className="text-dark fw-medium">{item.nome}</td>
+                        <td className="text-secondary">{item.usuario}</td>
+                        <td className="text-secondary">{item.perfil}</td>
+                        <td className="text-secondary">{Number(item.status) === 1 ? 'Ativo' : 'Inativo'}</td>
                         {/* Ações com botões de ícone limpos e sem cores pesadas */}
                         <td className="text-center">
                           <div className="d-flex justify-content-center gap-1">
                             <button className="btn btn-light btn-sm border" title="Visualizar" onClick={() => setRegistroSelecionado(item)}><Eye size={22} className="text-primary" /></button>
-                            <button className="btn btn-light btn-sm border" title="Editar" onClick={() => abrirEdicao(indiceRealAbsoluto)}><Pencil size={22} className="text-primary" /></button>
-                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => removerLinha(indiceRealAbsoluto)}><Trash2 size={22} className="text-primary" /></button>
+                            <button className="btn btn-light btn-sm border" title="Editar" onClick={() => abrirEdicao(item)}><Pencil size={22} className="text-primary" /></button>
+                            <button className="btn btn-light btn-sm border" title="Inativar/Ativar usuário" onClick={() => removerLinha(item)}><UserRound size={22} className="text-primary" /></button>
+                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => removerLinha(item)}><Trash2 size={22} className="text-primary" /></button>
                           </div>
                         </td>
                       </tr>
@@ -357,20 +467,21 @@ const listarUsuarios = () => {
             <form onSubmit={confirmarAcaoFormulario} className="modal-body pt-2 text-start">
               <div className="mb-2.5">
                 <label className="form-label small fw-bold text-secondary mb-1">Data:</label>
-                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputData} onChange={(e) => setInputData(e.target.value)} required />
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputNome} onChange={(e) => setInputNome(e.target.value)} required />
               </div>
               <div className="mb-2.5">
                 <label className="form-label small fw-bold text-secondary mb-1">Assunto:</label>
-                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputAssunto} onChange={(e) => setInputAssunto(e.target.value)} required />
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputUsuario} onChange={(e) => setInputUsuario(e.target.value)} required />
               </div>
               <div className="mb-2.5">
                 <label className="form-label small fw-bold text-secondary mb-1">E-mail:</label>
-                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputEmail} onChange={(e) => setInputEmail(e.target.value)} required />
+                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputPerfil} onChange={(e) => setInputPerfil(e.target.value)} required />
               </div>
-              <div className="mb-3">
-                <label className="form-label small fw-bold text-secondary mb-1">Ações / Status:</label>
-                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputAcoes} onChange={(e) => setInputAcoes(e.target.value)} />
+              <div className="mb-2.5">
+                <label className="form-label small fw-bold text-secondary mb-1">E-mail:</label>
+                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputStatus} onChange={(e) => setInputStatus(e.target.value)} required />
               </div>
+
               
               <div className="d-flex flex-column gap-2 border-top pt-3 mt-2">
                 <button type="submit" className="btn btn-dark fw-semibold py-2" style={{ fontSize: '0.9rem' }}>

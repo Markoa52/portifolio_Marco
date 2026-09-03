@@ -1,6 +1,9 @@
 import express from 'express';
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
 
 const router = express.Router();
+
+router.use(authMiddlewareInstance.verificarJWT);
 
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
 import { RabbitMqPublisher } from '../queue/publisher'; // Ajuste o caminho real se necessário
@@ -32,7 +35,7 @@ const geradorController = new contratoController(geradorService); // Passa o ser
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/contratos', (req, res) => geradorController.contrato(req, res));
+router.get('/contratos', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.contrato(req, res));
 
 /**
  * @openapi
@@ -59,7 +62,7 @@ router.get('/contratos', (req, res) => geradorController.contrato(req, res));
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/contrato/:id', (req, res) => geradorController.buscarPorId(req, res));
+router.get('/contrato/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarPorId(req, res));
 
 /**
  * @openapi
@@ -86,7 +89,7 @@ router.get('/contrato/:id', (req, res) => geradorController.buscarPorId(req, res
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/contrato/fatura/:id', (req, res) => geradorController.buscarFaturaId(req, res));
+router.get('/contrato/fatura/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarFaturaId(req, res));
 
 /**
  * @openapi
@@ -113,7 +116,7 @@ router.get('/contrato/fatura/:id', (req, res) => geradorController.buscarFaturaI
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/fatura/aberto/:id', (req, res) => geradorController.buscarFaturaAbertoId(req, res));
+router.get('/fatura/aberto/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarFaturaAbertoId(req, res));
 
 /**
  * @openapi
@@ -140,7 +143,7 @@ router.get('/fatura/aberto/:id', (req, res) => geradorController.buscarFaturaAbe
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/contrato/faturas/:id', (req, res) => geradorController.buscarFaturasId(req, res));
+router.get('/contrato/faturas/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarFaturasId(req, res));
 
 /**
  * @openapi
@@ -167,7 +170,7 @@ router.get('/contrato/faturas/:id', (req, res) => geradorController.buscarFatura
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/fatura/saldo/:id', (req, res) => geradorController.buscarSaldoFaturaId(req, res));
+router.get('/fatura/saldo/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarSaldoFaturaId(req, res));
 
 /**
  * @openapi
@@ -194,7 +197,7 @@ router.get('/fatura/saldo/:id', (req, res) => geradorController.buscarSaldoFatur
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/contrato/limite/:id', (req, res) => geradorController.contratoLimite(req, res));
+router.get('/contrato/limite/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.contratoLimite(req, res));
 
 /**
  * @openapi
@@ -225,7 +228,7 @@ router.get('/contrato/limite/:id', (req, res) => geradorController.contratoLimit
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/contrato/pesquisa', (req, res) => geradorController.pesquisa(req, res));
+router.post('/contrato/pesquisa', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.pesquisa(req, res));
 
 /**
  * @openapi
@@ -256,6 +259,6 @@ router.post('/contrato/pesquisa', (req, res) => geradorController.pesquisa(req, 
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/contrato/acoes', (req, res) => geradorController.contratoAcoes(req, res));
+router.post('/contrato/acoes', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.contratoAcoes(req, res));
 
 export default router;

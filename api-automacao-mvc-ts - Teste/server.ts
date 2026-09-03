@@ -24,6 +24,7 @@ import condicoesComerciaisRoutes from './src/routes/condicoesComerciaisRoutes.js
 import veiculoRoutes from './src/routes/veiculoRoutes.js'
 import pedidoRoutes from './src/routes/pedidoRoutes.js'
 import tag from './src/routes/tagRoutes.js'
+import authRoutes from './src/routes/authRoutes.js'
 // ==========================================================================
 // INICIALIZAÇÃO CRÍTICA (DEVE SER A PRIMEIRA COISA)
 // ==========================================================================
@@ -90,6 +91,7 @@ app.use('/api', condicoesComerciaisRoutes)
 app.use('/api', veiculoRoutes)
 app.use('/api', pedidoRoutes)
 app.use('/api', tag)
+app.use('/api', authRoutes)
 
 app.use(cors()); // 🌟 2. Ative o CORS antes de qualquer rota!
 app.use(express.json());

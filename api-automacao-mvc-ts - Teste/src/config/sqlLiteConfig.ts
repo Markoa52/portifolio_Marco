@@ -10,6 +10,7 @@ export class Database {
             // 1. Aponta exatamente para a pasta central de microsserviços
             const pastaCompartilhada = 'C:\\Site\\7-API-Microservicos_fullStack-V4';
 
+            const caminhoUsuario = path.join(pastaCompartilhada, 'Usuario.db');
             const caminhoFaturamento = path.join(pastaCompartilhada, 'FinancialBilling.db');
             const caminhoPrincipal = path.join(pastaCompartilhada, 'TollManagement.db');
 
@@ -23,6 +24,7 @@ export class Database {
 
             // 3. ANEXA O SEGUNDO BANCO (FinancialBilling)
             await this.instance.exec(`ATTACH DATABASE '${caminhoFaturamento}' AS banco_fat`);
+            await this.instance.exec(`ATTACH DATABASE '${caminhoUsuario}' AS banco_user`);
             
             // 4. CONFIGURAÇÃO DE SEGURANÇA CONTRA CONCORRÊNCIA (MUITO IMPORTANTE!)
             // Avisa o SQLite para aguardar até 5 segundos (5000ms) se o outro microsserviço
