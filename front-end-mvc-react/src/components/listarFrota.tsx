@@ -245,12 +245,25 @@ const handleBaixarModeloCSV = () => {
   exportarParaCSV("modelo_importacao_veiculos", cabecalhos, exemplo);
 };
 
-const handleExportarTodosVeiculos = () => {
+const handleExportarTodosVeiculos = async () => {
   const cabecalhos = ["placa", "marca", "modelo", "tipoveiculo", "eixo"];
+
+  const respostaVeiculos = await axios.get(`http://localhost:3000/api/veiculo/${contractId}`)
+  setveiculoCriado(Array.isArray(respostaVeiculos.data) ? respostaVeiculos.data : [respostaVeiculos.data]);
   
   // dadosLocais ou usuarios é a sua lista que popula a tabela principal
-  //exportarParaCSV("relatorio_geral_veiculos", cabecalhos, dadosLocais);
+  exportarParaCSV("relatorio_geral_veiculos", cabecalhos, respostaVeiculos.data);
 };
+
+ const handleExportarErrosLote = () => {
+   if (!resultadoLote || !resultadoLote.erros || resultadoLote.erros.length === 0) return;
+   
+   // Define os cabeçalhos das colunas do relatório de falhas
+   const cabecalhos = ["placa", "modelo", "motivo"];
+   
+   // Dispara o motor genérico que criámos
+   exportarParaCSV("veiculos_rejeitados_duplicidade", cabecalhos, resultadoLote.erros);
+ };
 
   // -------------------------------------------------------------
   // TELA 1: LISTAGEM DA FROTA (TABELA COM O BOTÃO EXPORTAR INCLUÍDO)
@@ -542,30 +555,49 @@ if (subAba === 'cadastro-lote') {
 
           {/* TABELA DE ERROS (SÓ APARECE SE HOUVER ALGUM ERRO) */}
           {resultadoLote.erros.length > 0 && (
-            <div className="mb-4">
-              <h4 className="fs-6 fw-bold text-danger mb-2">❌ Itens Não Importados (Placas Repetidas)</h4>
-              <div className="table-responsive rounded-3 border" style={{ maxHeight: "200px" }}>
-                <table className="table table-sm table-hover align-middle m-0 small">
-                  <thead className="table-danger sticky-top">
-                    <tr>
-                      <th className="px-3 py-2">Placa</th>
-                      <th className="py-2">Modelo</th>
-                      <th className="py-2 px-3 text-end">Motivo da Rejeição</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resultadoLote.erros.map((item: any, idx: number) => (
-                      <tr key={idx}>
-                        <td className="px-3 py-2 fw-bold text-dark">{item.placa}</td>
-                        <td className="text-secondary">{item.modelo}</td>
-                        <td className="text-danger px-3 text-end fw-medium">{item.motivo}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
+           <div className="mb-4">
+             
+             {/* 💡 CABEÇALHO DA TABELA COM O BOTÃO DE EXPORTAÇÃO ALINHADO LADO A LADO */}
+             <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2 text-start">
+               <h4 className="fs-6 fw-bold text-danger m-0">
+                 ❌ Itens Não Importados (Placas Repetidas)
+               </h4>
+               
+               {/* 🚀 BOTÃO DE EXPORTAÇÃO DO CENÁRIO B ADICIONADO AQUI */}
+               <button
+                 type="button"
+                 className="btn btn-outline-danger btn-sm fw-semibold d-inline-flex align-items-center gap-1 py-1.5 px-3"
+                 style={{ fontSize: '0.8rem' }}
+                 onClick={handleExportarErrosLote}
+               >
+                 📥 Exportar Erros (.csv)
+               </button>
+             </div>
+         
+             {/* Estrutura da tabela existente (Mantém igual) */}
+             <div className="table-responsive rounded-3 border" style={{ maxHeight: "200px" }}>
+               <table className="table table-sm table-hover align-middle m-0 small">
+                 <thead className="table-danger sticky-top">
+                   <tr>
+                     <th className="px-3 py-2">Placa</th>
+                     <th className="py-2">Modelo</th>
+                     <th className="py-2 px-3 text-end">Motivo da Rejeição</th>
+                   </tr>
+                 </thead>
+                 <tbody>
+                   {resultadoLote.erros.map((item: any, idx: number) => (
+                     <tr key={idx}>
+                       <td className="px-3 py-2 fw-bold text-dark">{item.placa}</td>
+                       <td className="text-secondary">{item.modelo}</td>
+                       <td className="text-danger px-3 text-end fw-medium">{item.motivo}</td>
+                     </tr>
+                   ))}
+                 </tbody>
+               </table>
+             </div>
+         
+           </div>
+         )}
 
           {/* TABELA DE SUCESSOS */}
           {resultadoLote.sucesses?.length > 0 && (
