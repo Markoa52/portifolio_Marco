@@ -1,5 +1,5 @@
 import '../styles/contrato.css'; // Toda a estilização do header e abas fica presa aqui!
-import { Home, Truck, FileText, BarChart3, Info } from "lucide-react";
+import { Home, Truck, FileText, BarChart3, Info, Tag } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 
 import { DetalhesPedagio } from './saldoVpr'; 
@@ -12,6 +12,7 @@ import { ConsultaPedidosCards } from './consultaPedidosCards';
 import {SolicitacaoPedido} from './solicitacaoPedido';
 import {AtivacaoTagVeiculo} from './tag';
 import {DetalhesContrato} from './contratoDetalhes';
+import { TransferenciaTag } from './estoqueTag';
 //import { Menu, X, Landmark } from 'lucide-react';
 
 //import { MenuMobileModulos } from './menuHumbugerMobile';
@@ -19,9 +20,9 @@ import {DetalhesContrato} from './contratoDetalhes';
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
 
-export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login';
+export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login' | 'estoque-tag';
 
-export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login';
+export type PaginaTipo = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'pesquisar-contrato' | 'editar-usuario' | 'usuario' |'contrato' | 'dashboard' | 'consumoAPI' | 'atendimento'| 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login' | 'estoque-tag';
 
 import type { IContratoProps } from '../types/IContratoProps';
 //import type { IDetalhesContrato } from '../types/IDetalhesContrato';
@@ -58,7 +59,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
   const [veiculoContaVPR, setVeiculoContaVPR] = useState<any>(null);
   const [limiteContrato, setlimiteContrato] = useState<any>(null);
   const [pedidoRastreamento, setPedidoRastreamento] = useState<any>(null);
-  const [tagContrato, setTagContrato] = useState<any>(null);
+  const [, setTagContrato] = useState<any>(null);
 
   const formatarDataBr = (dataBruta: any) => {
     if (!dataBruta) return "---";
@@ -176,10 +177,10 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
     <header
       className="navbar navbar-light bg-white py-3 shadow-sm mx-auto"  
       style={{ 
-        width: 'calc(100% - 50px)', // Ajustado de 32px para 24px para expandir o cabeçalho no celular
+        width: 'calc(110% - 50px)', // Ajustado de 32px para 24px para expandir o cabeçalho no celular
         maxWidth: "1187px",          // Ajustado de 1152px para 1176px para alinhar de ponta a ponta no notebook
         margin: "0 auto", 
-        borderRadius: "0 0 12px 12px", 
+        borderRadius: "0 0 0px 0px", 
         borderBottom: "1px solid #e2e8f0",
         boxSizing: 'border-box'
       }}
@@ -190,7 +191,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         
         {/* LADO ESQUERDO: MENUS E NAVEGAÇÃO */}
         {/* 'justify-content-center justify-content-md-start' centraliza os ícones apenas no celular */}
-        <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-1 gap-md-2 flex-wrap" style={{ marginTop: '-20px' }}>
+        <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-0 gap-md-2 flex-wrap" style={{ marginTop: '-20px' }}>
           
           {/* MENU HAMBÚRGUER MOBILE */}
           {/* <div className="d-block d-md-none me-2 text-dark" style={{ marginTop: '-37px' }} >
@@ -239,8 +240,34 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
               </ul>
             )}
           </div>
+
+          {/* ITEM 3: TAG */}
+          <div className="dropdown">
+            <button 
+              className={`btn btn-menu-limpo d-flex flex-column align-items-center p-2 dropdown-toggle fs-5 fw-bold text-dark border-0 ${menuAberto === 'tag' ? 'show' : ''}`}
+              onClick={() => alternarSubmenu('tag')}
+              style={{ minWidth: '90px', transition: 'background-color 0.2s' }}
+            >
+              <Tag size={26} color="#475569" strokeWidth={2} className="mb-2" />
+              <span>Tag</span>
+            </button>
+            {menuAberto === 'tag' && (
+              <ul className="dropdown-menu show position-absolute shadow border-light-subtle bg-white">
+                <li className="dropdown-item cp" onClick={() => { setAbaAtiva('consultaPedidosCards'); setMenuAberto(null); }}>
+                  Pedidos tag
+                </li>
+                  <li className="dropdown-item cp" onClick={() => { setAbaAtiva('tag'); setMenuAberto(null); }}>
+                  Ativar tag
+                </li>
+                  <li className="dropdown-item cp" onClick={() => { setAbaAtiva('estoque-tag'); setMenuAberto(null); }}>
+                  Estoque tag
+                </li>
+              </ul>
+              
+            )}
+          </div>
           
-          {/* ITEM 3: FATURAS */}
+          {/* ITEM 4: FATURAS */}
           <div className="dropdown">
             <button 
               className={`btn btn-menu-limpo d-flex flex-column align-items-center p-2 dropdown-toggle fs-5 fw-bold text-dark border-0 ${menuAberto === 'faturas' ? 'show' : ''}`}
@@ -262,7 +289,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
             )}
           </div>
 
-          {/* ITEM 4: RELATÓRIOS */}
+          {/* ITEM 5: RELATÓRIOS */}
           <div className="dropdown">
             <button 
               className={`btn btn-menu-limpo d-flex flex-column align-items-center p-2 dropdown-toggle fs-5 fw-bold text-dark border-0 ${menuAberto === 'relatorios' ? 'show' : ''}`}
@@ -589,66 +616,71 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           </div>
         </div>
 
-        {/* CARD 4: Tag (Direita Inferior) */}
-         <div className="col-md-6 ps-3 pe-3 pt-0">
-          <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h3 className="fs-6 mb-0 fw-bold text-dark">Tag</h3>
-              <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('tag')}>
-                Ativar tags →
-              </button>
-            </div>
-
-            <div>
-              {/* NÚMERO PRINCIPAL: TOTALIZADOR GERAL */}
-              <h2 className="text-dark fs-4 text-start m-0">
-                {veiculoContrato?.length || 0}
-                <span className="d-block mb-0 text-muted fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
-                  TOTAL DE TAGS
-                </span>
-              </h2>
-            
-              {/* 📊 INDICADORES PARALELOS: 2 na esquerda e 2 na direita perfeitamente alinhados */}
-              <div className="row row-cols-2 g-x-3 g-y-2 pt-0">
-                
-                {/* ESQUERDA - CIMA: EM ESTOQUE */}
-                <div className="text-end mb-3">
-                  <span className="badge bg-success mb-1" style={{ fontSize: '0.7rem' }}>
-                    {veiculoContrato?.every((item: any) => item.status !== 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
-                  </span>
-                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Em estoque</span>
-                </div>
-            
-                {/* DIREITA - CIMA: BONIFICADAS */}
-                <div className="text-end mb-3">
-                  <span className="badge bg-secondary mb-1" style={{ fontSize: '0.7rem' }}>
-                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
-                  </span>
-                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Bonificadas</span>
-                </div>
-            
-                {/* ESQUERDA - BAIXO: ATIVAS */}
-                <div className="text-end mb-3">
-                  <span className="badge bg-primary mb-1" style={{ fontSize: '0.7rem' }}>
-                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
-                  </span>
-                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Ativas</span>
-                </div>
-            
-                {/* DIREITA - BAIXO: BLOQUEADAS */}
-                <div className="text-end mb-3">
-                  <span className="badge bg-danger mb-1" style={{ fontSize: '0.7rem' }}>
-                    {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
-                  </span>
-                  <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Bloqueadas</span>
-                </div>
-            
-               </div> {/* Fecha row */}
-              </div> {/* Fecha card mestre */}
-
-            </div>
-          </div>
+        <div className="col-md-6 ps-3 pe-3 pt-0">
+        <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
+    
+        {/* Cabeçalho do Card */}
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h3 className="fs-6 mb-0 fw-bold text-dark">Tag</h3>
+          <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('tag')}>
+            Ativar tags →
+          </button>
         </div>
+    
+        {/* Conteúdo Principal */}
+        <div className="d-flex flex-column justify-content-between flex-grow-1">
+          
+          {/* NÚMERO PRINCIPAL: TOTALIZADOR GERAL DE TAGS */}
+          {/* DICA: Substitua 'veiculoContrato' pelo estado real de tags (ex: tagsContrato) se o tiver criado */}
+          <h2 className="text-dark fs-4 text-start m-0 mb-3">
+            {veiculoContrato?.length || 0}
+            <span className="d-block mb-0 text-muted fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+              TOTAL DE TAGS
+            </span>
+          </h2>
+        
+          {/* INDICADORES PARALELOS: Perfeitamente alinhados em grelha 2x2 nativa */}
+          <div className="row row-cols-2 g-3 pt-0"> 
+            
+            {/* ESQUERDA - CIMA: EM ESTOQUE */}
+            <div className="col text-end"> {/* 💡 CORREÇÃO: Alinhado à esquerda com a classe 'col' para não entortar */}
+              <span className="badge bg-success mb-1" style={{ fontSize: '0.7rem' }}>
+                {veiculoContrato?.every((item: any) => item.status !== 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+              </span>
+              <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Em estoque</span>
+            </div>
+        
+            {/* DIREITA - CIMA: BONIFICADAS */}
+            <div className="col text-end">
+              <span className="badge bg-secondary mb-1" style={{ fontSize: '0.7rem' }}>
+                {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+              </span>
+              <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Bonificadas</span>
+            </div>
+        
+            {/* ESQUERDA - BAIXO: ATIVAS */}
+            <div className="col text-end">
+              <span className="badge bg-primary mb-1" style={{ fontSize: '0.7rem' }}>
+                {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+              </span>
+              <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Ativas</span>
+            </div>
+        
+            {/* DIREITA - BAIXO: BLOQUEADAS */}
+            <div className="col text-end">
+              <span className="badge bg-danger mb-1" style={{ fontSize: '0.7rem' }}>
+                {veiculoContrato?.every((item: any) => item.status === 'aguardando ativação') ? (veiculoContrato?.length || 0) : 0}
+              </span>
+              <span className="d-block text-muted" style={{ fontSize: '0.72rem' }}>Bloqueadas</span>
+            </div>
+        
+          </div> {/* Fecha row */}
+        </div> {/* Fecha bloco interno */}
+    
+      </div>
+    </div>
+
+    </div>
 
     )}
 
@@ -711,9 +743,20 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
          />
         )}
 
-        
         {abaAtiva === 'tag' && (
           <AtivacaoTagVeiculo contractId={Number(payloadEnvio.dadosLimpos.id)} onVoltar={() => setAbaAtiva('cards-gerais')} />
+        )}
+
+        {abaAtiva === 'estoque-tag' && (
+          <TransferenciaTag 
+            // Garante que o ID do contrato de origem é convertido para número
+            idContratoOrigem={Number(payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id || 0)}
+            
+            // 💡 PASSO CRUCIAL: Passe o objeto do usuário logado que recebemos no topo do contrato.tsx
+            usuarioLogado={usuarioLogado} // ou usuarioLogado dependendo do nome da prop no seu contrato.tsx
+            
+            setPaginaAtiva={setPaginaAtiva} 
+          />
         )}
 
        </main>

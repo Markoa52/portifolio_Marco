@@ -48,7 +48,7 @@ export class contratoController {
 
   /**
    * 2. MÉTODO PARA O GET (Consulta Rápida de Tela / SQL Server Puro)
-   * 🔥 ESTE MÉTODO VAI RESOLVER O SEU ERRO! Ele não tenta ler o body, ele lê apenas o ID da URL (req.params)
+   * ESTE MÉTODO VAI RESOLVER O SEU ERRO! Ele não tenta ler o body, ele lê apenas o ID da URL (req.params)
    */
   async buscarPorId(req: Request, res: Response): Promise<Response> {
     try {
@@ -154,6 +154,26 @@ export class contratoController {
     }
   }
 
+  async ContratosDoUsuario(req: Request, res: Response): Promise<Response> {
+  try {
+    // 💡 CORREÇÃO: Lê o 'id' da rota (que é o ID do utilizador neste contexto)
+    const { id } = req.params; 
+
+    console.log("📡 [Controller] Buscando contratos para o Usuário ID:", id);
+
+    if (!id || id === 'undefined') {
+      return res.status(400).json({ erro: 'O parâmetro id do usuário é obrigatório.' });
+    }
+
+    // Passa o ID convertido em número para a busca no banco SQLite
+    const contratos = await this.contratoService.obterContratosVinculados(Number(id));
+    
+    return res.status(200).json(contratos);
+  } catch (error: any) {
+    console.error('❌ Erro no método ContratosDoUsuario:', error.message);
+    return res.status(500).json({ erro: 'Erro interno ao listar contratos.' });
+  }
+}
 
     async buscarSaldoFaturaId(req: Request, res: Response): Promise<Response> {
     try {

@@ -1,8 +1,10 @@
 import express from 'express';
+import multer from 'multer';
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
 
 const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
 
-import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
 router.use(authMiddlewareInstance.verificarJWT);
 
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
@@ -174,6 +176,6 @@ router.get('/veiculo/vincular-tag/:id', authMiddlewareInstance.verificarJWT,(req
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/veiculo/acoes', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculoAcoes(req, res));
+router.post('/veiculo/acoes', upload.single('file'), authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculoAcoes(req, res));
 
 export default router;

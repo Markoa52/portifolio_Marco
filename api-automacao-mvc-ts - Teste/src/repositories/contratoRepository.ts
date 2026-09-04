@@ -110,6 +110,31 @@ export class ContratoRepository {
     }
   }
 
+  async listarContratosVinculados(usuarioId: number): Promise<any[]> {
+  const db = await Database.getConnection();
+  
+  try {
+    // 💡 A QUERY PERFEITA: Traz o ID do contrato, CNPJ e Nome da Empresa vinculados ao usuário
+    const query = `
+      SELECT 
+        c.id,
+        c.cnpj,
+        p.nomeEmpresa
+      FROM contrato c
+      INNER JOIN usuarioContrato uc ON c.id = uc.contratoId
+      INNER JOIN person p on c.cnpj=p.documentNumber
+      WHERE uc.usuarioId = ?
+      ORDER BY p.nomeEmpresa ASC;
+    `;
+
+    const contratos = await db.all(query, [usuarioId]);
+    return contratos || [];
+  } catch (error: any) {
+    console.error('❌ Erro ao buscar contratos vinculados na base:', error.message);
+    throw error;
+  }
+}
+
   async buscaFatura(contractId: number): Promise<any> {
   try {
     const db = await Database.getConnection();

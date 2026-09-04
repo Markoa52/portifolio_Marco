@@ -86,4 +86,24 @@ export class veiculoRepository {
       throw erro;
     }
   }
+
+ async verificarPlacaExiste(placa: string): Promise<boolean> {
+  // TRAVA CRÍTICA: Se a placa for vazia ou nula, assume que não existe para não quebrar o loop
+  if (!placa || placa.trim() === "" || placa === "undefined") {
+    return false;
+  }
+
+  const db = await Database.getConnection();
+  try {
+    const query = `SELECT COUNT(*) AS total FROM veiculo WHERE UPPER(placa) = ?;`;
+    const resultado = await db.get(query, [placa.toUpperCase().trim()]);
+    return (resultado?.total || 0) > 0;
+  } catch (error: any) {
+    console.error("Erro ao checar placa no repositório:", error.message);
+    throw error;
+  }
+}
+
+
+
 }

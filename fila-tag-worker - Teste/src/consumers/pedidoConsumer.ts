@@ -2,18 +2,18 @@ import amqp from 'amqplib';
 // E no seu código substitua (msg: Message | null) por (msg: amqp.Message | null)
 // Lembre-se da extensão .js obrigatória para imports locais no microsserviço
 import { connectRabbit } from '../config/rabbitConfig.js';
-import pdfQueue from '../queues/geraPdfQueue.js';
-import { geraArquivoPdf } from '../services/geraPdfService.js';
+import atualizaTagQueue from '../queues/atualizaTagQueue.js';
+import { cadastroPedidoService } from '../services/tagServices.js';
 
 // DEFINIÇÃO DOS NOMES DA DLX (Padrão de mercado baseado na sua fila atual)
-const DLX_EXCHANGE_NAME = `${pdfQueue.nome}.dlx`;
-const DLQ_QUEUE_NAME = `${pdfQueue.nome}.dlq`;
-const DLQ_ROUTING_KEY = `${pdfQueue.nome}.failed`;
+const DLX_EXCHANGE_NAME = `${atualizaTagQueue.nome}.dlx`;
+const DLQ_QUEUE_NAME = `${atualizaTagQueue.nome}.dlq`;
+const DLQ_ROUTING_KEY = `${atualizaTagQueue.nome}.failed`;
 
 export async function iniciarConsumer(): Promise<void> {
     try {
         // CORREÇÃO: Passa o nome da fila como argumento e coleta o canal retornado diretamente
-        const channel = await connectRabbit(pdfQueue.nome);
+        const channel = await connectRabbit(atualizaTagQueue.nome);
 
         // ==========================================
         // STEP 1: CONFIGURAÇÃO DA DEAD LETTER (DLX / DLQ)
@@ -31,7 +31,7 @@ export async function iniciarConsumer(): Promise<void> {
         // STEP 2: VINCULAR A FILA PRINCIPAL À DLX
         // ==========================================
         // Garante a existência da fila correta incluindo os argumentos que apontam para a DLX criada acima
-        await channel.assertQueue(pdfQueue.nome, { 
+        await channel.assertQueue(atualizaTagQueue.nome, { 
             durable: true,
             arguments: {
                 'x-dead-letter-exchange': DLX_EXCHANGE_NAME,
@@ -42,23 +42,23 @@ export async function iniciarConsumer(): Promise<void> {
         // >>> ADICIONE ESTA LINHA LOGO ABAIXO <<<
         // Ela vincula a sua fila principal à rota que o seu Agendador vai disparar às 2h da manhã
         await channel.bindQueue(
-            pdfQueue.nome, 
+            atualizaTagQueue.nome, 
             'reports.exchange',                // Mesma Exchange usada no Agendador
-            'reports.v1.trigger.processa_pdf'  // Mesma Routing Key usada no Agendador
+            'reports.v1.trigger.atualiza-tag'  // Mesma Routing Key usada no Agendador
         );
 
-        console.log(`Aguardando mensagens na fila: ${pdfQueue.nome}`);
+        console.log(`Aguardando mensagens na fila: ${atualizaTagQueue.nome}`);
         console.log(`Proteção Dead Letter ativa. Falhas irão para: ${DLQ_QUEUE_NAME}`);
 
 
         channel.prefetch(1);
 
-     channel.consume(pdfQueue.nome, async (msg: amqp.Message | null) => {
+     channel.consume(atualizaTagQueue.nome, async (msg: amqp.Message | null) => {
     if (!msg) return;
 
     try {
         const conteudoBruto = msg.content.toString();
-        console.log('[Worker PDF] Conteúdo bruto recebido da fila:', conteudoBruto);
+        console.log('[Worker pedido] Conteúdo bruto recebido da fila:', conteudoBruto);
 
         let dados: any;
 
@@ -72,34 +72,35 @@ export async function iniciarConsumer(): Promise<void> {
 
         // Recupera o payload legítimo envelopado pelo publisherEvent
         const payload = dados.payload || dados;
-        console.log('[Worker PDF] Payload decodificado com sucesso:', payload);
+        console.log('[Worker pedido] Payload decodificado com sucesso:', payload);
 
-        // Validação de segurança do array 'js'
-        if (!payload.js || !Array.isArray(payload.js) || payload.js.length === 0) {
-            throw new Error("O array 'js' veio vazio ou inválido no payload.");
+        // CORREÇÃO: Valida se 'js' existe e se é um objeto válido, checando suas chaves internas
+        if (!payload.js || typeof payload.js !== 'object' || Array.isArray(payload.js)) {
+            throw new Error("O campo 'js' deve ser um objeto válido e não pode vir vazio.");
         }
+        
+        // Opcional: Validar se as chaves cruciais estão lá dentro para não dar undefined depois
+        // if (!payload.js.metadata || !payload.js.contextoPedido || !payload.js.contextoTransferencia) {
+        //     throw new Error("O objeto 'js' está incompleto: faltando 'metadata' ou 'contextoVeiculo'.");
+        // }
 
-        // Captura a primeira linha para validar se a estrutura do Excel veio com a coluna certa
-        const primeiraLinha = payload.js[0];
-        if (!primeiraLinha || !primeiraLinha.bill_id) {
-            throw new Error("A propriedade 'bill_id' não foi encontrada na primeira linha do array 'js'.");
-        }
+        const payloadDecodificado = JSON.parse(msg.content.toString());
 
         // CORREÇÃO: Passamos o payload validado para o serviço gerar o arquivo
-        await geraArquivoPdf(payload);
+        await cadastroPedidoService.processarCadastroRelacional(payloadDecodificado);
         
         // Confirmação de sucesso para o RabbitMQ remover a mensagem da fila
         channel.ack(msg);
 
-    } catch (erro: any) {
-        console.error('Erro ao processar mensagem no Worker de PDF:', erro.message);
-        // O nack direciona a mensagem com erro de código direto para a sua DLQ
-        channel.nack(msg, false, false); 
-    }
-}, { noAck: false });
+       } catch (erro: any) {
+           console.error('Erro ao processar mensagem no Worker de Pedido:', erro.message);
+           // O nack direciona a mensagem com erro de código direto para a sua DLQ
+           channel.nack(msg, false, false); 
+       }
+       }, { noAck: false });
 
 
-    } catch (error: any) {
-        console.error('Falha crítica ao iniciar o consumerPDF:', error.message);
+       } catch (error: any) {
+           console.error('Falha crítica ao iniciar o consumerPedido:', error.message);
+       }
     }
-}

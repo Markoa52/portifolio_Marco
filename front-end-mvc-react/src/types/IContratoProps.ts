@@ -8,5 +8,5 @@ export interface IContratoProps {
   paginaAtiva: string;
   setIdContratoSelecionado: (id: number) => void;
   setPayloadGlobal: (payload: any) => void;
-  usuarioLogado: any
+  usuarioLogado: any;
 }

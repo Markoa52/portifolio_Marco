@@ -30,27 +30,28 @@ export class usuarioRepository {
     }
   }
 
-async inativarAtivarUsuario(dados: any): Promise<void> {
-  const db = await DatabaseConnection.getConnection();
-  try {
-    const query = `
-      UPDATE usuario SET ativo = ? WHERE id = ?;
-    `;
-    
-    // 💡 CORREÇÃO: Lê 'novoStatus' (ou 'status') e 'usuarioId' com fallbacks seguros
-    const statusFinal = dados.novoStatus !== undefined ? dados.novoStatus : dados.status;
-    const idFinal = dados.usuarioId || dados.idUsuario;
-
-    console.log(`💾 [Repositório SQLite] Aplicando status ${statusFinal} no Usuário ID ${idFinal}`);
-
-    await db.run(query, [statusFinal, idFinal]);
-    
-  } catch (error: any) {
-    console.error('Erro ao atualizar status usuário no repositório:', error.message);
-    throw error;
+  async inativarAtivarUsuario(dados: any): Promise<void> {
+  
+    const db = await DatabaseConnection.getConnection();
+  
+    try {
+      const query = `
+        UPDATE usuario SET ativo = ? WHERE id = ?;
+      `;
+      
+      // CORREÇÃO: Lê 'novoStatus' (ou 'status') e 'usuarioId' com fallbacks seguros
+      const statusFinal = dados.novoStatus !== undefined ? dados.novoStatus : dados.status;
+      const idFinal = dados.usuarioId || dados.idUsuario;
+  
+      console.log(`💾 [Repositório SQLite] Aplicando status ${statusFinal} no Usuário ID ${idFinal}`);
+  
+      await db.run(query, [statusFinal, idFinal]);
+      
+    } catch (error: any) {
+      console.error('Erro ao atualizar status usuário no repositório:', error.message);
+      throw error;
+    }
   }
-}
-
 
     async vincularContrato(dados: any): Promise<void> {
     const db = await DatabaseConnection.getConnection();

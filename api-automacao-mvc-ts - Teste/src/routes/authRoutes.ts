@@ -12,7 +12,7 @@ import { authController } from '../controllers/authController';
 const repository = new authRepository();
 const rabbitPublisher = new RabbitMqPublisher();
 
-// 💡 CORREÇÃO 1: Limpeza de vírgulas órfãs no construtor para evitar quebra de análise estática
+// CORREÇÃO 1: Limpeza de vírgulas órfãs no construtor para evitar quebra de análise estática
 const geradorAuthService = new authServices(repository, rabbitPublisher); 
 const geradorAuthController = new authController(geradorAuthService);
 
@@ -68,7 +68,7 @@ const geradorAuthController = new authController(geradorAuthService);
  *       500:
  *         description: Erro interno ao processar a requisição no servidor.
  */
-router.get('/auth/usuario', (req, res) => geradorAuthController.listarTodos(req, res));
+router.get('/auth/usuarios', (req, res) => geradorAuthController.listarTodos(req, res));
 
 /**
  * @openapi
@@ -247,7 +247,7 @@ router.get('/auth/usuarios/:id/contratos', (req, res) => geradorAuthController.l
  *         description: Erro interno no servidor.
  */
 
-// 💡 CORREÇÃO 2: Alterado cirurgicamente de router.get para router.post 
+// CORREÇÃO 2: Alterado cirurgicamente de router.get para router.post 
 // Isso garante o casamento perfeito com o axios.post() disparado pela sua TelaLogin.tsx!
 router.post('/auth/login', (req, res) => geradorAuthController.authValida(req, res));
 
@@ -284,7 +284,7 @@ router.post('/auth/login', (req, res) => geradorAuthController.authValida(req, r
  *         description: Erro interno no servidor.
  */
 
-// 💡 CORREÇÃO 2: Alterado cirurgicamente de router.get para router.post 
+// CORREÇÃO 2: Alterado cirurgicamente de router.get para router.post 
 // Isso garante o casamento perfeito com o axios.post() disparado pela sua TelaLogin.tsx!
 router.post('/auth/validarUsuario', (req, res) => geradorAuthController.authValidaUsuario(req, res));
 

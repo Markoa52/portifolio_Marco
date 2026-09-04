@@ -53,10 +53,10 @@ export async function iniciarConsumer(): Promise<void> {
 
         channel.prefetch(1);
 
-     channel.consume(atualizaUsuarioQueue.nome, async (msg: amqp.Message | null) => {
-    if (!msg) return;
+        channel.consume(atualizaUsuarioQueue.nome, async (msg: amqp.Message | null) => {
+        if (!msg) return;
 
-    try {
+        try {
         const conteudoBruto = msg.content.toString();
         console.log('[Worker atualiza usuario] Conteúdo bruto recebido da fila:', conteudoBruto);
 
@@ -75,31 +75,31 @@ export async function iniciarConsumer(): Promise<void> {
         console.log('[Worker atualiza usuario] Payload decodificado com sucesso:', payload);
 
         // CORREÇÃO: Valida se 'js' existe e se é um objeto válido, checando suas chaves internas
-if (payload.js && typeof payload.js === 'string') {
-    try {
-        payload.js = JSON.parse(payload.js);
-    } catch (e) {
-        throw new Error("Falha ao converter a string 'js' em um objeto JSON válido.");
-    }
-}
+        if (payload.js && typeof payload.js === 'string') {
+            try {
+                payload.js = JSON.parse(payload.js);
+            } catch (e) {
+                throw new Error("Falha ao converter a string 'js' em um objeto JSON válido.");
+            }
+        }
+        
+        // CORREÇÃO 2: Agora a sua validação existente vai passar com sucesso!
+        if (!payload.js || typeof payload.js !== 'object' || Array.isArray(payload.js)) {
+            throw new Error("O campo 'js' deve ser um objeto válido e não pode vir vazio.");
+        }
+        
+        // Opcional: Validar as chaves internas
+        if (!payload.js.metadata || !payload.js.contextoUsuario) {
+            throw new Error("O objeto 'js' está incompleto: faltando 'metadata' ou 'contextoUsuario'.");
+        }
 
-// 💡 CORREÇÃO 2: Agora a sua validação existente vai passar com sucesso!
-if (!payload.js || typeof payload.js !== 'object' || Array.isArray(payload.js)) {
-    throw new Error("O campo 'js' deve ser um objeto válido e não pode vir vazio.");
-}
+        //const payloadDecodificado = JSON.parse(msg.content.toString());
 
-// Opcional: Validar as chaves internas
-if (!payload.js.metadata || !payload.js.contextoUsuario) {
-    throw new Error("O objeto 'js' está incompleto: faltando 'metadata' ou 'contextoUsuario'.");
-}
-
-        const payloadDecodificado = JSON.parse(msg.content.toString());
-
-const objetoProntoParaAService = {
-    payload: {
-        js: payload.js // Aqui o 'js' já é o objeto real parseado!
-    }
-};
+        const objetoProntoParaAService = {
+            payload: {
+                js: payload.js // Aqui o 'js' já é o objeto real parseado!
+            }
+        };
 
         // CORREÇÃO: Passamos o payload validado para o serviço gerar o arquivo
         await UsuarioService.processarCadastroRelacional(objetoProntoParaAService);

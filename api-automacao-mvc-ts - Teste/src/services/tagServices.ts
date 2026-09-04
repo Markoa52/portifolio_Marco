@@ -6,8 +6,8 @@ import { tagRepository } from '../repositories/tagRepository';
 const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "consultar" | "atualizar" | "excluir"; routingKey: string }> = {
   inserir:   { tipoArquivo: 'inserir',   routingKey: 'reports.v1.trigger.ativar-tag' },
   consultar: { tipoArquivo: 'consultar', routingKey: 'reports.v1.trigger.consulta_contrato' },
-  atualizar: { tipoArquivo: 'atualizar', routingKey: 'reports.v1.trigger.atualiza_contrato' },
-  excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui_contrato' }
+  atualizar: { tipoArquivo: 'atualizar', routingKey: 'reports.v1.trigger.atualiza-tag' },
+  excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui-tag' }
 };
 
 export class tagServices {

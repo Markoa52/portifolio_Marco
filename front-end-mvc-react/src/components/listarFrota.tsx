@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import type { IPropsFaturas } from '../types/IPropsFaturas';
 import type { IVeiculo } from '../types/IVeiculo';
+import { toast } from 'react-toastify';
 
 // Atualizamos as opções de sub-telas da frota com os novos cadastros
 type SubAbaFrota = 'lista' | 'editar' | 'ativacao' | 'detalhes' | 'cadastro-unico' | 'cadastro-lote';
@@ -14,11 +15,13 @@ type SubAbaFrota = 'lista' | 'editar' | 'ativacao' | 'detalhes' | 'cadastro-unic
 // ];
 
 export const ListarFrota: React.FC<IPropsFaturas> = ({contractId}) => {
+  const [resultadoLote, setResultadoLote] = useState<any>(null);
+
   const [subAba, setSubAba] = useState<SubAbaFrota>('lista');
   const [veiculoSelecionado, setVeiculoSelecionado] = useState<IVeiculo | null>(null);
   const [veiculoCriado, setveiculoCriado] = useState<any[]>([]);
 
-  // 💡 DEVE FICAR NO TOPO DO SEU COMPONENTE PAI (Junto com os outros useStates):
+  // DEVE FICAR NO TOPO DO SEU COMPONENTE PAI (Junto com os outros useStates):
 const [tagsEstoque] = useState<any[]>([
   // Dados simulados para você testar visualmente agora mesmo:
   { id: 1, numeroSerie: "TAG-9981", modeloFabricante: "ConectCar RFID Standard" },
@@ -35,6 +38,7 @@ const [tagSelecionada, setTagSelecionada] = useState<any>(null);
     const [listaMarcaVeiculo, setlistaMarcaVeiculo] = useState<any[]>([]);
     const [listaTipoVeiculo, setlistaTipoVeiculo] = useState<any[]>([]);
     const [listaEixoVeiculo, setlistaEixoVeiculo] = useState<any[]>([]);
+    const [linhasPlanilha, setLinhasPlanilha] = useState<any[]>([]);
   
     const [formData, setFormData] = useState({ placa: "", marca: "", modelo: "", tipoveiculo: "", eixo: "", rntc: "", documento: "" });
 
@@ -43,44 +47,84 @@ const [tagSelecionada, setTagSelecionada] = useState<any>(null);
     setFormData((prevState) => ({ ...prevState, [name]: String(value) }));
     };
 
-   async function enviarDadosCadastroVeiculo() {
-   try {
+   // ADICIONE o parâmetro opcional 'dadosLote' no final da assinatura
+async function enviarDadosCadastroVeiculo(acao: string, tipoAcao: string, dadosLote?: any) {
+  try {
+    let payloadEnvio: any;
 
-    // Captura dados do formulário principal
-    const { placa, marca, modelo, tipoveiculo, eixo, rntc, documento } = formData;
-
-    // Montagem do payload idêntica ao que o seu Worker espera receber
-    const payloadEnvio = {
-      metadata: {
-        protocoloId: `PROT-${Date.now()}`, 
-        acao: 'inserir', 
-        criadoEm: new Date(),
-        contratoId: Number(contractId)
-      },
-      contextoVeiculo: {
-        placa: String(placa),
-        marca: String(marca),
-        modelo: String(modelo),
-        tipoveiculo: String(tipoveiculo),
-        eixo: String(eixo),
-        rntc: String(rntc),
-        documento: String(documento)
-      }
-    };
-
-    console.log(`[Configuração] Despachando nova informação para a fila:`, payloadEnvio);
-
-    // Dispara para a API do Express que gerencia a fila
-    const resposta = await axios.post('http://localhost:3000/api/veiculo/acoes', payloadEnvio);
-    
-    // Verifica se a API aceitou a mensagem
-    if (resposta.status === 200 || resposta.status === 202 || resposta.data?.sucesso) {
-      alert(`Sucesso! Parâmetros enviados para a fila.\nProtocolo: ${payloadEnvio.metadata.protocoloId}`);
+    // CENÁRIO A: Importação em lote (Veio da planilha)
+    if (dadosLote && Array.isArray(dadosLote)) {
+      payloadEnvio = dadosLote.map((linha: any, index: number) => {
+        const placaBruta = linha.Placa || linha.placa || '';
+        return {
+          metadata: {
+            protocoloId: `PROT-IMP-${Date.now()}-${Math.floor(Math.random() * 1000)}-${index}`,
+            acao: acao,
+            criadoEm: new Date(),
+            contratoId: Number(contractId)
+          },
+          contextoVeiculo: {
+            placa: String(placaBruta).toUpperCase().trim(),
+            marca: String(linha.Marca || linha.marca || 'Não informado').trim(),
+            modelo: String(linha.Modelo || linha.modelo || 'Não informado').trim(),
+            tipoveiculo: String(linha.Tipo || linha.tipo || 'Não informado').trim(),
+            eixo: String(linha.Eixo || linha.eixo || '0'),
+            rntc: String(linha.RNTC || linha.rntc || ''),
+            documento: String(linha.Documento || linha.documento || '')
+          }
+        };
+      }).filter(p => p.contextoVeiculo.placa !== '');
+    } 
+    // CENÁRIO B: Cadastro unitário tradicional (Formulário manual)
+    else {
+      const { placa, marca, modelo, tipoveiculo, eixo, rntc, documento } = formData;
+      
+      payloadEnvio = {
+        metadata: {
+          protocoloId: `PROT-${Date.now()}`,
+          acao: acao,
+          criadoEm: new Date(),
+          contratoId: Number(contractId)
+        },
+        contextoVeiculo: {
+          placa: String(placa).toUpperCase().trim(), // Força maiúsculas antes do envio
+          marca: String(marca),
+          modelo: String(modelo),
+          tipoveiculo: String(tipoveiculo),
+          eixo: String(eixo),
+          rntc: String(rntc),
+          documento: String(documento)
+        }
+      };
     }
 
-  } catch (error) {
-    console.error("Erro ao enviar dados para a API/Fila:", error);
-    alert("Falha ao processar o cadastro do contrato. Verifique o console.");
+    // Faz a requisição unificada para o mesmo endpoint
+    const resposta = await axios.post('http://localhost:3000/api/veiculo/acoes', payloadEnvio);
+
+    if (resposta.status === 200 || resposta.data?.sucesso) {
+      if (Array.isArray(payloadEnvio)) {
+        // GUARDA O RELATÓRIO DO BACKEND NA MEMÓRIA DO REACT
+        setResultadoLote(resposta.data.resumo);
+        toast.success("Planilha processada! Veja o resumo abaixo.");
+      } else {
+        toast.success(`Veículo integrado à fila!\nProtocolo: ${payloadEnvio.metadata.protocoloId}`);
+        setSubAba('lista');
+      }
+    }
+
+  } catch (error: any) {
+    // INTERCEÇÃO DO ERRO 400 (Placa existente)
+    // O Axios guarda a resposta do servidor em error.response.data
+    const mensagemErroServidor = error.response?.data?.erro;
+
+    if (error.response?.status === 400 && mensagemErroServidor) {
+      // Exibe a mensagem exata de duplicidade enviada pelo banco de dados SQLite
+      toast.error(`${mensagemErroServidor}`);
+    } else {
+      // Fallback genérico para erros de rede, queda de servidor ou erro 500
+      console.error("Erro na comunicação com a API de veículos:", error);
+      toast.error("Falha na comunicação com o servidor. Tente novamente mais tarde.");
+    }
   }
 }
 
@@ -123,7 +167,92 @@ useEffect(() => {
     };
    }, []);
 
-    // -------------------------------------------------------------
+   // Função interna para ler o arquivo Excel/CSV e carregar no estado 'linhasPlanilha'
+  const handleSelecionarArquivo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (!e.target.files || e.target.files.length === 0) return;
+
+  const arquivo = e.target.files[0];
+
+  try {
+    const xlsx = await import('xlsx');
+    const reader = new FileReader();
+
+    reader.onload = (evt) => {
+      const dadosBinarios = evt.target?.result;
+      
+      // ADICIONADO: 'raw: false' ajuda a processar datas e textos do Excel de forma mais amigável
+      const workbook = xlsx.read(dadosBinarios, { type: 'binary', raw: false });
+      const primeiraAba = workbook.SheetNames[0]; 
+      
+      // EVITA CRASH: Se o Excel veio com ponto e vírgula (comum em CSVs de Excel), o leitor adapta-se
+      const linhasJson = xlsx.utils.sheet_to_json(workbook.Sheets[primeiraAba], {
+        defval: "" // Preenche células vazias com "" em vez de deletar a propriedade
+      });
+
+      console.log("[Debug Leitor] Array gerado pelo leitor do arquivo:", linhasJson);
+      
+      setLinhasPlanilha(linhasJson);
+    };
+
+    reader.readAsBinaryString(arquivo);
+  } catch (error) {
+    console.error("Erro ao ler o arquivo de planilha:", error);
+    alert("Não foi possível ler o arquivo. Verifique se o formato está correto.");
+  }
+};
+
+const exportarParaCSV = (nomeArquivo: string, cabecalhos: string[], dados: any[]) => {
+  // 1. Monta a primeira linha com os cabeçalhos separados por ponto e vírgula
+  const linhasDoArquivo = [cabecalhos.join(";")];
+
+  // 2. Transforma cada objeto de dados numa linha separada por ponto e vírgula
+  dados.forEach((item) => {
+    // MAPEAMENTO DINÂMICO: Garante que lê as chaves exatas passadas no cabeçalho
+    const linha = cabecalhos.map(chave => {
+      const valor = item[chave] !== undefined && item[chave] !== null ? item[chave] : '';
+      // Se o valor contiver ponto e vírgula ou quebra de linha, envolve em aspas para não quebrar o CSV
+      return String(valor).includes(";") ? `"${valor}"` : String(valor);
+    });
+    linhasDoArquivo.push(linha.join(";"));
+  });
+
+  // 3. Junta todas as linhas com a quebra de página (\n)
+  const conteudoCSV = linhasDoArquivo.join("\n");
+
+  // MOTOR DE DOWNLOAD ORIGINAL (Exatamente o que você já fez)
+  const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), conteudoCSV], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", `${nomeArquivo}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+
+const handleBaixarModeloCSV = () => {
+  const cabecalhos = ["placa", "marca", "modelo", "tipo", "eixo", "rntc", "documento"];
+  const exemplo = [{
+    placa: "ABC1234", marca: "Fiat", modelo: "Fiorino 2.0", 
+    tipo: "Furgão", eixo: "2 eixos", rntc: "123456", documento: "999999999"
+  }];
+
+  // Chama a função global
+  exportarParaCSV("modelo_importacao_veiculos", cabecalhos, exemplo);
+};
+
+const handleExportarTodosVeiculos = () => {
+  const cabecalhos = ["placa", "marca", "modelo", "tipoveiculo", "eixo"];
+  
+  // dadosLocais ou usuarios é a sua lista que popula a tabela principal
+  //exportarParaCSV("relatorio_geral_veiculos", cabecalhos, dadosLocais);
+};
+
+  // -------------------------------------------------------------
   // TELA 1: LISTAGEM DA FROTA (TABELA COM O BOTÃO EXPORTAR INCLUÍDO)
   // -------------------------------------------------------------
   if (subAba === 'lista') {
@@ -143,7 +272,7 @@ useEffect(() => {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-wrap align-items-md-center gap-2 mb-4">
         <button 
           className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0" 
-          onClick={() => alert('Gerando arquivo Excel/CSV... O download começará em instantes!')}
+          onClick={handleExportarTodosVeiculos}
         >
           📥 Exportar Lista
         </button>
@@ -272,11 +401,7 @@ useEffect(() => {
   </div>
 );}
 
-
   // -------------------------------------------------------------
-  // TELA NUEVA: CADASTRO ÚNICO DE VEÍCULO
-  // -------------------------------------------------------------
-    // -------------------------------------------------------------
   // SUB-TELA 1: CADASTRO ÚNICO DE VEÍCULO
   // -------------------------------------------------------------
   if (subAba === 'cadastro-unico') {
@@ -366,7 +491,7 @@ useEffect(() => {
 
             {/* BOTÕES COMPACTOS: w-100 no celular e flex-grow-0 no PC */}
             <div className="d-flex flex-column flex-sm-row gap-2 border-top pt-3">
-              <button type="submit" className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => {enviarDadosCadastroVeiculo(); setSubAba('lista'); }}>
+              <button type="submit" className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => {enviarDadosCadastroVeiculo('inserir','cadastroUnico'); setSubAba('lista'); }}>
                 Salvar Veículo
               </button>
               <button type="button" className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => setSubAba('lista')}>
@@ -380,39 +505,154 @@ useEffect(() => {
     );
   }
 
-  // -------------------------------------------------------------
-  // SUB-TELA 2: CADASTRO EM LOTE (UPLOAD)
-  // -------------------------------------------------------------
-  if (subAba === 'cadastro-lote') {
-
-    // Diminui o tamanho lateral do
-    // className="container my-3 my-md-4 px-3 text-start"
-    return (
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+// -------------------------------------------------------------
+// SUB-TELA 2: CADASTRO EM LOTE (UPLOAD)
+// -------------------------------------------------------------
+if (subAba === 'cadastro-lote') {
+  return (
+    <div style={{ maxWidth: "1200px", margin: "0 auto" }} className="text-start">
+      
+      {/* ➡️ SE JÁ HOUVER UM RESULTADO NA MEMÓRIA, MOSTRA O PAINEL DE RESUMO */}
+      {resultadoLote ? (
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
-          
-          <h3 className="fs-5 fw-bold text-dark mb-1">📦 Importar Veículos em Lote</h3>
-          <p className="text-muted small mb-4">Faça o upload de um arquivo de planilha (.csv ou .xlsx) contendo as colunas de Placas e Tags.</p>
-          
-          {/* ZONA DE UPLOAD DISCRETA E ESPAÇADA */}
-          <div className="p-4 py-5 text-center bg-light border border-2 border-dashed border-secondary-subtle rounded-3 mb-4">
-            <span className="fs-3 d-block mb-2">📥</span>
-            <p className="text-secondary small fw-medium m-0">Arraste seu arquivo aqui ou clique para selecionar</p>
+          <h3 className="fs-5 fw-bold text-dark mb-1">📊 Relatório de Importação em Lote</h3>
+          <p className="text-muted small mb-4">O processamento da sua planilha terminou. Abaixo estão os detalhes consolidado das integrações:</p>
+
+          {/* INDICADORES EM CAIXAS */}
+          <div className="row g-3 mb-4 text-center">
+            <div className="col-md-4">
+              <div className="p-3 bg-light rounded-3 border border-light-subtle">
+                <span className="text-muted small d-block mb-1 fw-semibold text-uppercase">Lidos na Planilha</span>
+                <span className="fw-bold text-dark fs-4">{resultadoLote.totalGeral}</span>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="p-3 bg-success-subtle rounded-3 border border-success-subtle">
+                <span className="text-success small d-block mb-1 fw-semibold text-uppercase">Enviados para Fila</span>
+                <span className="fw-bold text-success fs-4">✅ {resultadoLote.totalSucesso}</span>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="p-3 bg-danger-subtle rounded-3 border border-danger-subtle">
+                <span className="text-danger small d-block mb-1 fw-semibold text-uppercase">Rejeitados (Duplicados)</span>
+                <span className="fw-bold text-danger fs-4">⚠️ {resultadoLote.totalErro}</span>
+              </div>
+            </div>
           </div>
 
+          {/* TABELA DE ERROS (SÓ APARECE SE HOUVER ALGUM ERRO) */}
+          {resultadoLote.erros.length > 0 && (
+            <div className="mb-4">
+              <h4 className="fs-6 fw-bold text-danger mb-2">❌ Itens Não Importados (Placas Repetidas)</h4>
+              <div className="table-responsive rounded-3 border" style={{ maxHeight: "200px" }}>
+                <table className="table table-sm table-hover align-middle m-0 small">
+                  <thead className="table-danger sticky-top">
+                    <tr>
+                      <th className="px-3 py-2">Placa</th>
+                      <th className="py-2">Modelo</th>
+                      <th className="py-2 px-3 text-end">Motivo da Rejeição</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultadoLote.erros.map((item: any, idx: number) => (
+                      <tr key={idx}>
+                        <td className="px-3 py-2 fw-bold text-dark">{item.placa}</td>
+                        <td className="text-secondary">{item.modelo}</td>
+                        <td className="text-danger px-3 text-end fw-medium">{item.motivo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* TABELA DE SUCESSOS */}
+          {resultadoLote.sucesses?.length > 0 && (
+            <div className="mb-4">
+              <h4 className="fs-6 fw-bold text-success mb-2">✅ Itens Enviados com Sucesso</h4>
+              <div className="table-responsive rounded-3 border" style={{ maxHeight: "200px" }}>
+                <table className="table table-sm table-hover align-middle m-0 small">
+                  <thead className="table-success sticky-top">
+                    <tr>
+                      <th className="px-3 py-2">Placa</th>
+                      <th className="py-2">Modelo</th>
+                      <th className="py-2 px-3 text-end">Protocolo da Fila</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultadoLote.sucessos.map((item: any, idx: number) => (
+                      <tr key={idx}>
+                        <td className="px-3 py-2 fw-bold text-dark">{item.placa}</td>
+                        <td className="text-secondary">{item.modelo}</td>
+                        <td className="text-muted px-3 text-end font-monospace" style={{ fontSize: "0.75rem" }}>{item.protocolo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* BOTÃO PARA VOLTAR OU FAZER NOVA IMPORTAÇÃO */}
+          <div className="d-flex justify-content-md-end border-top pt-3">
+            <button 
+              type="button" 
+              className="btn btn-dark fw-semibold px-4" 
+              onClick={() => {
+                setResultadoLote(null); // Reseta a memória do relatório
+                setLinhasPlanilha([]);  // Limpa os dados lidos
+                setSubAba('lista');     // Volta para a tabela geral de veículos
+              }}
+            >
+              Concluir e Voltar para Lista
+            </button>
+          </div>
+        </div>
+
+      ) : (
+
+        // ➡️ CASO CONTRÁRIO, EXIBE A TELA DE UPLOAD TRADICIONAL QUE JÁ MONTÁMOS
+        <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
+          <h3 className="fs-5 fw-bold text-dark mb-1">📦 Importar Veículos em Lote</h3>
+          <p className="text-muted small mb-1">Faça o upload de um arquivo de planilha (.csv) contendo as colunas de Placas e Tags.</p>
+          
+          <p className="mb-4">
+            <button type="button" className="btn btn-link p-0 small fw-semibold text-primary text-decoration-none d-inline-flex align-items-center gap-1" onClick={handleBaixarModeloCSV}>
+              📋 Clique aqui para descarregar o modelo de planilha padrão (.csv)
+            </button>
+          </p>
+          
+          <input type="file" id="input-arquivo-excel" accept=".xlsx, .xls, .csv" className="d-none" onChange={handleSelecionarArquivo} />
+
+          <label htmlFor="input-arquivo-excel" className="p-4 py-5 text-center bg-light border border-2 border-dashed border-secondary-subtle rounded-3 mb-4 d-block" style={{ cursor: 'pointer' }}>
+            <span className="fs-3 d-block mb-2">📥</span>
+            <p className="text-secondary small fw-medium m-0">
+              {linhasPlanilha && linhasPlanilha.length > 0 
+                ? `✅ Planilha carregada! ${linhasPlanilha.length} linhas encontradas.` 
+                : 'Clique aqui para selecionar o arquivo de planilha'}
+            </p>
+          </label>
+
           <div className="d-flex flex-column flex-sm-row gap-2 border-top pt-3">
-            <button className="btn btn-dark btn-sm fw-semibold py-2 px-4 order-1 order-sm-2" onClick={() => { alert('Planilha processada com sucesso!'); setSubAba('lista'); }}>
-              Processar Arquivo
+            <button 
+              type="submit" 
+              className="btn btn-dark btn-sm fw-semibold py-2 px-4 order-1" 
+              disabled={!linhasPlanilha || linhasPlanilha.length === 0} 
+              onClick={() => enviarDadosCadastroVeiculo('inserir', 'cadastroLote', linhasPlanilha)} 
+            > 
+              Processar Arquivo 
             </button>
             <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-4 order-2 order-sm-1" onClick={() => setSubAba('lista')}>
               Cancelar
             </button>
           </div>
-
         </div>
-      </div>
-    );
-  }
+      )}
+
+    </div>
+  );
+}
 
   // -------------------------------------------------------------
   // SUB-TELA 3: TELA DE EDIÇÃO
@@ -441,9 +681,6 @@ useEffect(() => {
   }
 
   // -------------------------------------------------------------
-  // SUB-TELA 4: TELA DE ATIVAÇÃO
-  // -------------------------------------------------------------
-    // -------------------------------------------------------------
   // SUB-TELA 4: TELA DE ATIVAÇÃO COM ESTOQUE DE TAGS INTEGRADO
   // -------------------------------------------------------------
   if (subAba === 'ativacao' && veiculoSelecionado?.contratoId) {
@@ -566,11 +803,7 @@ useEffect(() => {
     );
   }
 
-
-  // -------------------------------------------------------------
-  // SUB-TELA 5: TELA DE DETALHES
-  // -------------------------------------------------------------
-    // -------------------------------------------------------------
+   // -------------------------------------------------------------
   // SUB-TELA 5: TELA DE DETALHES COMPACTA COM ESPAÇAMENTO
   // -------------------------------------------------------------
   if (subAba === 'detalhes' && veiculoSelecionado) {
@@ -609,8 +842,6 @@ useEffect(() => {
       </div>
     );
   }
-
-
 
   return null;
 };

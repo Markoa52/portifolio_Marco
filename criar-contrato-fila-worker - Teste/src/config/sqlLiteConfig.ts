@@ -62,7 +62,8 @@ export class Database {
             //await this.instance.exec(`UPDATE banco_user.usuario set perfil='atendimento' where id=3;`);
             //await this.instance.exec(`UPDATE banco_user.usuario set perfil='admin' where id=1;`);
             //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);
-            //await this.instance.exec(`DROP TABLE ContaVeiculo`);
+            //await this.instance.exec(`DROP TABLE ContaVeiculo where contratoId=2`);
+            //await this.instance.exec(`DELETE FROM Veiculo where contratoId=2`);
             //await this.instance.exec(`DROP TABLE contaContrato`);
             //await this.instance.exec(`INSERT INTO tag (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
 

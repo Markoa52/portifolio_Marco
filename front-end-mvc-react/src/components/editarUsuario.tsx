@@ -1,9 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { IEmailRegistro } from '../types/index.ts';
 import '../styles/editarUsuario.css';
-import { ArrowLeft, Eye, Info, Pencil, Search, Trash2, UserRound } from 'lucide-react';
+import { ArrowLeft, Eye, Info, Pencil, Search, Trash2 } from 'lucide-react';
 import type { IGerenciadorProps } from '../types/IGerenciadorProps.ts';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAbaAtiva, dadosIniciais}) => {
 
@@ -45,8 +46,17 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
     const resposta = await axios.post('http://localhost:3000/api/auth/usuario/inativarAtivar', payload);
 
     const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
-  
 
+    let statusString='';
+
+    if(status === 0){
+      statusString='Inativação'
+      toast.success(`${statusString} do usuário ${dadosServidor}, realizada!`);
+    }else{
+      statusString='Ativação'
+      toast.success(`${statusString} do usuário ${dadosServidor}, realizada!`);
+    }
+    
   }catch (error) {
       console.error('Erro ao buscar usuários:', error);
       setUsuarios([]);
@@ -57,13 +67,28 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
     }
   };
 
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+  const [itemParaExcluir, setItemParaExcluir] = useState<any>(null);
+
+  const handleConfirmarExclusao = () => {
+  if (itemParaExcluir) {
+    // 🚀 Chame aqui a sua rotina atual que apaga do banco/fila
+    removerLinha(itemParaExcluir); 
+  }
+  
+  // Fecha a modal e limpa o estado
+  setModalExclusaoAberto(false);
+  setItemParaExcluir(null);
+};
+
+
   const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
   const [, setCarregando] = useState<boolean>(true);
   const [, setUsuarios] = useState<any[]>([]);
   
   // MONITOR DE ÁREA ÚTIL: O React descobre o tamanho real do ecrã a cada milissegundo!
 
-  const [larguraJanela, setLarguraJanela] = useState<number>(window.innerWidth);
+  const [, setLarguraJanela] = useState<number>(window.innerWidth);
 
   useEffect(() => {
     const tratarRedimensionamento = () => setLarguraJanela(window.innerWidth);
@@ -114,7 +139,6 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
 
   
     //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
-   const isMobile = larguraJanela <= 1024;
 
   const [dadosLocais, setDadosLocais] = useState<IEmailRegistro[]>(dadosIniciais ?? []);
   const [pesquisa, setPesquisa] = useState<string>('');
@@ -420,8 +444,10 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
                           <div className="d-flex justify-content-center gap-1">
                             <button className="btn btn-light btn-sm border" title="Visualizar" onClick={() => setRegistroSelecionado(item)}><Eye size={22} className="text-primary" /></button>
                             <button className="btn btn-light btn-sm border" title="Editar" onClick={() => abrirEdicao(item)}><Pencil size={22} className="text-primary" /></button>
-                            <button className="btn btn-light btn-sm border" title="Inativar/Ativar usuário" onClick={() => removerLinha(item)}><UserRound size={22} className="text-primary" /></button>
-                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => removerLinha(item)}><Trash2 size={22} className="text-primary" /></button>
+                            <button className="btn btn-light btn-sm border text-danger" title="Excluir" onClick={() => {
+                              setItemParaExcluir(item);     // 💾 Guarda o item selecionado 
+                              setModalExclusaoAberto(true);  // 🔓 Abre a modal de confirmação
+                              }} ><Trash2 size={22} className="text-danger" /> {/* 💡 Mudei para text-danger para combinar com a lixeira */}</button>
                           </div>
                         </td>
                       </tr>
@@ -449,6 +475,49 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
         )}
       </div>
     </div>
+
+    {/* MODAL DE CONFIRMAÇÃO DE EXCLUSÃO */}
+    {modalExclusaoAberto && (
+      <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1070 }}>
+        <div className="modal-dialog modal-dialog-centered modal-sm"> {/* modal-sm deixa ela mais compacta */}
+          <div className="modal-content shadow border-0 p-3 text-center">
+            
+            <div className="modal-body pt-3">
+              <div className="text-danger mb-3">
+                <Trash2 size={40} />
+              </div>
+              <h5 className="fw-bold text-dark fs-6 mb-2">Confirmar Exclusão</h5>
+              <p className="text-muted small mb-4">
+                Tem a certeza que deseja excluir o registo de <strong>{itemParaExcluir?.nome || itemParaExcluir?.usuario}</strong>? Esta ação não pode ser desfeita.
+              </p>
+              
+              {/* Botões de Ação */}
+              <div className="d-grid gap-2">
+                <button 
+                  type="button" 
+                  className="btn btn-danger fw-semibold py-2" 
+                  onClick={handleConfirmarExclusao}
+                >
+                  Sim, Excluir de fato
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-light border text-secondary fw-semibold py-2" 
+                  onClick={() => {
+                    setModalExclusaoAberto(false);
+                    setItemParaExcluir(null);
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+    
+            </div>
+    
+          </div>
+        </div>
+      </div>
+    )}
 
     {/* MODAL FLUTUANTE DE INCLUSÃO/EDIÇÃO DO BOOTSTRAP */}
     {modalAberto && (

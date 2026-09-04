@@ -248,7 +248,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
                       <td className="text-secondary">{item.nome}</td>
                       <td className="text-secondary">{item.usuario}</td>
                       <td className="text-secondary">{item.email}</td>
-                      <td className="text-secondary">{item.status}</td>
+                      <td className="text-secondary">{Number(item.status) === 1 ? 'Ativo' : 'Inativo'}</td>
                       <td className="text-secondary">{item.data}</td>
                       <td className="text-secondary">{item.perfil}</td>
                     </tr>

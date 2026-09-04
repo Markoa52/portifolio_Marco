@@ -22,6 +22,12 @@ async obterContratos(): Promise<any> {
   return contrato;
 }
 
+async obterContratosVinculados(usuarioId: any): Promise<any> {
+  // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
+  const contrato = await this.contratoRepository.listarContratosVinculados(Number(usuarioId));
+  return contrato;
+}
+
   // Adicione este método dentro da classe ContratoService no seu arquivo contratoService.ts:
 async obterDadosDiretosDoBanco(contractId: number): Promise<any> {
   // Faz o select puro no SQL Server usando o repositório que já injetamos lá no construtor
@@ -104,7 +110,7 @@ async obterLimiteContrato(contractId: number): Promise<any> {
     // // 5. Envia para o RabbitMQ em segundo plano
     // await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payload);
 
-    // C) 🔥 RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+    // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
     // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
     return { 
       sucesso: true, 
@@ -141,7 +147,7 @@ async obterLimiteContrato(contractId: number): Promise<any> {
     // 5. Envia para o RabbitMQ em segundo plano
     await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payload);
 
-    // C) 🔥 RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+    // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
     // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
     return { 
       sucesso: true, 

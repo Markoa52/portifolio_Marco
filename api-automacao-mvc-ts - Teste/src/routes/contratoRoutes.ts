@@ -66,6 +66,33 @@ router.get('/contrato/:id', authMiddlewareInstance.verificarJWT,(req, res) => ge
 
 /**
  * @openapi
+ * /api/contrato/{id}/contratos-vinculados:
+ *   get:
+ *     tags:
+ *       - Contrato
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/contrato/:id/contratos-vinculados', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.ContratosDoUsuario(req, res));
+
+/**
+ * @openapi
  * /api/contrato/fatura{id}:
  *   get:
  *     tags:
