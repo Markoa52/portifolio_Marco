@@ -166,7 +166,7 @@ async function enviarDadosCadastroContrato() {
       <div className="card p-3 shadow-sm border border-light-subtle bg-white">
         
         {/* Título mais discreto e alinhado à esquerda para fazer sentido dentro do Atendimento */}
-        <div className="border-bottom pb-2 mb-3">
+        <div className="border-bottom pb-0 mb-1">
           <h2 className="fs-5 fw-bold text-dark m-0">📄 Incluir Novo Contrato</h2>
         </div>
 

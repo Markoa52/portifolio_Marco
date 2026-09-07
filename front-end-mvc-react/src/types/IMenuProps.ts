@@ -7,5 +7,6 @@ export interface IMenuProps {
   usuario:() =>void;
   onLogoff:() =>void;
   idContratoSelecionado: number | null
+  usuarioLogado: any;
   
 }

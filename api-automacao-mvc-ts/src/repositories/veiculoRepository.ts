@@ -90,4 +90,34 @@ async buscaSaldoVeiculoVPR(contratoId: number): Promise<any> {
     throw erro;
   }
  }
+
+ async verificarPlacaExiste(placa: string): Promise<boolean> {
+  // TRAVA CRÍTICA: Se a placa for vazia ou nula, assume que não existe para não quebrar o loop
+  if (!placa || placa.trim() === "" || placa === "undefined") {
+    return false;
+  }
+
+  try {
+    // 1. Obtém a conexão com o SQL Server
+    const pool = await Database.getConnection();
+    
+    // 2. Prepara a query trocando o "?" por "@placa"
+    const query = `SELECT COUNT(*) AS total FROM veiculo WHERE UPPER(placa) = @placa;`;
+
+    // 3. Executa injetando a string tratada de forma segura
+    const result = await pool.request()
+      .input('placa', sql.VarChar, placa.toUpperCase().trim())
+      .query(query);
+
+    // 4. Como o COUNT(*) sempre retorna uma única linha, acessamos a posição [0] do recordset
+    const total = result.recordset[0]?.total || 0;
+    
+    return total > 0;
+    
+  } catch (error: any) {
+    console.error("❌ Erro ao checar placa no repositório:", error.message);
+    throw error;
+  }
+}
+
 }

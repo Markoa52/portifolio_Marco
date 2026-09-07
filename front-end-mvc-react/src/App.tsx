@@ -192,13 +192,13 @@ function App() {
             
             {paginaAtiva === 'atendimento' && (
               <Atendimento 
-                setPaginaAtiva={setPaginaAtiva} 
-                idContratoSelecionado={idContratoSelecionado}
-                setIdContratoSelecionado={setIdContratoSelecionado}
-                setPayloadGlobal={setPayloadGlobal} 
-                usuario={usuarioLogado}            
-                onLogoff={handleLogoff}            
-              />
+                  setPaginaAtiva={setPaginaAtiva}
+                  idContratoSelecionado={idContratoSelecionado}
+                  setIdContratoSelecionado={setIdContratoSelecionado}
+                  setPayloadGlobal={setPayloadGlobal}
+                  usuario={usuarioLogado}
+                  onLogoff={handleLogoff} 
+                  usuarioLogado={usuarioLogado}              />
             )}
 
             {paginaAtiva === 'pesquisar-contrato' && (

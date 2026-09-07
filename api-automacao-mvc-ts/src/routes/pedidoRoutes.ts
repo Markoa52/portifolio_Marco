@@ -2,6 +2,9 @@ import express from 'express';
 
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
 import { RabbitMqPublisher } from '../queue/publisher'; // Ajuste o caminho real se necessário
 import { pedidoRepository } from '../repositories/pedidoRepository';
@@ -66,7 +69,7 @@ router.get('/pedidos/:id', (req, res) => geradPedidoController.buscarPedidosId(r
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/pedido/rastreamento/:id', (req, res) => geradPedidoController.buscarStatusPedidosId(req, res));
+router.get('/pedido/rastreamento/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradPedidoController.buscarStatusPedidosId(req, res));
 
 /**
  * @openapi
@@ -97,6 +100,6 @@ router.get('/pedido/rastreamento/:id', (req, res) => geradPedidoController.busca
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/pedido/solicitar', (req, res) => geradPedidoController.pedidoSolicitacao(req, res));
+router.post('/pedido/solicitar', authMiddlewareInstance.verificarJWT,(req, res) => geradPedidoController.pedidoSolicitacao(req, res));
 
 export default router;

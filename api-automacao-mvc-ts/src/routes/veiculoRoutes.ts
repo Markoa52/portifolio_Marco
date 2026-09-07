@@ -1,6 +1,11 @@
 import express from 'express';
+import multer from 'multer';
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
 
 const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
+
+router.use(authMiddlewareInstance.verificarJWT);
 
 // 1. Importe as 3 classes do seu sistema (Fila, Service e Controller)
 import { RabbitMqPublisher } from '../queue/publisher'; // Ajuste o caminho real se necessário
@@ -59,7 +64,7 @@ router.get('/veiculo/lookups', (req, res) => geradorVeiculoController.veiculosCo
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/:id', (req, res) => geradorVeiculoController.veiculosId(req, res));
+router.get('/veiculo/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculosId(req, res));
 
 /**
  * @openapi
@@ -86,7 +91,7 @@ router.get('/veiculo/:id', (req, res) => geradorVeiculoController.veiculosId(req
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/saldoVPR/:id', (req, res) => geradorVeiculoController.saldoId(req, res));
+router.get('/veiculo/saldoVPR/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.saldoId(req, res));
 
 /**
  * @openapi
@@ -113,7 +118,34 @@ router.get('/veiculo/saldoVPR/:id', (req, res) => geradorVeiculoController.saldo
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.get('/veiculo/VPR/:id', (req, res) => geradorVeiculoController.veiculosSaldoVPR(req, res));
+router.get('/veiculo/VPR/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculosSaldoVPR(req, res));
+
+/**
+ * @openapi
+ * /api/veiculo/VPR/{id}:
+ *   get:
+ *     tags:
+ *       - Veiculo
+ *     summary: Traz os dados do contrato pelo seu Id
+ *     description: Envia o ID numérico do contrato na URL para buscar as informações detalhadas no SQL Server.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID numérico do contrato registrado
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Objeto JSON contendo os dados do contrato.
+ *       404:
+ *         description: Contrato não localizado no banco de dados.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+
+// 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
+router.get('/veiculo/vincular-tag/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculosId(req, res));
 
 /**
  * @openapi
@@ -144,6 +176,6 @@ router.get('/veiculo/VPR/:id', (req, res) => geradorVeiculoController.veiculosSa
  */
 
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
-router.post('/veiculo/acoes', (req, res) => geradorVeiculoController.veiculoAcoes(req, res));
+router.post('/veiculo/acoes', upload.single('file'), authMiddlewareInstance.verificarJWT,(req, res) => geradorVeiculoController.veiculoAcoes(req, res));
 
 export default router;

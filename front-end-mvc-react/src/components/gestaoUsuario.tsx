@@ -169,7 +169,7 @@ export const GestaoUsuarios: React.FC = () => {
     <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       
       {/* CABEÇALHO */}
-      <div className="border-bottom pb-2 mb-4 d-flex justify-content-between align-items-end">
+      <div className="border-bottom pb-2 mb-0 d-flex justify-content-between align-items-end">
         <div>
           <h2 className="fs-4 fw-bold text-dark d-flex align-items-center gap-2 m-0">
             <Layers size={22} className="text-primary" /> Central de Controle de Usuários e Escopo
@@ -192,8 +192,8 @@ export const GestaoUsuarios: React.FC = () => {
         {/* ====================================================================
             LADO ESQUERDO: LISTAGEM UNIFICADA DE USUÁRIOS
             ==================================================================== */}
-        <div className="col-12 col-md-6 p-0 pr-md-3">
-          <div className="card p-3 border shadow-sm bg-white rounded-3">
+        <div className="col-11 col-md-6 p-0 pr-md-3">
+          <div className="card p-3 border shadow-sm bg-white rounded-3" style={{ maxWidth: '537px' }}>
             
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="fs-6 fw-bold text-dark m-0">👥 Contas Ativas ({usuariosFiltrados.length})</h3>
@@ -208,7 +208,7 @@ export const GestaoUsuarios: React.FC = () => {
                 <div 
                   key={u.id}
                   onClick={() => handleSelecionarUsuario(u)}
-                  className="p-2.5 rounded-3 border text-start d-flex justify-content-between align-items-center transition-all"
+                  className="p-2 rounded-0 border text-start d-flex justify-content-between align-items-center transition-all"
                   style={{ 
                     cursor: 'pointer',
                     backgroundColor: usuarioSelecionado?.id === u.id ? '#f3f4f6' : '#ffffff',
@@ -242,7 +242,7 @@ export const GestaoUsuarios: React.FC = () => {
                  VISTA A: FORMULÁRIO DE NOVO CADASTRO
                  ==================================================================== */
               <>
-                <h4 className="fs-6 fw-bold text-dark border-bottom pb-2 mb-3 d-flex align-items-center gap-1.5">
+                <h4 className="fs-6 fw-bold text-dark border-bottom pb-2 mb-0 d-flex align-items-center gap-1.5">
                   <UserPlus size={16} className="text-primary" /> Adicionar Operador / Cliente
                 </h4>
                 

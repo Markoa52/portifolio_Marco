@@ -42,6 +42,22 @@ async obterVeiculosSaldoVPR(contractId: number): Promise<any> {
   return saldoVpr;
 }
 
+async placaExiste(placaUnitária: string): Promise<boolean> {
+  // TRAVA: Se a placa vier vazia, assume falso imediatamente
+  if (!placaUnitária || placaUnitária.trim() === '') {
+    return false;
+  }
+
+  // CORREÇÃO 1: Passa a string limpa direto, SEM usar Number()
+  const placaLimpa = placaUnitária.toUpperCase().trim();
+
+  // CORREÇÃO 2: Chama o método correto do repositório que faz o COUNT(*)
+  const existeNoBanco = await this.veiculoRepository.verificarPlacaExiste(placaLimpa);
+  
+  return existeNoBanco;
+}
+
+
 async acoes(dadosDoPedido: any) {
 
     const { metadata } = dadosDoPedido;

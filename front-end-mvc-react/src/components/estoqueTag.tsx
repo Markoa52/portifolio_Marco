@@ -155,9 +155,9 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
   };
 
   return (
-    <div className="container-fluid p-3 text-start">
+    <div className="container-fluid p-0 text-start">
       {/* Cabeçalho de Navegação */}
-      <div className="d-flex align-items-center gap-2 mb-4 border-bottom pb-3">
+      <div className="d-flex align-items-center gap-2 mb-1 pb-0">
         <button type="button" onClick={() => setPaginaAtiva('contrato')} className="btn btn-link p-0 text-secondary text-decoration-none">
           <ArrowLeft size={20} />
         </button>
@@ -170,8 +170,8 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
         {/* COLUNA 1: VISUALIZAÇÃO E SELEÇÃO DAS TAGS DO CONTRATO ATUAL */}
         <div className="col-md-6">
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white">
-            <h3 className="fs-6 fw-bold text-dark mb-1">1. Selecione a Tag de Origem</h3>
-            <p className="text-muted small mb-0">Listagem de tags ativas vinculadas a este contrato:</p>
+            <h3 className="fs-6 fw-bold text-dark mb-4">1. Selecione a Tag de Origem</h3>
+            <p className="text-muted small mb-1 fs-6">Listagem de tags ativas vinculadas a este contrato:</p>
 
             {carregandoTags ? (
               <div className="text-center py-4 text-muted small"><RefreshCw className="spinner-border spinner-border-sm me-2 animate-spin" /> Carregando tags...</div>
@@ -206,8 +206,8 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
         <div className="col-md-6">
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div>
-              <h3 className="fs-6 fw-bold text-dark mb-1">2. Procurar Contrato de Destino</h3>
-              <p className="text-muted small mb-3">Busque o contrato que receberá a tag selecionada:</p>
+              <h3 className="fs-6 fw-bold text-dark mb-4">2. Procurar Contrato de Destino</h3>
+              <p className="text-muted small mb-1 fs-6">Busque o contrato que receberá a tag selecionada:</p>
 
               {/* Formulário de Busca */}
               <form onSubmit={buscarContratosDestino} className="input-group mb-3">
@@ -263,12 +263,12 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
 
       {/* BLOCO 3: RESUMO CONSOLIDADO E BOTÃO DE EVENTO (EXECUÇÃO) */}
       <div className="card p-3 mt-3 shadow-sm border border-light-subtle bg-light">
-        <h3 className="fs-6 fw-bold text-dark mb-3">3. Resumo da Operação</h3>
+        <h3 className="fs-6 fw-bold text-dark mb-0">3. Resumo da Operação</h3>
         
-        <div className="row g-3 text-center mb-4">
+        <div className="row g-2 text-center mb-4">
           <div className="col-md-5">
 
-        <div className="row g-3 text-center align-items-center mb-4">
+        <div className="row g-3 text-center align-items-center mb-2">
           {/* Tag de Origem */}
           <div className="col-md-5">
             <div className="p-3 bg-white rounded-3 border border-light-subtle">

@@ -1,22 +1,15 @@
-import { Database } from '../config/sqlConfig.js'; // 🛠️ Alterado para a sua configuração do SQL Server
+import sql from 'mssql';
+import { Database } from '../config/sqlConfig.js'; 
 import { ContratoRepository } from '../repositories/cadastroContratoRepository.js';
-import sqlServer from 'mssql'; // 👈 Importação obrigatória do driver do SQL Server para gerenciar a transação
 
 const contratoRepository = new ContratoRepository(); 
 
 class CriarContratoService {
 
   async processarCadastroRelacional(dadosDoPedido: any) {
-    // Extrai as camadas do payload que vieram de carona na fila do RabbitMQ
-    const payload = dadosDoPedido?.payload || dadosDoPedido;
-    const js = payload?.js || payload?.dadosLimpos;
-
-    console.log("👉 DADOS REAIS QUE CHEGARAM DO REACT PARA O WORKER:", JSON.stringify(js, null, 2));
+    const { payload } = dadosDoPedido;
+    const { js } = payload;
         
-    if (!js) {
-      throw new Error("[Service] Payload 'js' ou 'dadosLimpos' não fornecido ou indefinido.");
-    }
-
     const { 
       contextoPerson, 
       contextoEndereco, 
@@ -26,70 +19,60 @@ class CriarContratoService {
       contextoContaContrato
     } = js;
     
-    // Obtém o pool de conexão global do SQL Server
+    // 1. Obtém o pool de conexões do SQL Server
     const pool = await Database.getConnection();
     
-    // 🛠️ Cria o objeto de transação nativo e robusto do SQL Server
-    const transacao = new sqlServer.Transaction(pool);
+    // 2. Cria uma instância de transação isolada do mssql
+    const transaction = new sql.Transaction(pool);
+    
+    // Variável de controle para o TypeScript saber se a transação chegou a começar
+    let transacaoIniciada = false;
 
     try {
-      console.log('⏳ [SQL Server] Iniciando transação relacional complexa de contrato...');
-      
-      // Abre a transação de forma isolada e segura
-      await transacao.begin();
+      // 3. Inicia a transação centralizada global no SQL Server
+      await transaction.begin();
+      transacaoIniciada = true; // Define como true apenas após o sucesso do .begin()
+      console.log('⚡ Transação iniciada com sucesso no SQL Server.');
 
-      console.log('⏳ 1/5 Gerando Contrato, Faturamento e Fatura Inicial...');
-      // 2. Cria o contrato e captura o ID gerado pelo SCOPE_IDENTITY()
-      const contratoId = await contratoRepository.criarContrato(contextoContrato);
+      console.log('⏳ 1/7 Gerando Contrato e Faturamento...');
+      const contratoId = await contratoRepository.criarContrato(contextoContrato, transaction);
 
-      
-      const tmContractId = contratoId.tmContractId;
-      const contratoFaturamentoId = contratoId.contratoFaturamentoId;
+      console.log('⏳ 2/7 Vinculando Empresa ao Contrato...');
+      contextoPerson.contractId = contratoId;
+      const personId = await contratoRepository.criarPerson(contextoPerson, transaction);
 
-      console.log('⏳ 2/5 Vinculando Empresa ao Contrato...');
-      // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
-      contextoPerson.contractId = contratoFaturamentoId; 
-      const personId = await contratoRepository.criarPerson(contextoPerson);
-
-        const tmPersonId = personId.tmPersonId;
-      const personFaturamentoId = personId.personFaturamentoId;
-
-      console.log('⏳ 3/5 Vinculando Endereço...');
-      // 4. Injeta os IDs de relacionamento no endereço antes de salvar
-      contextoEndereco.personId = personFaturamentoId; 
+      console.log('⏳ 3/7 Vinculando Endereço...');
+      contextoEndereco.personId = personId;
       contextoEndereco.contractId = contratoId;
-      await contratoRepository.criarEndereco(contextoEndereco);
+      await contratoRepository.criarEndereco(contextoEndereco, transaction);
 
-      console.log('⏳ 4/5 Salvando Responsável Legal...');
-      // 5. Injeta os IDs no responsável legal
-      contextoResposnsavelLegal.personId = personFaturamentoId;
-      await contratoRepository.criarResponsavelLegal(contextoResposnsavelLegal);
+      console.log('⏳ 4/7 Salvando Responsável Legal...');
+      contextoResposnsavelLegal.personId = personId;
+      await contratoRepository.criarResponsavelLegal(contextoResposnsavelLegal, transaction);
 
-      console.log('⏳ 5/5 Processando Canais de Contato...');
-      // 6. Cria as linhas de contato associadas
-      contextoResposnsavelLegal.personId = personFaturamentoId;
-      await contratoRepository.criarContato(contextoContato);
+      console.log('⏳ 5/7 Processando Canais de Contato...');
+      contextoContato.personId = personId;
+      await contratoRepository.criarContato(contextoContato, transaction);
 
       console.log('⏳ 6/7 Processando Conta contrato...');
-      // 7. Cria os contatos se existirem
-        await contratoRepository.criarContaContrato(contextoContaContrato, Number(contratoId) );
+      await contratoRepository.criarContaContrato(contextoContaContrato, Number(contratoId), transaction);
 
-      // 8. Se nenhuma tabela do fluxo falhou, confirma todas as inserções no disco de vez!
-      await transacao.commit();
-      
-      console.log(`\n🚀 [Sucesso Total] Todo o ecossistema foi salvo no SQL Server para a Person ID: ${personId}`);
+      // 4. Se todas as tabelas foram inseridas com sucesso, confirma tudo no banco!
+      await transaction.commit();
+      console.log(`\n🚀 [Sucesso Total] Todo o ecossistema foi salvo para a Person ID: ${personId}`);
       return { sucesso: true, personId };
 
     } catch (erro) {
-      try { 
-        // 8. Se qualquer tabela falhar, desfaz e limpa absolutamente TUDO das tabelas do banco
-        await transacao.rollback(); 
-        console.log("↩️ [SQL Server] Rollback relacional executado com sucesso.");
-      } catch (erroRollback) {
-        console.error("❌ [SQL Server] Falha catastrófica ao tentar executar o Rollback:", erroRollback);
+      // 5. Se qualquer tabela falhar, desfaz TODAS as alterações automaticamente
+      // Usamos a nossa flag de controle para fazer o rollback de forma totalmente segura
+      if (transacaoIniciada) {
+        try {
+          await transaction.rollback();
+        } catch (rollbackError) {
+          console.error("⚠️ Falha ao tentar executar o rollback da transação:", rollbackError);
+        }
       }
-      
-      console.error("❌ [Service] Erro no processamento em cascata. Operação cancelada.", erro);
+      console.error("↩️ [Rollback Executado] Transação cancelada por completo no SQL Server.", erro);
       throw erro; 
     }
   }

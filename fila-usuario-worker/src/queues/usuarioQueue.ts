@@ -1,6 +1,6 @@
-const pdfQueue = {
-  nome: 'processa-arquivoPdf'
+const usuarioQueue = {
+  nome: 'criar-usuario'
 };
 
 // Exportação padrão compatível com o ESModules do seu microsserviço
-export default pdfQueue;
+export default usuarioQueue;

@@ -423,12 +423,12 @@ const handleExportarTodosVeiculos = async () => {
         {/* CARD BRANCO PADRÃO */}
         <div className="card p-3 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
-          <h3 className="fs-5 fw-bold text-dark mb-1">➕ Cadastrar Novo Veículo</h3>
-          <p className="text-muted small mb-4">Preencha os campos abaixo para inserir um veículo individualmente no sistema.</p>
+          <h3 className="fs-5 fw-bold text-dark mb-4">➕ Cadastrar Novo Veículo</h3>
+          <p className="text-muted small mb-1 fs-6">Preencha os campos abaixo para inserir um veículo individualmente no sistema.</p>
           
           {/* FORMULÁRIO RESPONSIVO COMPACTO */}
           <form style={{ maxWidth: '480px' }} onSubmit={(e) => e.preventDefault()}>
-            <div className="row g-2 mb-4">
+            <div className="row g-3 mb-4">
               <div className="col-12 col-sm-6">
                 <label className="form-label small fw-bold text-secondary mb-1">Placa</label>
                 <input value={formData.placa} onChange={handleChange} name="placa" type="text" placeholder="Ex: ABC-1234" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} />
@@ -647,7 +647,7 @@ if (subAba === 'cadastro-lote') {
         // ➡️ CASO CONTRÁRIO, EXIBE A TELA DE UPLOAD TRADICIONAL QUE JÁ MONTÁMOS
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           <h3 className="fs-5 fw-bold text-dark mb-1">📦 Importar Veículos em Lote</h3>
-          <p className="text-muted small mb-1">Faça o upload de um arquivo de planilha (.csv) contendo as colunas de Placas e Tags.</p>
+          <p className="text-muted small mb-1 fs-6">Faça o upload de um arquivo de planilha (.csv) contendo as colunas de Placas e Tags.</p>
           
           <p className="mb-4">
             <button type="button" className="btn btn-link p-0 small fw-semibold text-primary text-decoration-none d-inline-flex align-items-center gap-1" onClick={handleBaixarModeloCSV}>
@@ -695,7 +695,7 @@ if (subAba === 'cadastro-lote') {
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
           <h3 className="fs-5 fw-bold text-dark mb-1">✏️ Editar Veículo: <span className="text-primary">{veiculoSelecionado.placa}</span></h3>
-          <p className="text-muted small mb-4">Utilize o painel abaixo para alterar os dados de identificação deste veículo.</p>
+          <p className="text-muted small mb-1 fs-6">Utilize o painel abaixo para alterar os dados de identificação deste veículo.</p>
           
           <div className="alert alert-light border py-2 px-3 small text-muted mb-4" role="alert">
             ℹ️ Formulário de alteração de dados do veículo aqui...
@@ -719,14 +719,14 @@ if (subAba === 'cadastro-lote') {
 
     return (
       <div style={{ maxWidth: "1200px", margin: "0 auto" }} className="text-start">
-        <div className="row g-4 m-0">
+        <div className="row g-0 m-0">
           
           {/* COLUNA ESQUERDA: INFORMAÇÕES DO VEÍCULO E BOTÕES DE AÇÃO */}
           <div className="col-12 col-md-6 p-0 pe-md-3">
-            <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 h-100 d-flex flex-column justify-content-between">
+            <div className="card p-3 shadow-sm border border-light-subtle bg-white rounded-3 h-100 d-flex flex-column justify-content-between">
               <div>
-                <h3 className="fs-5 fw-bold text-dark mb-1">⚙️ Gerenciar Ativação</h3>
-                <p className="text-muted small mb-1">Vincule um dispositivo físico disponível em seu estoque para ativar a frota.</p>
+                <h3 className="fs-5 fw-bold text-dark mb-4">⚙️ Gerenciar Ativação</h3>
+                <p className="text-muted small mb-1 fs-6">Vincule um dispositivo físico disponível em seu estoque para ativar a frota.</p>
                 
                 {/* Detalhes do Carro */}
                 <div className="bg-light p-3 rounded-3 mb-3 border">
@@ -788,9 +788,9 @@ if (subAba === 'cadastro-lote') {
 
           {/* COLUNA DIREITA: LISTAGEM DE TAGS DISPONÍVEIS NO ESTOQUE */}
           <div className="col-12 col-md-6 p-0 ps-md-2">
-            <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 h-100">
-              <h4 className="fs-6 fw-bold text-dark mb-1">🏷️ TAGs Disponíveis em Estoque</h4>
-              <p className="text-muted small mb-1">Dispositivos RFID em posse do cliente prontos para homologação.</p>
+            <div className="card p-3 shadow-sm border border-light-subtle bg-white rounded-3 h-100">
+              <h4 className="fs-5 fw-bold text-dark mb-3">🏷️ TAGs Disponíveis em Estoque</h4>
+              <p className="text-muted small mb-1 fs-6">Dispositivos RFID em posse do cliente prontos para homologação.</p>
 
               {tagsEstoque && tagsEstoque.length > 0 ? (
                 /* Lista Rolável Inteligente */
@@ -843,8 +843,8 @@ if (subAba === 'cadastro-lote') {
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
           
-          <h3 className="fs-5 fw-bold text-dark mb-1">📊 Detalhes Completos: <span className="text-primary">{veiculoSelecionado.placa}</span></h3>
-          <p className="text-muted small mb-4">Histórico interno e dados de rastreabilidade da tag vinculada.</p>
+          <h3 className="fs-5 fw-bold text-dark mb-4">📊 Detalhes Completos: <span className="text-primary">{veiculoSelecionado.placa}</span></h3>
+          <p className="text-muted small mb-4 fs-6">Histórico interno e dados de rastreabilidade da tag vinculada.</p>
           
           {/* LISTA CHAVE-VALOR RECALIBRADA COM ESPAÇAMENTO */}
           {/* MUDANÇA: Retirado o 'list-group' rígido que grudava tudo e usado blocos individuais espaçados com mb-2 */}

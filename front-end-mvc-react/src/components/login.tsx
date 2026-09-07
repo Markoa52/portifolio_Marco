@@ -167,7 +167,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 bg-light p-3">
+    <div className="d-flex align-items-center justify-content-center p-4">
       <div className="card border-0 shadow-sm bg-white rounded-3 p-4 text-start" style={{ maxWidth: '400px', width: '100%' }}>
         
         {/* Identidade Visual Central */}

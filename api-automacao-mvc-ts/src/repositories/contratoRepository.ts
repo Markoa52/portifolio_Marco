@@ -245,4 +245,36 @@ async buscaSaldoFatura(contractId: number): Promise<any> {
   }
 }
 
+async listarContratosVinculados(usuarioId: number): Promise<any[]> {
+  try {
+    // 1. Obtém a conexão com o SQL Server
+    const pool = await Database.getConnection();
+    
+    // 2. Prepara a query trocando o "?" por "@usuarioId"
+    const query = `
+      SELECT 
+        c.id,
+        c.cnpj,
+        p.nomeEmpresa
+      FROM contrato c
+      INNER JOIN usuarioContrato uc ON c.id = uc.contratoId
+      INNER JOIN person p ON c.cnpj = p.documentNumber
+      WHERE uc.usuarioId = @usuarioId
+      ORDER BY p.nomeEmpresa ASC;
+    `;
+
+    // 3. Executa injetando o parâmetro de forma segura (Evita SQL Injection)
+    const result = await pool.request()
+      .input('usuarioId', sqlServer.Int, usuarioId) // Define o nome, tipo do SQL Server e o valor
+      .query(query);
+
+    // 4. Retorna as linhas encontradas (no mssql fica dentro de recordset)
+    return result.recordset || [];
+    
+  } catch (error: any) {
+    console.error('❌ Erro ao buscar contratos vinculados na base:', error.message);
+    throw error;
+  }
+}
+
 }

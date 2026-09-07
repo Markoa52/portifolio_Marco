@@ -1,6 +1,9 @@
 import express from 'express';
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 import { webhookPedagioService } from '../services/webhookPedagioService';
 import { dashboardController } from '../controllers/dashboardController';
 
@@ -9,7 +12,7 @@ const dadosController = new dashboardController(dadosService);
 
 /**
  * @openapi
- * /api/dadosPedagio:
+ * /api/dadosChamados:
  *   get:
  *     tags:
  *       - Dashboard
@@ -34,7 +37,7 @@ const dadosController = new dashboardController(dadosService);
  *                 tempoMedio:
  *                   type: integer
  */
-router.post('/dadosPedagio', (req, res) => dadosController.obterDadosAPI(req, res));
+router.post('/dadosChamados', authMiddlewareInstance.verificarJWT,(req, res) => dadosController.obterDadosAPI(req, res));
 
 export default router;
 

@@ -7,6 +7,9 @@ import { GerarArquivoFilaController } from '../controllers/gerarArquivoFilaContr
 
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 // 2. A MONTAGEM CORRETA DA ENGRENAGEM (Injeção de Dependências em Cascata)
 const rabbitPublisher = new RabbitMqPublisher(); // Primeiro cria o entregador da fila
 const geradorService = new GeradorArquivosServices(rabbitPublisher); // Passa o entregador para o cérebro do serviço
@@ -39,6 +42,6 @@ const geradorController = new GerarArquivoFilaController(geradorService); // Pas
  */
 
 // 3. Chame o método encapsulando em uma função seta para não perder o contexto do 'this' no TypeScript
-router.post('/gerarArquivoSend', (req, res) => geradorController.arquivoSend(req, res));
+router.post('/gerarArquivoSend', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.arquivoSend(req, res));
 
 export default router;

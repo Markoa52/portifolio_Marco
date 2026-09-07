@@ -1,6 +1,9 @@
 import express from 'express';
 const router = express.Router();
 
+import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+router.use(authMiddlewareInstance.verificarJWT);
+
 import {oneDriveController} from '../controllers/oneDriveController';
 import {OneDriveService} from '../services/oneDriveService';
 
@@ -19,7 +22,7 @@ const oneDrive = new oneDriveController(oneDS);
  *       200:
  *         description: Array contendo a lista de registros extraídos da planilha.
  */
-router.get('/dados', (req, res) => oneDrive.obterDados(req, res));
+router.get('/dados', authMiddlewareInstance.verificarJWT,(req, res) => oneDrive.obterDados(req, res));
 
 /**
  * @openapi
@@ -52,6 +55,6 @@ router.get('/dados', (req, res) => oneDrive.obterDados(req, res));
  *       500:
  *         description: Falha ao tentar manipular ou salvar o arquivo.
  */
-router.post('/salvar', (req, res) => oneDrive.salvarDados(req, res));
+router.post('/salvar', authMiddlewareInstance.verificarJWT,(req, res) => oneDrive.salvarDados(req, res));
 
 export default router;

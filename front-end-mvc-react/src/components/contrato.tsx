@@ -173,7 +173,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
     {/* ==========================================================================
         1. CABEÇALHO PRINCIPAL (FLEXBOX FLUIDO E TOTALMENTE RESPONSIVO)
         ========================================================================== */}
-    {/* 🌟 CALIBRAÇÃO FINAL DO TAMANHO DO HEADER */}
+    {/* CALIBRAÇÃO FINAL DO TAMANHO DO HEADER */}
     <header
       className="navbar navbar-light bg-white py-3 shadow-sm mx-auto"  
       style={{ 
@@ -374,7 +374,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           CONTEÚDO PRINCIPAL DINÂMICO (GRID TOTALMENTE RESPONSIVO)
           ========================================================================== */}
        {/* CONTEÚDO PRINCIPAL (Muda dinamicamente conforme a aba) */}
-      <main className="container my-4 p-0" style={{ maxWidth: "1200px", margin: "0 auto", width: 'calc(100% - 33px)'}}>
+      <main className="container my-2 p-0" style={{ maxWidth: "1200px", margin: "0 auto", width: 'calc(100% - 33px)'}}>
       
         {/* ABA 1: PAINEL GERAL (CARDS) */}
         {abaAtiva === 'cards-gerais' && (
@@ -384,7 +384,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         {/* CARD 1: Fatura (Esquerda Superior) */}
          <div className="col-md-6 p-3">
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
-            <div className="d-flex justify-content-between align-items-center mb-2">
+            <div className="d-flex justify-content-between align-items-center mb-0">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Fatura</h3>
               <button className="btn btn-light border btn-sm text-secondary fw-semibold" style={{ fontSize: '0.8rem' }} onClick={() => setAbaAtiva('historico-fatura')}>
                 Consultar faturas →
@@ -568,7 +568,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         </div>
    
         {/* CARD 3: Veículos (Esquerda Inferior) */}
-         <div className="col-md-6 ps-3 pe-3 pt-0">
+         <div className="col-md-6 p-3 pt-0"> 
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Veículos</h3>
@@ -587,7 +587,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
                 </span>
               </h2>
             
-              {/* 📊 SEÇÃO DE SUB-INDICADORES (Empilhados na vertical e alinhados à direita) */}
+              {/* SEÇÃO DE SUB-INDICADORES (Empilhados na vertical e alinhados à direita) */}
               <div className="d-flex flex-column align-items-end pt-0">
                 
                 {/* BLOCO 1: COM TAG ATIVA */}
@@ -616,7 +616,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           </div>
         </div>
 
-        <div className="col-md-6 ps-3 pe-3 pt-0">
+        <div className="col-md-6 p-3 pt-0">
         <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
     
         {/* Cabeçalho do Card */}

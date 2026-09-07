@@ -3,7 +3,9 @@ import sqlServer from 'mssql'; // 👈 Importação obrigatória do driver do SQ
 
 export class ContratoRepository {
 
-  async criarContrato(contratoData: any) {
+  async criarContrato(contratoData: any, transaction?: sqlServer.Transaction) {
+
+     const request = transaction ? new sqlServer.Request(transaction) : new sqlServer.Request(await Database.getConnection());
     // Obtém a conexão global mapeada do SQL Server
     const pool = await Database.getConnection();
 
@@ -27,7 +29,7 @@ export class ContratoRepository {
         `;
 
         // Monta a requisição parametrizada (Blindada contra SQL Injection)
-        const requestPrincipal = pool.request()
+        const requestPrincipal = await request
           .input('dataInicio', sqlServer.VarChar(18), contratoData.dataInicio)
           .input('dataEncerramento', sqlServer.VarChar(18), contratoData.dataEncerramento || null)
           .input('corteFaturamento', sqlServer.Int, contratoData.corteFaturamento)
@@ -211,7 +213,9 @@ export class ContratoRepository {
   // =========================================================================
   // 6. INSERÇÃO NA TABELA PERSON (SQL SERVER)
   // =========================================================================
-  async criarPerson(personData: any) {
+  async criarPerson(personData: any, transaction?: sqlServer.Transaction) {
+
+    const request = transaction ? new sqlServer.Request(transaction) : new sqlServer.Request(await Database.getConnection());
     const pool = await Database.getConnection();
 
     // No SQL Server, estruturamos os parâmetros nomeados e mantemos a subquery de ID
@@ -227,7 +231,7 @@ export class ContratoRepository {
     // =========================================================================
     // EXECUÇÃO DA INSERÇÃO DA PESSOA (banco_principal.dbo.person)
     // =========================================================================
-    const requestPerson = pool.request()
+    const requestPerson = await request
       .input('documentNumber', sqlServer.VarChar(18), personData.cnpj)
       .input('nomeEmpresa', sqlServer.VarChar(18), personData.nomeEmpresa)
       .input('cnpj', sqlServer.VarChar(18), personData.cnpj || personData.documentNumber || personData.documento || null)
@@ -245,7 +249,7 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
       SELECT SCOPE_IDENTITY() AS lastID;
     `;
     
-    const requestFaturamentoPerson = pool.request()
+    const requestFaturamentoPerson = await request
       .input('documentNumber', sqlServer.VarChar(18), personData.cnpj)
       .input('nomeEmpresa', sqlServer.VarChar(18), personData.nomeEmpresa)
       .input('contractId', sqlServer.Int, personData.contractId || null)
@@ -269,7 +273,8 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
   // =========================================================================
   // 7. INSERÇÃO NA TABELA ENDERECO (SQL SERVER)
   // =========================================================================
-  async criarEndereco(enderecoData: any) {
+  async criarEndereco(enderecoData: any, transaction?: sqlServer.Transaction) {
+    const request = transaction ? new sqlServer.Request(transaction) : new sqlServer.Request(await Database.getConnection());
     const pool = await Database.getConnection();
 
     const query = `
@@ -282,7 +287,7 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
       SELECT SCOPE_IDENTITY() AS lastID;
     `;
 
-    const requestEndereco = pool.request()
+    const requestEndereco = await request
       .input('cep', sqlServer.VarChar(18), enderecoData.cep)
       .input('rua', sqlServer.VarChar(18), enderecoData.rua)
       .input('numero', sqlServer.VarChar(18), enderecoData.numero)
@@ -311,7 +316,7 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
       );
     `;
     
-    const requestFaturamentoEndereco = pool.request()
+    const requestFaturamentoEndereco = await request
       .input('cep', sqlServer.VarChar(18), enderecoData.cep)
       .input('rua', sqlServer.VarChar(18), enderecoData.rua)
       .input('numero', sqlServer.VarChar(18), enderecoData.numero)
@@ -332,7 +337,8 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
   // =========================================================================
   // 8. INSERÇÃO NA TABELA CONTATO (SQL SERVER)
   // =========================================================================
-  async criarContato(contatoData: any) {
+  async criarContato(contatoData: any, transaction?: sqlServer.Transaction) {
+     const request = transaction ? new sqlServer.Request(transaction) : new sqlServer.Request(await Database.getConnection());
     const pool = await Database.getConnection();
 
     const query = `
@@ -340,7 +346,7 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
       VALUES (@telefone, @email, @personId);
     `;
 
-    const requestContato = pool.request()
+    const requestContato = await request
       .input('telefone', sqlServer.VarChar(18), contatoData.telefone)
       .input('email', sqlServer.VarChar(18), contatoData.email)
       .input('personId', sqlServer.Int, contatoData.personId);
@@ -353,7 +359,8 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
   // =========================================================================
   // 9. INSERÇÃO NA TABELA RESPONSAVEL LEGAL (SQL SERVER)
   // =========================================================================
-  async criarResponsavelLegal(responsavelLegalData: any) {
+  async criarResponsavelLegal(responsavelLegalData: any, transaction?: sqlServer.Transaction) {
+     const request = transaction ? new sqlServer.Request(transaction) : new sqlServer.Request(await Database.getConnection());
     const pool = await Database.getConnection();
 
     const query = `
@@ -361,7 +368,7 @@ const tmPersonId = resultadoPerson.recordset?.[0]?.lastID || resultadoPerson.rec
       VALUES (@nome, @personId, @documentNumber);
     `;
 
-    const requestResponsavel = pool.request()
+    const requestResponsavel = await request
       .input('nome', sqlServer.VarChar(18), responsavelLegalData.responsavelLegal)
       .input('personId', sqlServer.Int, responsavelLegalData.personId)
       .input('documentNumber', sqlServer.VarChar(18), responsavelLegalData.documentNumber);

@@ -104,7 +104,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
   return (
     <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
-      <div className="d-flex align-items-center gap-2 mb-2">
+      <div className="d-flex align-items-center gap-2 mb-0">
         <button 
           type="button"
           className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center border" 
@@ -118,7 +118,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
       </div>
       
       {/* CABEÇALHO */}
-      <div className="border-bottom pb-2 mb-4">
+      <div className="border-bottom pb-0 mb-0">
         <h2 className="fs-4 fw-bold text-dark d-flex align-items-center gap-2">
           <Layers size={22} className="text-primary" /> Homologação e Ativação de Dispositivos (TAGs)
         </h2>
@@ -244,7 +244,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
                ) : (
                  /* Estado Vazio de Estoque */
                  <div className="text-center py-4 border border-dashed rounded-3 bg-light">
-                   <p className="fw-bold mb-0 small">Estoque Zerado</p>
+                   <p className="text-muted small mb-1 fs-6">Estoque Zerado</p>
                    <small className="text-muted d-block px-3" style={{ fontSize: '0.68rem' }}>
                      Este cliente não possui dispositivos avulsos em sua posse.
                    </small>

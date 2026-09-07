@@ -11,7 +11,7 @@ import {GestaoUsuarios} from './gestaoUsuario';
 import type { IMenuProps } from '../types/IMenuProps';
 
 // 2. CORREÇÃO 1: Você PRECISA extrair as funções aqui dentro dos parênteses do componente!
-export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal, usuario, onLogoff }) => {
+export const Atendimento: React.FC<IMenuProps> = ({usuarioLogado,  setPaginaAtiva, setIdContratoSelecionado, setPayloadGlobal, usuario, onLogoff }) => {
 
   const [abaAtiva, setAbaAtiva] = useState<string>('cards-gerais');
   const [titulo, setTitulo] = useState<string>('Módulos de Atendimento');
@@ -24,7 +24,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
 
          return (
     /* TRAVA 1: Força o container a ocupar 100% da largura disponível na tela, limpando travas do pai */
-    <div className="container my-3 my-md-4 px-3 pagina-layout-atendimento-blindado">
+    <div className="container my-3 my-md-0 px-1 pagina-layout-atendimento-blindado">
       
       {/* CABEÇALHO DO MÓDULO */}
       <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom pb-3 mb-4 text-start gap-2">
@@ -166,9 +166,13 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
           {abaAtiva === 'editar-usuario' && (
             /* CORREÇÃO 3: Removido propriedades que não existem ou que causavam erro se a interface deles for restrita */
             <EditarUsuario 
-              setPaginaAtiva={setPaginaAtiva} 
-              setAbaAtiva={setAbaAtiva} 
-            />
+             setPaginaAtiva={setPaginaAtiva}
+             setAbaAtiva={setAbaAtiva} 
+             contractId={0} 
+             payloadEnvio={undefined} 
+             setIdContratoSelecionado={setIdContratoSelecionado} 
+             setPayloadGlobal={setPayloadGlobal}            
+             />
           )}
 
           {abaAtiva === 'cadastro-contrato' && (
@@ -188,6 +192,7 @@ export const Atendimento: React.FC<IMenuProps> = ({ setPaginaAtiva, setIdContrat
                setAbaAtiva={setAbaAtiva}
                setIdContratoSelecionado={setIdContratoSelecionado}
                setPayloadGlobal={setPayloadGlobal}
+               usuarioLogado={usuarioLogado}
                usuario={usuario}
                onLogoff={onLogoff}
              />
