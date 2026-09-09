@@ -103,7 +103,7 @@ export const FaturasAbertas: React.FC<IPropsFaturas> = ({ contractId }) => {
     <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
-    <div className="border-bottom pb-3 mb-4">
+    <div className="pb-3 mb-0">
       <h2 className="fs-4 fw-bold text-dark m-0">Faturas em Aberto</h2>
     </div>
 
@@ -117,10 +117,10 @@ export const FaturasAbertas: React.FC<IPropsFaturas> = ({ contractId }) => {
         >
           
           {/* BADGE DE URGÊNCIA (Mostra apenas se a fatura for urgente) */}
-          {fatura.Urgente && (
+          {!!fatura.Urgente && (
             <div className="mb-3">
               <span className="badge bg-danger fw-bold text-uppercase" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>
-                ⚠️ Atenção: Vencimento Próximo
+                ⚠️ Atenção: Vencimento Próximo : n
               </span>
             </div>
           )}
@@ -133,7 +133,7 @@ export const FaturasAbertas: React.FC<IPropsFaturas> = ({ contractId }) => {
            {/* VALOR A PAGAR COM COR DINÂMICA */}
            <div className="col-6 col-md-3">
            <span className="text-muted fw-bold d-block mb-1" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>VALOR</span>
-           {/* 🌟 A mágica acontece aqui: a classe muda de cor baseada no status da fatura */}
+           {/* A mágica acontece aqui: a classe muda de cor baseada no status da fatura */}
            <h3 className={`fs-5 fw-bold m-0 ${obterClasseCorValor(fatura.status)}`}>
              {fatura.totalValor}
            </h3>

@@ -178,7 +178,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
       className="navbar navbar-light bg-white py-3 shadow-sm mx-auto"  
       style={{ 
         width: 'calc(110% - 50px)', // Ajustado de 32px para 24px para expandir o cabeçalho no celular
-        maxWidth: "1187px",          // Ajustado de 1152px para 1176px para alinhar de ponta a ponta no notebook
+        maxWidth: "1200px",          // Ajustado de 1152px para 1176px para alinhar de ponta a ponta no notebook
         margin: "0 auto", 
         borderRadius: "0 0 0px 0px", 
         borderBottom: "1px solid #e2e8f0",
@@ -314,18 +314,18 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         </div>
 
         {/* LADO DIREITO: BLOCOS INFORMATIVOS FINANCEIROS (BLINDADO VIA STYLES INLINE) */}
-        <div className="d-flex align-items-center justify-content-end text-dark mt-2 mt-md-0 px-2 px-md-0" style={{ gap: '35px' }}>
+        <div className="d-flex align-items-center justify-content-end text-dark mt-2 mt-md-0 px-2 px-md-0" style={{ gap: '40px' }}>
           
           {/* CONTRATO */}
           {/* MUDANÇA: Forçado margin-right de 24px para afastar do Saldo Pedágio */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
             <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>CONTRATO</span>
-            <span className="fs-7 fw-bold text-dark mt-1">{contratoCriado ?`${contratoCriado.id}-${contratoCriado.nomeEmpresa}` : "---"}</span>
+            <span className="fs-7 fw-bold text-dark mt-0">{contratoCriado ?`${contratoCriado.id}-${contratoCriado.nomeEmpresa}` : "---"}</span>
           </div>
           
           {/* SALDO VALE PEDÁGIO CORRIGIDO */}
           {/* MUDANÇA: Alterado 'alignItems' de 'flex-end' para 'flex-start' para puxar o texto para a esquerda */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px',  minWidth: '80px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
             <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>VALE PEDÁGIO</span>
             <div className="d-flex align-items-center gap-2 mt-1">
               <span className="fs-7 fw-bold text-dark">{veiculoContaVPR != null ? 
@@ -370,11 +370,11 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
            </div>
            </header>
 
-      {/* ==========================================================================
+       {/* ==========================================================================
           CONTEÚDO PRINCIPAL DINÂMICO (GRID TOTALMENTE RESPONSIVO)
           ========================================================================== */}
        {/* CONTEÚDO PRINCIPAL (Muda dinamicamente conforme a aba) */}
-      <main className="container my-2 p-0" style={{ maxWidth: "1200px", margin: "0 auto", width: 'calc(100% - 33px)'}}>
+       <main className="container my-1 p-0" style={{ maxWidth: "1200px", margin: "0 auto", width: 'calc(100% - 33px)'}}>
       
         {/* ABA 1: PAINEL GERAL (CARDS) */}
         {abaAtiva === 'cards-gerais' && (
@@ -382,7 +382,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           <div className="row g-3">
       
         {/* CARD 1: Fatura (Esquerda Superior) */}
-         <div className="col-md-6 p-3">
+         <div className="col-md-6 p-2">
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-0">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Fatura</h3>
@@ -445,7 +445,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         </div>
 
         {/* CARD 2: Últimos Pedidos (Direita Superior) */}
-        <div className="col-md-6 p-3">
+        <div className="col-md-6 p-2">
         <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
 
         <div className="d-flex justify-content-between align-items-center mb-2">
@@ -568,7 +568,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         </div>
    
         {/* CARD 3: Veículos (Esquerda Inferior) */}
-         <div className="col-md-6 p-3 pt-0"> 
+         <div className="col-md-6 p-2 pt-0"> 
           <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h3 className="fs-6 mb-0 fw-bold text-dark">Veículos</h3>
@@ -577,15 +577,14 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
               </button>
             </div>
 
-            <div>
+            <div className="d-flex flex-column justify-content-between flex-grow-1">
               
               {/* NÚMERO PRINCIPAL: TOTALIZADOR MESTRE */}
-              <h2 className="text-dark fs-4 text-start m-0">
-                {veiculoContrato?.length || 0}
-                <span className="d-block mb-3 text-muted fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
-                  VEÍCULOS CADASTRADOS
+               
+                <span className="text-dark fs-6 text-start mb-0 fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+                  {veiculoContrato?.length || 0} VEÍCULOS CADASTRADOS
                 </span>
-              </h2>
+        
             
               {/* SEÇÃO DE SUB-INDICADORES (Empilhados na vertical e alinhados à direita) */}
               <div className="d-flex flex-column align-items-end pt-0">
@@ -616,7 +615,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           </div>
         </div>
 
-        <div className="col-md-6 p-3 pt-0">
+        <div className="col-md-6 p-2 pt-0">
         <div className="card p-4 h-100 shadow-sm border border-light-subtle bg-white d-flex flex-column justify-content-between">
     
         {/* Cabeçalho do Card */}
@@ -632,13 +631,11 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           
           {/* NÚMERO PRINCIPAL: TOTALIZADOR GERAL DE TAGS */}
           {/* DICA: Substitua 'veiculoContrato' pelo estado real de tags (ex: tagsContrato) se o tiver criado */}
-          <h2 className="text-dark fs-4 text-start m-0 mb-3">
-            {veiculoContrato?.length || 0}
-            <span className="d-block mb-0 text-muted fw-semibold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
-              TOTAL DE TAGS
+
+            <span className="text-dark fs-6 text-start mb-0 fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '0.05em' }}>
+              {veiculoContrato?.length || 0} TOTAL DE TAGS
             </span>
-          </h2>
-        
+
           {/* INDICADORES PARALELOS: Perfeitamente alinhados em grelha 2x2 nativa */}
           <div className="row row-cols-2 g-3 pt-0"> 
             
@@ -733,6 +730,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         {(abaAtiva === 'consultaPedidosCards') && (
           <ConsultaPedidosCards onNovoPedido={() => setAbaAtiva('solicitacaoPedido')} 
           contractId={Number(payloadEnvio.dadosLimpos.id)}
+          onVoltar={() => setAbaAtiva('cards-gerais')} 
           />
         )}
 

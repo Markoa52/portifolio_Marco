@@ -32,7 +32,7 @@ const handleConsultarContrato = async (formato: 'consultar', idDoContrato: strin
     // Se o código chegou até aqui, significa que a API deu sucesso e o ID existe!
     console.log('2. ID validado com sucesso no banco. Mudando de página...');
 
-    // 🔥 CORREÇÃO DEFINITIVA: Estas três linhas DEVEM ficar aqui dentro, após o sucesso do Axios!
+    // CORREÇÃO DEFINITIVA: Estas três linhas DEVEM ficar aqui dentro, após o sucesso do Axios!
     setPayloadGlobal(payloadEnvio); 
     setIdContratoSelecionado(idDoContrato);
     setPaginaAtiva('contrato'); // 👈 Só muda de tela se o ID for válido!
@@ -45,51 +45,66 @@ const handleConsultarContrato = async (formato: 'consultar', idDoContrato: strin
     
     alert(`Falha ao iniciar a consulta: ${mensagemErro}`);
     
-    // 🛑 IMPORTANTE: Não coloque nenhum comando de setPaginaAtiva aqui! O usuário continuará preso na tela de busca.
+    // IMPORTANTE: Não coloque nenhum comando de setPaginaAtiva aqui! O usuário continuará preso na tela de busca.
   }
 };
 
 
   return (
-  // container-fluid limita a largura máxima em 1200px para alinhar com o Header e o Menu de Módulos
+  // container limita a largura máxima em 1200px para manter a simetria com o sistema
   <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
-    {/* PAINEL OPERACIONAL (Card Branco Padrão do Sistema) */}
-    <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 mx-0 w-100">
+    {/* PAINEL OPERACIONAL */}
+    <div className="card p-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100">
       
       {/* TÍTULO INTERNO DA BUSCA */}
-      <h4 className="text-primary fs-6 fw-bold text-uppercase tracking-wider mb-3">Pesquisar Contrato</h4>
+      <h4 className="text-secondary fs-6 fw-bold text-uppercase tracking-wider mb-3" style={{ letterSpacing: '0.05em', fontSize: '0.75rem' }}>
+        Pesquisar Contrato
+      </h4>
       
-      {/* BARRA DE FERRAMENTAS: Input e Botão acoplados usando o input-group do Bootstrap */}
-      <div className="row g-3 m-0">
-        <div className="col-md-6 p-0">
-          <div className="input-group">
-            {/* O campo de texto ganha um visual limpo e moderno */}
-            <div className="input-group mb-3" style={{ maxWidth: '400px' }}>
-              {/* A moldura cinza claro que segura a lupa da Lucide */}
-              <span className="input-group-text bg-light border-end-0 text-secondary">
-                <Search size={18} />
-              </span>
-              
-              {/* O campo de digitação real com a borda esquerda zerada para colar no ícone */}
-              <input 
-                type="text" 
-                className="form-control border-start-0 ps-1" 
-                placeholder="Pesquisar registros..." 
-                style={{ fontSize: '0.875rem', height:"50px" }}
-               value={textoDigitado} 
+      {/* BARRA DE FERRAMENTAS: Bloco único integrado */}
+      <div className="row m-0">
+        <div className="col-12 col-md-6 p-0">
+          <div className="input-group shadow-sm rounded-3 overflow-hidden" style={{ maxWidth: '450px' }}>
+            
+            {/* Ícone de Lupa da Lucide */}
+            <span className="input-group-text bg-white border-end-0 text-muted ps-3">
+              <Search size={18} />
+            </span>
+            
+            {/* Campo de digitação real */}
+            <input 
+              type="text" 
+              className="form-control border-start-0 border-end-0 ps-2 bg-white" 
+              placeholder="Digite o número do contrato..." 
+              style={{ fontSize: '0.9rem', height: "48px", boxShadow: "none" }}
+              value={textoDigitado} 
               onChange={(e) => setTextoDigitado(e.target.value)}
-              />
-            </div>
-            {/* O botão 'btn-dark' fica acoplado direto no input, criando uma barra de busca elegante */}
+              onKeyDown={(e) => e.key === 'Enter' && handleConsultarContrato('consultar', textoDigitado)}
+            />
+
+            {/* Botão de Limpar Dinâmico (Aparece apenas se houver texto) */}
+            {textoDigitado && (
+              <button 
+                className="btn bg-white border-top border-bottom text-muted px-2" 
+                type="button"
+                onClick={() => setTextoDigitado('')}
+                style={{ borderColor: '#dee2e6' }}
+              >
+                ✕
+              </button>
+            )}
+            
+            {/* Botão de Ação integrado na ponta direita */}
             <button 
-              className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0" 
+              className="btn btn-primary fw-semibold px-4" 
               type="button"
-              style={{ fontSize: '0.875rem', height:"50px" }}
-              onClick={() => handleConsultarContrato ('consultar', textoDigitado)}
+              style={{ fontSize: '0.9rem', height: "48px" }}
+              onClick={() => handleConsultarContrato('consultar', textoDigitado)}
             >
               Buscar
             </button>
+
           </div>
         </div>
       </div>
@@ -97,4 +112,5 @@ const handleConsultarContrato = async (formato: 'consultar', idDoContrato: strin
     </div>
   </div>
 );
+
 };

@@ -16,7 +16,7 @@ export const RelatorioExtrato: React.FC= () => {
   <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
-    <div className="border-bottom pb-3 mb-4">
+    <div className="pb-3 mb-0">
       <h2 className="fs-4 fw-bold text-dark m-0">Extrato de Utilização</h2>
     </div>
 

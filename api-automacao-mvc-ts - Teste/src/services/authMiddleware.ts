@@ -7,19 +7,19 @@ export interface CustomRequest extends Request {
 }
 
 export class AuthMiddleware {
-  // 💡 Guardamos a chave secreta de forma encapsulada na classe
+  // Guardamos a chave secreta de forma encapsulada na classe
   private readonly JWT_SECRET = 'SuaChaveSecretaSuperProtegida123';
 
   /**
-   * 🔐 Método de verificação JWT estruturado em formato Arrow Function 
+   * Método de verificação JWT estruturado em formato Arrow Function 
    * para não perder o escopo do "this" quando o Express acionar o gatilho.
    */
   public verificarJWT = (req: any, res: any, next: any) => {
-  // 💡 A MÁGICA DA LISTA BRANCA: Se a rota for de login ou primeiro acesso, ignora o token!
+  // A MÁGICA DA LISTA BRANCA: Se a rota for de login ou primeiro acesso, ignora o token!
   const urlAtual = req.originalUrl || req.url;
   
-  if (urlAtual.includes('/auth/login') || urlAtual.includes('/auth/primeiro-acesso') || urlAtual.includes('/auth/validarUsuario') ){
-    console.log(`🟢 [Middleware] Rota pública liberada sem token: ${urlAtual}`);
+  if (urlAtual.includes('/auth/login') || urlAtual.includes('/auth/primeiro-acesso') || urlAtual.includes('/auth/validarUsuario') || urlAtual.includes('auth/confimarMFA') ){
+    console.log(`[Middleware] Rota pública liberada sem token: ${urlAtual}`);
     return next(); // Libera a esteira sem checar cabeçalhos
   }
 
@@ -41,6 +41,6 @@ export class AuthMiddleware {
 
 }
 
-// 🚀 Exportamos uma instância única (Singleton) pronta para uso nas rotas
+// Exportamos uma instância única (Singleton) pronta para uso nas rotas
 export const authMiddlewareInstance = new AuthMiddleware();
 

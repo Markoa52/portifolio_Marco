@@ -33,20 +33,21 @@ export class authRepository {
        }
      }
 
-    async validacaoUsuario(usuario: string): Promise<any> {
-
-    try { 
-        
-    const db = await Database.getConnection();
-
-    // Busca o operador no banco de dados SQLite
-    const conta = await db.get(
-      'SELECT id, nome, usuario, email, senha, ativo FROM usuario WHERE usuario OR email = ?', [usuario]);
-
-      return conta || null;
-      
-     } catch (erro) {
-         console.error("Erro na consulta findById do repositório:", erro);
+     async validacaoUsuario(usuario: string): Promise<any> {
+       try { 
+         const db = await Database.getConnection();
+     
+         // CORREÇÃO: Especificar a comparação individual para cada coluna
+         // E passar o parâmetro duas vezes no array [usuario, usuario]
+         const conta = await db.get(
+           'SELECT id, nome, usuario, email, senha, ativo FROM usuario WHERE usuario = ? OR email = ?', 
+           [usuario, usuario]
+         );
+     
+         return conta || null;
+         
+       } catch (erro) {
+         console.error("Erro na consulta do repositório:", erro);
          throw erro;
        }
      }
@@ -116,11 +117,11 @@ export class authRepository {
   }
 
   async listarUsuariosContrato(contratoId: any): Promise<any[]> {
-  // 💡 Garanta que usa a classe DatabaseConnection correta do seu projeto
+  // Garanta que usa a classe DatabaseConnection correta do seu projeto
   const db = await Database.getConnection(); 
   
   try {
-    // 💡 CORREÇÃO DA QUERY: Ajustado o ON do JOIN e adicionado o WHERE com o '?'
+    // CORREÇÃO DA QUERY: Ajustado o ON do JOIN e adicionado o WHERE com o '?'
     const query = `
       SELECT 
         u.id, 
@@ -146,5 +147,39 @@ export class authRepository {
     throw error;
   }
 }
+
+     async buscaMFAUsuario(identificador: any, codigo: any): Promise<any> {
+       try { 
+         const db = await Database.getConnection();
+
+          const usuarioBanco = await db.get(
+           'SELECT id, nome, usuario, email, ativo FROM usuario WHERE usuario = ? OR email = ?',
+           [identificador, identificador]
+         );
+
+          if (!usuarioBanco) {
+          //return res.status(404).json({ mensagem: "❌ Utilizador não encontrado." });
+          console.log('Utilizador não encontrado.');
+        }
+     
+         // CORREÇÃO: Especificar a comparação individual para cada coluna
+         // E passar o parâmetro duas vezes no array [usuario, usuario]
+         const tokenMFA = await db.get(
+           'SELECT id, codigo, expira_em FROM mfa_tokens WHERE usuario_id = ?', 
+           [usuarioBanco.id]
+         );
+
+          if (!tokenMFA || tokenMFA.codigo !== codigo) {
+          //return res.status(400).json({ mensagem: "❌ Código de verificação incorreto ou expirado." });
+          throw new Error(`codigo ${codigo} inserido não confere`); 
+          }else{
+            return usuarioBanco || null;
+          }
+         
+       } catch (erro) {
+         console.error("Erro na consulta do repositório:", erro);
+         throw erro;
+       }
+     }
 
 }

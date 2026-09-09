@@ -7,7 +7,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
   const [veiculosInativos, setVeiculosInativos] = useState<any[]>([]);
   const [veiculoSelecionado, setVeiculoSelecionado] = useState<any>(null);
   
-  // 🔥 NOVOS ESTADOS: Gerenciamento do estoque de TAGs do cliente
+  // NOVOS ESTADOS: Gerenciamento do estoque de TAGs do cliente
   const [tagsEstoque, setTagsEstoque] = useState<any[]>([]);
   const [tagSelecionada, setTagSelecionada] = useState<any>(null);
   const [carregandoTags, setCarregandoTags] = useState<boolean>(false);
@@ -25,7 +25,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
 
     console.log("📥 [Debug Ativação] O que chegou do SQLite:", dados);
 
-    // 💡 A MÁGICA: Ajustado o filtro para bater idêntico ao status real gravado no banco ("aguardando ativação")
+    // A MÁGICA: Ajustado o filtro para bater idêntico ao status real gravado no banco ("aguardando ativação")
     const inativosGarantidos = dados.filter((v: any) => {
       const statusTexto = String(v.status || '').toLowerCase().trim();
       return statusTexto === 'aguardando ativação' || statusTexto === 'inativo' || statusTexto === 'inativa';
@@ -42,7 +42,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
 
 
 
-  // 2. 🔥 NOVO EFFECT: Busca as TAGs em estoque disponíveis para o contrato
+  // 2. NOVO EFFECT: Busca as TAGs em estoque disponíveis para o contrato
   const buscarTagsDisponiveis = async () => {
     try {
       setCarregandoTags(true);
@@ -102,30 +102,22 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
   );
 
   return (
-    <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div className="container-fluid p-0 text-start">
 
-      <div className="d-flex align-items-center gap-2 mb-0">
-        <button 
-          type="button"
-          className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center border" 
-          onClick={onVoltar} 
-          style={{ width: '32px', height: '32px', cursor: 'pointer' }}
-          title="Voltar para a Listagem"
-        >
-          <ArrowLeft size={16} className="text-dark" />
+      {/* <div className="d-flex align-items-center gap-2 mb-2 pb-0">
+        <button type="button" onClick={onVoltar} className="btn btn-link p-0 text-secondary text-decoration-none">
+          <ArrowLeft size={20} />
         </button>
-        <span className="text-muted small fw-semibold">Voltar ao painel geral</span>
-      </div>
-      
-      {/* CABEÇALHO */}
-      <div className="border-bottom pb-0 mb-0">
-        <h2 className="fs-4 fw-bold text-dark d-flex align-items-center gap-2">
-          <Layers size={22} className="text-primary" /> Homologação e Ativação de Dispositivos (TAGs)
+        <h2 className="fs-5 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+          <Layers className="text-primary" size={20} /> Transferência de Tags entre Contratos
         </h2>
-        <small className="text-muted">Vincule um dispositivo físico disponível no estoque do Contrato nº {contractId} para ativar as frotas.</small>
-      </div>
+      </div> */}
 
-      <div className="row g-4 m-0">
+    <div className="pb-3 mb-0">
+      <h2 className="fs-4 fw-bold text-dark m-0">Ativar tag</h2>
+    </div>
+
+      <div className="row g-3 m-0">
         
         {/* ====================================================================
             LADO ESQUERDO: LISTAGEM DE VEÍCULOS AGUARDANDO ATIVAÇÃO
@@ -204,7 +196,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
               <div>
                 <label className="text-muted small fw-semibold mb-2 d-block">Escolha uma TAG disponível no Estoque:</label>
                 
-                {/* 💡 LISTAGEM INTERNA DE TAGS: Sincronizada milimetricamente com o seu JSON do banco */}
+                {/* LISTAGEM INTERNA DE TAGS: Sincronizada milimetricamente com o seu JSON do banco */}
                {carregandoTags ? (
                  <div className="text-center py-3 text-muted small">Buscando RFID...</div>
                ) : tagsEstoque && tagsEstoque.length > 0 ? (
@@ -212,7 +204,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
                    
                    {tagsEstoque.map((tag: any) => (
                      <div
-                       key={tag.id} // 💡 Puxa o 'id' numérico real (1, 2, 3...) do seu JSON
+                       key={tag.id} // Puxa o 'id' numérico real (1, 2, 3...) do seu JSON
                        onClick={() => setTagSelecionada(tag)}
                        className="p-2.5 rounded-3 border text-start d-flex justify-content-between align-items-center transition-all"
                        style={{
@@ -224,7 +216,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
                        <div className="d-flex align-items-center gap-2">
                          <span style={{ fontSize: '1rem' }}>🏷️</span>
                          <div>
-                           {/* 💡 CORREÇÃO CRÍTICA: Mudado de tag.numeroSerie para tag.serial conforme o seu JSON */}
+                           {/* CORREÇÃO CRÍTICA: Mudado de tag.numeroSerie para tag.serial conforme o seu JSON */}
                            <strong className="text-dark font-monospace" style={{ fontSize: '0.82rem' }}>
                              {tag.serial || "---"}
                            </strong>
@@ -263,7 +255,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
                >
                  {carregando ? 'Validando Dispositivo...' : (
                    tagSelecionada 
-                     // 💡 CORREÇÃO: Lemos .serial aqui também para estampar o número certo no clique!
+                     // CORREÇÃO: Lemos .serial aqui também para estampar o número certo no clique!
                      ? <>Vincular {tagSelecionada.serial} e Ativar <ArrowRight size={18} /></>
                      : "Selecione uma TAG para liberar"
                  )}

@@ -162,7 +162,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
   <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
-    <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+    <div className="d-flex align-items-center justify-content-between pb-3 mb-0">
       <h2 className="fs-4 fw-bold text-dark m-0">Usuários</h2>  
     </div>
        

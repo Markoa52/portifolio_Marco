@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { UserPlus, Search, ArrowRight, Plus, Trash2, Building, Layers } from 'lucide-react';
+import { UserPlus, Search, ArrowRight, Plus, Trash2, Building, Edit2 } from 'lucide-react';
 import axios from 'axios';
 
 export const GestaoUsuarios: React.FC = () => {
+
+  const [modalEditarAberta, setModalEditarAberta] = useState(false);
+  const [nomeEditado, setNomeEditado] = useState('');
+  const [emailEditado, setEmailEditado] = useState('');
+  const [perfilSelecionado, setPerfilSelecionado] = useState('operador');
+
   // Grades Globais
   const [usuarios, setUsuarios] = useState<any[]>([]);
   const [todosContratos, setTodosContratos] = useState<any[]>([]);
@@ -137,23 +143,66 @@ export const GestaoUsuarios: React.FC = () => {
 
   // Operação C: Remove o vínculo (DELETE) da tabela intermediária
   const handleRemoverVinculo = async (contratoId: number) => {
-    if (!usuarioSelecionado) return;
-    if (!window.confirm("Deseja revogar o acesso deste usuário a este contrato?")) return;
+  if (!usuarioSelecionado) return;
+  if (!window.confirm("Deseja revogar o acesso deste usuário a este contrato?")) return;
 
-    try {
-      setCarregando(true);
-      setErro(null);
-      const res = await axios.delete(`http://localhost:3000/api/usuarios/${usuarioSelecionado.id}/contratos/${contratoId}`);
-      if (res.data?.sucesso) {
-        setSucesso('Acesso revogado com sucesso!');
-        await carregarContratosDoUsuario(usuarioSelecionado.id);
-      }
-    } catch (err) {
-      setErro('Falha ao remover o vínculo.');
-    } finally {
-      setCarregando(false);
+  try {
+    setCarregando(true);
+    setErro(null);
+    setSucesso(null); // 💡 Boa prática: Limpa o sucesso anterior antes de iniciar
+
+    // CORREÇÃO Semântica: Alterado de .post para .delete
+    const res = await axios.delete(`http://localhost:3000/api/auth/usuario/${usuarioSelecionado.id}/contrato/${contratoId}`);
+    
+    if (res.data?.sucesso) {
+      setSucesso('Acesso revogado com sucesso!');
+      await carregarContratosDoUsuario(usuarioSelecionado.id);
     }
-  };
+  } catch (err: any) {
+    console.error('Erro ao remover vínculo:', err);
+    // CORREÇÃO UX: Tenta capturar o erro real enviado pelo seu backend
+    setErro(err.response?.data?.erro || err.response?.data?.mensagem || 'Falha ao remover o vínculo.');
+  } finally {
+    setCarregando(false);
+  }
+};
+
+const handleSalvarUsuario = async () => {
+  if (!usuarioSelecionado || !nomeEditado.trim() || !emailEditado.trim()) return;
+
+  try {
+    setCarregando(true);
+    setErro(null);
+    setSucesso(null);
+
+    // Faz a chamada PUT passando os dados editados no corpo (body)
+    const res = await axios.put(`http://localhost:3000/api/auth/atualizaUsuario/${usuarioSelecionado.id}`, {
+      nome: nomeEditado.trim(),
+      email: emailEditado.trim(),
+      perfil: perfilSelecionado
+    });
+
+    if (res.data?.sucesso) {
+      setSucesso('Dados do utilizador atualizados com sucesso!');
+      
+      // Atualiza o objeto na tela para refletir o novo nome/perfil imediatamente
+      setUsuarioSelecionado({
+        ...usuarioSelecionado,
+        nome: nomeEditado.trim(),
+        email: emailEditado.trim(),
+        perfil: perfilSelecionado
+      });
+
+      setModalEditarAberta(false); // Fecha a modal
+    }
+  } catch (err: any) {
+    console.error('Erro ao atualizar usuário:', err);
+    setErro(err.response?.data?.erro || 'Falha ao atualizar os dados do utilizador.');
+  } finally {
+    setCarregando(false);
+  }
+};
+
 
   // Filtros locais
   const usuariosFiltrados = usuarios.filter(u => 
@@ -169,13 +218,13 @@ export const GestaoUsuarios: React.FC = () => {
     <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       
       {/* CABEÇALHO */}
-      <div className="border-bottom pb-2 mb-0 d-flex justify-content-between align-items-end">
-        <div>
+      <div className="pb-0 mb-0 d-flex justify-content-between align-items-end">
+        {/* <div>
           <h2 className="fs-4 fw-bold text-dark d-flex align-items-center gap-2 m-0">
             <Layers size={22} className="text-primary" /> Central de Controle de Usuários e Escopo
           </h2>
           <small className="text-muted">Crie credenciais ou clique em um usuário da lista para gerenciar quais contratos ele pode auditar.</small>
-        </div>
+        </div> */}
         
         {/* Botão para forçar o retorno ao modo de cadastro */}
         <button 
@@ -290,12 +339,133 @@ export const GestaoUsuarios: React.FC = () => {
                   <span className="text-muted font-monospace small fw-normal" style={{ fontSize: '0.7rem' }}>@{usuarioSelecionado?.usuario}</span>
                 </h4>
 
-                <div className="bg-light p-2.5 rounded-3 border mb-3">
-                  <span className="text-muted text-uppercase fw-bold" style={{ fontSize: '0.6rem' }}>OPERADOR SELECIONADO</span>
-                  <strong className="text-dark d-block mt-0.5" style={{ fontSize: '0.95rem' }}>{usuarioSelecionado?.nome}</strong>
+                  <div className="bg-light p-2 rounded-3 border mb-3 d-flex align-items-center justify-content-between">
+                  <div>
+                    <span className="text-muted text-uppercase fw-bold" style={{ fontSize: '0.6rem', display: 'block' }}>
+                      OPERADOR SELECIONADO
+                    </span>
+                    <strong className="text-dark d-block mt-0.5" style={{ fontSize: '0.95rem' }}>
+                      {usuarioSelecionado?.nome}
+                    </strong>
+                    <span className="badge bg-secondary mt-1" style={{ fontSize: '0.65rem' }}>
+                      Perfil: {usuarioSelecionado?.perfil || 'Não definido'}
+                    </span>
+                  </div>
+                
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-primary btn-sm fw-semibold d-flex align-items-center gap-1"
+                    onClick={() => {
+                      // Carrega os dados atuais nos inputs da modal
+                      setNomeEditado(usuarioSelecionado?.nome || '');
+                      setEmailEditado(usuarioSelecionado?.email || '');
+                      setPerfilSelecionado(usuarioSelecionado?.perfil || 'operador');
+                      setModalEditarAberta(true);
+                    }}
+                  >
+                    <Edit2 size={14} /> Editar
+                  </button>
                 </div>
 
+                {/* ====================================================================
+                   MODAL DE EDIÇÃO DE DADOS E PERFIL DO USUÁRIO (CAMPOS EDITÁVEIS)
+                   ==================================================================== */}
+                {modalEditarAberta && (
+                  <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '400px' }}>
+                      <div className="modal-content border-0 shadow rounded-3 text-start">
+                        
+                        {/* CABEÇALHO */}
+                        <div className="modal-header bg-light border-bottom-0 py-3">
+                          <h5 className="modal-title fs-6 fw-bold text-dark">Editar Operador</h5>
+                          <button 
+                            type="button" 
+                            className="btn-close small" 
+                            onClick={() => setModalEditarAberta(false)}
+                          ></button>
+                        </div>
+                
+                        {/* CORPO DA MODAL */}
+                        <div className="modal-body p-4">
+                          
+                          {/* NOME EDITÁVEL */}
+                          <div className="mb-3">
+                            <label className="text-muted small fw-semibold mb-1">Nome do Operador</label>
+                            <input 
+                              type="text" 
+                              required
+                              value={nomeEditado} 
+                              onChange={(e) => setNomeEditado(e.target.value)} 
+                              className="form-control form-control-lg fs-6 text-start" 
+                              placeholder="Digite o nome completo"
+                            />
+                          </div>
+                
+                          {/* E-MAIL EDITÁVEL */}
+                          <div className="mb-3">
+                            <label className="text-muted small fw-semibold mb-1">E-mail Corporativo</label>
+                            <input 
+                              type="email" 
+                              required
+                              value={emailEditado} 
+                              onChange={(e) => setEmailEditado(e.target.value)} 
+                              className="form-control form-control-lg fs-6 text-start" 
+                              placeholder="nome@empresa.com"
+                            />
+                          </div>
+                
+                          {/* COMBOBOX DE PERFIL */}
+                          <div className="mb-2">
+                            <label className="text-dark small fw-bold mb-1.5 d-block">Perfil de Acesso</label>
+                            <select 
+                              className="form-select form-select-lg fs-6"
+                              value={perfilSelecionado}
+                              onChange={(e) => setPerfilSelecionado(e.target.value)}
+                            >
+                              <option value="administrador">🔑 admin</option>
+                              <option value="operador">📄 cliente</option>
+                              <option value="auditor">👁️ atendimento</option>
+                            </select>
+                          </div>
+                        </div>
+                
+                        {/* RODAPÉ / AÇÕES */}
+                        <div className="modal-footer border-top-0 p-3 pt-0 d-flex gap-2">
+                          <button 
+                            type="button" 
+                            className="btn btn-light fw-semibold flex-grow-1" 
+                            onClick={() => setModalEditarAberta(false)}
+                          >
+                            Cancelar
+                          </button>
+                          <button 
+                            type="button" 
+                            disabled={carregando || !nomeEditado.trim() || !emailEditado.trim()}
+                            className="btn btn-primary fw-bold flex-grow-1" 
+                            onClick={async () => {
+                              // Preparado para chamar a sua API
+                              console.log("Dados prontos para salvar no backend:", {
+                                usuarioId: usuarioSelecionado?.id,
+                                nome: nomeEditado.trim(),
+                                email: emailEditado.trim(),
+                                perfil: perfilSelecionado
+                              });
+                              setModalEditarAberta(false);
+                              handleSalvarUsuario();
+                              
+                            }}
+                          >
+                            {carregando ? 'A salvar...' : 'Salvar Alterações'}
+                          </button>
+                        </div>
+                
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Dropdown de Adicionar Novo Vínculo */}
+                {usuarioSelecionado?.perfil === 'cliente' && 
                 <form onSubmit={handleAdicionarVinculo} className="row g-2 align-items-end border-bottom pb-3 mb-2">
                   <div className="col text-start">
                     <label className="text-muted small fw-semibold mb-1">Vincular Nova Conta/Contrato:</label>
@@ -311,11 +481,12 @@ export const GestaoUsuarios: React.FC = () => {
                       <Plus size={14} /> Adicionar
                     </button>
                   </div>
-                </form>
+                </form> }
 
                 {/* Grade Rolável das Autorizações do Operador */}
+                
                 <div className="d-flex flex-column gap-2 mt-2" style={{ maxHeight: '180px', overflowY: 'auto' }}>
-                  {contratosVinculados.length > 0 ? (
+                  {contratosVinculados.length > 0  ? (
                     contratosVinculados.map((v) => (
                       <div key={v.id} className="p-2 rounded-3 border bg-light bg-opacity-25 d-flex justify-content-between align-items-center">
                         <div className="d-flex align-items-center gap-2">

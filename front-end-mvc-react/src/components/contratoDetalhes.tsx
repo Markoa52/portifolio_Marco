@@ -42,10 +42,14 @@ export const DetalhesContrato: React.FC<IDetalhesContratoProps> = ({ contractId,
   };
 
   return (
-    <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+
+                <h2 className="fs-4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+            <FileText size={22} className="text-primary" /> Informações do Contrato : {contractId}
+          </h2>
       
-      {/* 🟢 CABEÇALHO DA TELA COM BOTÃO VOLTAR */}
-      <div className="d-flex align-items-center gap-2 border-bottom pb-3 mb-4">
+      {/* CABEÇALHO DA TELA COM BOTÃO VOLTAR */}
+      {/* <div className="d-flex align-items-center gap-2 border-bottom pb-3 mb-4">
         <button 
           type="button"
           className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center border me-1" 
@@ -61,7 +65,7 @@ export const DetalhesContrato: React.FC<IDetalhesContratoProps> = ({ contractId,
           </h2>
           <small className="text-muted">Visão consolidada de termos comerciais, dados cadastrais e faturamento.</small>
         </div>
-      </div>
+      </div> */}
 
       {carregando ? (
         <div className="text-center py-5 text-muted small fw-bold">🔄 Carregando dados do contrato...</div>

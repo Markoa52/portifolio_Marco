@@ -40,14 +40,25 @@ class usuarioService {
       // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
       const usuario = await usuarioRepo.atualizarUsuario(payload);
 
-      if (!isNaN(Number(usuario))) {
+    if (!isNaN(Number(usuario))) {
       throw new Error("Falha Crítica: O usuario não foi gerado pelo SQLite");
       }
      }
 
-      if(js.contextoUsuario.tipoAcao==='ativarInativar'){
+    if(js.contextoUsuario.tipoAcao==='atualizarDadosUsuario'){
+      console.log('⏳ 3/4 Gerando cadastro do usuario...');
+      // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
+      const usuario = await usuarioRepo.atualizarDadosUsuario(payload);
+    }
+
+    if(js.contextoUsuario.tipoAcao==='ativarInativar'){
        console.log('⏳ 4/4 InativarAtivar usuário......');
        await usuarioRepo.inativarAtivarUsuario(contextoUsuario);
+    }
+
+    if(js.contextoUsuario.tipoAcao==='excluirContratoUsuario'){
+       console.log('⏳ 4/4 InativarAtivar usuário......');
+       await usuarioRepo.excluirVinculoContrato(contextoUsuario);
     }
 
       await db.exec('COMMIT');

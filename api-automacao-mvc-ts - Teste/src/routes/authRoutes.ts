@@ -290,6 +290,38 @@ router.post('/auth/validarUsuario', (req, res) => geradorAuthController.authVali
 
 /**
  * @openapi
+ * /api/auth/confimarMFA:
+ *   post:
+ *     tags:
+ *       - Autenticação
+ *     summary: Realiza a autenticação do operador e gera um Token JWT
+ *     description: Envia o usuário e a senha no corpo da requisição para validar as credenciais no banco de dados e obter o token de acesso.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - usuario
+ *             properties:
+ *               usuario:
+ *                 type: string
+ *                 example: admin
+ *     responses:
+ *       200:
+ *         description: Autenticação efetuada com sucesso. Retorna o Token JWT.
+ *       401:
+ *         description: Usuário ou senha incorretos.
+ *       500:
+ *         description: Erro interno no servidor.
+ */
+// CORREÇÃO 2: Alterado cirurgicamente de router.get para router.post 
+// Isso garante o casamento perfeito com o axios.post() disparado pela sua TelaLogin.tsx!
+router.post('/auth/confimarMFA', (req, res) => geradorAuthController.confirmaMFAUsuario(req, res));
+
+/**
+ * @openapi
  * /api/auth/primeiro-acesso:
  *   post:
  *     tags:
@@ -375,5 +407,97 @@ router.post('/auth/primeiro-acesso', (req, res) => geradorAuthController.registr
  *         description: Erro interno no servidor.
  */
 router.post('/auth/usuarios/vincular-contrato', (req, res) => geradorAuthController.vincularContrato(req, res));
+
+/**
+ * @openapi
+ * /api/auth/usuario/{usuarioId}/contrato/{contratoId}:
+ *   delete:
+ *     tags:
+ *       - Autenticação
+ *     summary: Revoga o vínculo entre um usuário e um contrato
+ *     description: Remove a permissão de acesso de um operador a um contrato específico no ecossistema TollManagement.
+ *     parameters:
+ *       - in: path
+ *         name: usuarioId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário operador
+ *         example: 1
+ *       - in: path
+ *         name: contratoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do contrato que será revogado
+ *         example: 45
+ *     responses:
+ *       200:
+ *         description: Vínculo removido/revogado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: true
+ *                 mensagem:
+ *                   type: string
+ *                   example: "Vínculo removido com sucesso."
+ *       400:
+ *         description: Parâmetros obrigatórios ausentes ou inválidos na URL.
+ *       404:
+ *         description: Usuário ou vínculo de contrato não encontrado.
+ *       500:
+ *         description: Erro interno ao processar a exclusão do vínculo.
+ */
+router.delete('/auth/usuario/:usuarioId/contrato/:contratoId', (req, res) => geradorAuthController.deletarVinculoContratoUsuario(req, res));
+
+/**
+ * @openapi
+ * /api/auth/atualizaUsuario/{id}:
+ *   put:
+ *     tags:
+ *       - Autenticação
+ *     summary: Revoga o vínculo entre um usuário e um contrato
+ *     description: Remove a permissão de acesso de um operador a um contrato específico no ecossistema TollManagement.
+ *     parameters:
+ *       - in: path
+ *         name: usuarioId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário operador
+ *         example: 1
+ *       - in: path
+ *         name: contratoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do contrato que será revogado
+ *         example: 45
+ *     responses:
+ *       200:
+ *         description: Vínculo removido/revogado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: true
+ *                 mensagem:
+ *                   type: string
+ *                   example: "Vínculo removido com sucesso."
+ *       400:
+ *         description: Parâmetros obrigatórios ausentes ou inválidos na URL.
+ *       404:
+ *         description: Usuário ou vínculo de contrato não encontrado.
+ *       500:
+ *         description: Erro interno ao processar a exclusão do vínculo.
+ */
+router.put('/auth/atualizaUsuario/:id', (req, res) => geradorAuthController.atualizarUsuario(req, res));
 
 export default router;

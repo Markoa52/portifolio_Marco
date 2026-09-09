@@ -247,17 +247,16 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
   if (registroSelecionado) {
   return (
   /* container limita a largura em 1200px e px-3 sincroniza milimetricamente com a reta do seu Header */
-  <div className="container my-3 my-md-4 px-3 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* 1. CABEÇALHO DO TÍTULO (LIMPO E SEM BOTÃO DO LADO) */}
-    <div className="border-bottom pb-3 mb-3">
-      <h2 className="fs-4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
-        <Search size={22} className="text-dark" /> Visualizar Detalhes do Registro
-      </h2>
+
+    <div className="d-flex align-items-center justify-content-between pb-3 mb-0">
+      <h2 className="fs-4 fw-bold text-dark m-0">Visualizar Detalhes do Registro</h2>
     </div>
 
     {/* 2. NOVO BOTÃO DE VOLTAR: BOLINHA COM SETA (POSICIONADO ABAIXO DA LINHA) */}
-    <div className="mb-4">
+    {/* <div className="mb-4">
       <button 
         className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center border shadow-xs" 
         onClick={() => setRegistroSelecionado(null)} 
@@ -266,15 +265,10 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
       >
         <ArrowLeft size={18} className="text-secondary" />
       </button>
-    </div>
+    </div> */}
 
     {/* PAINEL DE INFORMAÇÕES (Card Branco Premium Alinhado) */}
-    <div className="card p-3 p-md-4 shadow-sm border border-light-subtle bg-white rounded-3 w-100"  >
-      
-      {/* Título de seção azul real corporativo */}
-      <h3 className="fs-5 fw-bold text-primary mb-3 d-flex align-items-center gap-2">
-        <Info size={18} className="text-primary" /> Informações Estruturadas
-      </h3>
+    <div className="card p-3 p-md-3 shadow-sm border border-light-subtle bg-white rounded-3 w-100"  >
       
       {/* LISTA CHAVE-VALOR: TODOS OS TEXTOS ALINHADOS À ESQUERDA */}
       <div className="w-100 d-flex flex-column gap-2" style={{ maxWidth: "1200px" }}>
@@ -361,7 +355,7 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
   <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
-    <div className="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+    <div className="d-flex align-items-center justify-content-between pb-3 mb-0">
       <h2 className="fs-4 fw-bold text-dark m-0">Gerenciar Usuários</h2>
     </div>
 

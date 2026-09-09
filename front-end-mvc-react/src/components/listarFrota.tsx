@@ -274,7 +274,7 @@ const handleExportarTodosVeiculos = async () => {
   <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
     
     {/* CABEÇALHO DA TELA */}
-    <div className="border-bottom pb-3 mb-4">
+    <div className="pb-3 mb-0">
       <h2 className="fs-4 fw-bold text-dark m-0">Frota</h2>
     </div>
 
@@ -557,13 +557,13 @@ if (subAba === 'cadastro-lote') {
           {resultadoLote.erros.length > 0 && (
            <div className="mb-4">
              
-             {/* 💡 CABEÇALHO DA TABELA COM O BOTÃO DE EXPORTAÇÃO ALINHADO LADO A LADO */}
+             {/* CABEÇALHO DA TABELA COM O BOTÃO DE EXPORTAÇÃO ALINHADO LADO A LADO */}
              <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2 text-start">
                <h4 className="fs-6 fw-bold text-danger m-0">
                  ❌ Itens Não Importados (Placas Repetidas)
                </h4>
                
-               {/* 🚀 BOTÃO DE EXPORTAÇÃO DO CENÁRIO B ADICIONADO AQUI */}
+               {/* BOTÃO DE EXPORTAÇÃO DO CENÁRIO B ADICIONADO AQUI */}
                <button
                  type="button"
                  className="btn btn-outline-danger btn-sm fw-semibold d-inline-flex align-items-center gap-1 py-1.5 px-3"

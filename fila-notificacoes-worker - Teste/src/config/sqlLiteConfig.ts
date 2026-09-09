@@ -59,7 +59,7 @@ export class Database {
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
 
-            //await this.instance.exec(`UPDATE banco_user.usuario set email='nascimento.teste@yopmail.com' where id=4;`);
+            //await this.instance.exec(`UPDATE banco_user.usuario set perfil='atendimento' where id=3;`);
             //await this.instance.exec(`UPDATE banco_user.usuario set perfil='admin' where id=1;`);
             //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo where contratoId=2`);
@@ -510,17 +510,6 @@ export class Database {
                UNIQUE(usuarioId, contratoId)
                );
             `);
-
-             await this.instance.exec(`
-               CREATE TABLE IF NOT EXISTS banco_user.mfa_tokens (
-                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                 usuario_id INTEGER,
-                 codigo TEXT,
-                 criado_em TEXT,
-                 expira_em TEXT,
-                 FOREIGN KEY(usuario_id) REFERENCES usuario(id) ON DELETE CASCADE
-               );
-             `);
 
             console.log('[Sucesso] Todas as tabelas relacionais foram geradas e persistidas!');
         }

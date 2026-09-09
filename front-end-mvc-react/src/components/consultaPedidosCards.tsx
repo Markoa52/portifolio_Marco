@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingBag, Eye, DollarSign, Calendar, Search } from 'lucide-react';
+import { Eye, DollarSign, Calendar, Search, ArrowLeft, Layers } from 'lucide-react';
 import axios from 'axios';
 
 import type { IConsultaPedidosProps } from '../types/IConsultaPedidoProps';
 
-export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPedido, contractId }) => {
+export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPedido, contractId, onVoltar }) => {
   // Estados para armazenamento dos dados e controle da tela
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [filtroId, setFiltroId] = useState<string>('');
@@ -60,40 +60,37 @@ export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPed
   };
 
   return (
-    <div className="container my-4 p-0 px-2 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
-
-    <button className="btn btn-primary fw-semibold px-4" onClick={onNovoPedido}>
-      Novo pedido
-    </button>
+    <div className="container-fluid p-0 text-start">
       
-      {/* 🟢 TOPO DA TELA: TÍTULO E BARRA DE PESQUISA */}
-      <div className="row align-items-center g-3 border-bottom pb-3 mb-4 m-0">
-        <div className="col-md-6 p-0">
-          <h2 className="fs-4 fw-bold text-dark m-0 d-flex align-items-center gap-2">
-            <ShoppingBag size={22} className="text-primary" /> Painel de Pedidos e Recebimentos
-          </h2>
-          <small className="text-muted">Consulte, analise os detalhes e dê baixa financeira nos pedidos em lote.</small>
-        </div>
-        
+      {/* <div className="d-flex align-items-center gap-2 mb-3 pb-0">
+        <button type="button" onClick={onVoltar} className="btn btn-link p-0 text-secondary text-decoration-none">
+          <ArrowLeft size={20} />
+        </button>
+        <h2 className="fs-5 fw-bold text-dark m-0 d-flex align-items-center gap-2">
+          <Layers className="text-primary" size={20} /> Transferência de Tags entre Contratos
+        </h2>
+      </div> */}
+
+      <div className="pb-3 mb-0">
+      <h2 className="fs-4 fw-bold text-dark m-0">Pedidos de tag
+      </h2>
+    </div>
+
+      {/* TOPO DA TELA: TÍTULO E BARRA DE PESQUISA */}
+      <div className="row align-items-center g-1 pb-0 mb-0 m-0">
+
         {/* Barra de Busca Ágil */}
-        <div className="col-md-6 p-0 d-flex gap-2 justify-content-md-end">
-          <div className="input-group" style={{ maxWidth: '350px' }}>
+        <div className="col-md-6 p-0 d-flex gap-2 justify-content-md-start">
+          <div className="input-group" style={{ maxWidth: '400px' }}>
             <span className="input-group-text bg-white border-end-0 text-muted"><Search size={16} /></span>
-            <input 
-              type="text" 
-              placeholder="Buscar por ID do pedido..." 
-              value={filtroId}
-              onChange={(e) => setFiltroId(e.target.value)}
-              className="form-control border-start-0 text-start"
-            />
+            <input type="text" placeholder="Buscar por ID do pedido..." value={filtroId} onChange={(e) => setFiltroId(e.target.value)} className="form-control border-start-0 text-start"/>
           </div>
-          <button className="btn btn-primary fw-semibold px-4" onClick={() => buscarPedidos(filtroId)}>
-            Pesquisar
-          </button>
+          <button className="btn btn-primary fw-semibold px-1" onClick={() => buscarPedidos(filtroId)}>Pesquisar</button>
+          <button className="btn btn-primary fw-semibold px-1" onClick={onNovoPedido}>Novo pedido</button>
         </div>
       </div>
 
-      {/* 🔴 TRATAMENTO DE INTERFACE: LOADING OU ERRO */}
+      {/* TRATAMENTO DE INTERFACE: LOADING OU ERRO */}
       {carregando && (
         <div className="text-center py-5">
           <div className="spinner-border text-primary" role="status"></div>
@@ -102,7 +99,7 @@ export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPed
       )}
       {erro && <div className="alert alert-danger shadow-sm rounded-3">{erro}</div>}
 
-      {/* 🗂️ EMISSÃO DOS CARDS EM GRADE (Responsivo: 1 coluna no celular, 3 no PC) */}
+      {/* EMISSÃO DOS CARDS EM GRADE (Responsivo: 1 coluna no celular, 3 no PC) */}
       {!carregando && !erro && (
         <div className="row g-3 m-0">
           {pedidos && pedidos.length > 0 ? (
@@ -110,8 +107,8 @@ export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPed
               const statusInfo = obterEstiloStatus(pedido.status);
 
               return (
-                <div key={`${pedido.id || index}-${index}`} className="col-12 col-md-6 col-lg-4 p-0 px-md-2">
-                  <div className="card h-100 border border-light-subtle shadow-sm bg-white rounded-3 p-3 d-flex flex-column justify-content-between transition-all hover-shadow">
+                <div key={`${pedido.id || index}-${index}`} className="col-12 col-md-6 col-lg-4 p-0 px-md-0">
+                  <div className="card h-180 border border-light-subtle shadow-sm bg-white rounded-3 p-3 d-flex flex-column justify-content-between transition-all hover-shadow">
                     
                     {/* Linha 1: Código do Pedido e Badge de Status */}
                     <div className="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">

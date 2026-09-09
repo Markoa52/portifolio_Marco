@@ -157,14 +157,18 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
   return (
     <div className="container-fluid p-0 text-start">
       {/* Cabeçalho de Navegação */}
-      <div className="d-flex align-items-center gap-2 mb-1 pb-0">
+      {/* <div className="d-flex align-items-center gap-2 mb-2 pb-0">
         <button type="button" onClick={() => setPaginaAtiva('contrato')} className="btn btn-link p-0 text-secondary text-decoration-none">
           <ArrowLeft size={20} />
         </button>
         <h2 className="fs-5 fw-bold text-dark m-0 d-flex align-items-center gap-2">
           <Layers className="text-primary" size={20} /> Transferência de Tags entre Contratos
         </h2>
-      </div>
+      </div> */}
+
+    <div className="pb-3 mb-0">
+      <h2 className="fs-4 fw-bold text-dark m-0">Transferência de Tags entre Contratos</h2>
+    </div>
 
       <div className="row g-4">
         {/* COLUNA 1: VISUALIZAÇÃO E SELEÇÃO DAS TAGS DO CONTRATO ATUAL */}
@@ -260,15 +264,14 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
           </div>
         </div>
       </div>
-
-      {/* BLOCO 3: RESUMO CONSOLIDADO E BOTÃO DE EVENTO (EXECUÇÃO) */}
-      <div className="card p-3 mt-3 shadow-sm border border-light-subtle bg-light">
-        <h3 className="fs-6 fw-bold text-dark mb-0">3. Resumo da Operação</h3>
         
-        <div className="row g-2 text-center mb-4">
-          <div className="col-md-5">
+      {/* BLOCO 3: RESUMO CONSOLIDADO E BOTÃO DE EVENTO (EXECUÇÃO) */}
+      <div className="card p-2 mt-3 shadow-sm border border-light-subtle bg-light">
+        
+        <div className="row g-2 text-center mb-0">
+          <div className="col-md-6">
 
-        <div className="row g-3 text-center align-items-center mb-2">
+        <div className="row g-3 text-center align-items-center mb-3">
           {/* Tag de Origem */}
           <div className="col-md-5">
             <div className="p-3 bg-white rounded-3 border border-light-subtle">

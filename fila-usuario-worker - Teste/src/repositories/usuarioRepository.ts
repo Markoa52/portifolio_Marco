@@ -17,13 +17,33 @@ export class usuarioRepository {
     }
   }
 
-    async  atualizarUsuario(dados: any): Promise<void> {
+  async  atualizarUsuario(dados: any): Promise<void> {
     const db = await DatabaseConnection.getConnection();
     try {
       const query = `
         UPDATE usuario set senha= ?, ativo=1 where id= ?;
       `;
       await db.run(query, [ dados.js.contextoUsuario.senha, dados.js.contextoUsuario.usuarioId]);
+    } catch (error: any) {
+      console.error('Erro ao inserir novo usuário no repositório:', error.message);
+      throw error;
+    }
+  }
+
+  async  atualizarDadosUsuario(dados: any): Promise<void> {
+    const db = await DatabaseConnection.getConnection();
+    try {
+      const query = `
+        UPDATE usuario set nome=?, usuario=?, email=?, perfil=? where id = ?;
+      `;
+      await db.run(query, [ 
+        dados.js.contextoUsuario.nome, 
+        dados.js.contextoUsuario.usuario,
+        dados.js.contextoUsuario.email, 
+        dados.js.contextoUsuario.perfil, 
+        dados.js.contextoUsuario.usuarioId
+        ]);
+
     } catch (error: any) {
       console.error('Erro ao inserir novo usuário no repositório:', error.message);
       throw error;
@@ -63,6 +83,19 @@ export class usuarioRepository {
       await db.run(query, [dados.js.contextoUsuario.usuarioId, dados.js.contextoUsuario.contratoId]);
     } catch (error: any) {
       console.error('Erro ao inserir novo usuário no repositório:', error.message);
+      throw error;
+    }
+  }
+
+  async excluirVinculoContrato(dados: any): Promise<void> {
+    const db = await DatabaseConnection.getConnection();
+    try {
+      const query = `
+        DELETE FROM usuarioContrato where usuarioId=? and contratoId= ?;  
+      `;
+      await db.run(query, [dados.usuarioId, dados.contratoId]);
+    } catch (error: any) {
+      console.error('Erro ao deletar contrato do usuário no repositório:', error.message);
       throw error;
     }
   }

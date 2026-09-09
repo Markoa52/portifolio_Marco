@@ -71,14 +71,18 @@ export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar, contr
   };
 
   return (
-    <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div className="container-fluid p-0 text-start">
+
+    <div className="pb-0 mb-0">
+      <h2 className="fs-4 fw-bold text-dark m-0">Nova Solicitação de Pedido</h2>
+    </div>
 
     {/* CABEÇALHO DA TELA COM BOTÃO VOLTAR INTEGRADO */}
-    <div className="d-flex align-items-center gap-2 border-bottom pb-2 mb-4">
+    {/* <div className="d-flex align-items-center gap-2 border-bottom pb-2 mb-4">
       <button 
         type="button"
         className="btn btn-light btn-sm rounded-circle d-flex align-items-center justify-content-center border me-1" 
-        onClick={onVoltar} // 👈 Executa a função que veio do componente pai
+        onClick={onVoltar} // Executa a função que veio do componente pai
         style={{ width: '32px', height: '32px', cursor: 'pointer' }}
         title="Voltar para a Listagem de Pedidos"
       >
@@ -88,7 +92,7 @@ export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar, contr
         <ShoppingBag size={22} className="text-primary" /> Nova Solicitação de Pedido
       </h2>
       <small className="text-muted">Preencha os dados e acompanhe o resumo em tempo real.</small>
-    </div>
+    </div> */}
 
       {sucessoId ? (
         /* TELA DE SUCESSO */
