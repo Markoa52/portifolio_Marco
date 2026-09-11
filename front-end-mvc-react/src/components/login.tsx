@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Landmark, User, Lock, LogIn, UserPlus, ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify'; // 💡 Importe o toast
@@ -17,6 +17,9 @@ interface TelaLoginProps {
 export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
   // ESTADO MÁGICO: Controla se exibe a tela de 'login' ou de 'cadastro' (Primeiro Acesso)
   const [modoView, setModoView] = useState<'login' | 'cadastro' | 'dashboardGeral' | 'telaDoContrato' | 'selecionarContrato' | 'semVinculo'>('login');
+
+  const[, setUsuarioSelecionado] = useState<any[]>()
+  
   const [contratosDoUsuario] = useState<any[]>([]);
 
   const [codigoMFA, setCodigoMFA] = useState<string>('');
@@ -24,40 +27,6 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
   const [etapaPrimeiroAcesso, setEtapaPrimeiroAcesso] = useState(1); // 1: Validar dados, 2: Definir nova senha
 
   const [identificador, setIdentificador] = useState(''); // Pode ser e-mail ou utilizador
-
-  // Função para a Etapa 1: Validar se o utilizador existe e tem direito ao primeiro acesso
-  // Alteração no bloco catch: troque (err) por (err: any)
-  const handleValidarUsuario = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setCarregando(true);
-  setErro(null);
-
-  try {
-    const resposta = await fetch('http://localhost:3000/api/auth/validarUsuario', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identificador: identificador.trim().toLowerCase() })
-    });
-
-    const dados = await resposta.json();
-    console.log("📡 [Axios] resposta", dados);
-
-    if (!resposta.ok) {
-      throw new Error(dados.message || 'Utilizador ou E-mail não encontrado.');
-    }
-
-    setUsuarioId(dados.id || '');
-    setNome(dados.nome || '');
-    setUsuario(dados.usuario || '');
-    setEmail(dados.email || '');
-    
-    setEtapaPrimeiroAcesso(2);
-    } catch (err: any) { // CORREÇÃO AQUI: Força o tipo para 'any'
-      setErro(err.message || 'Ocorreu um erro inesperado.');
-    } finally {
-      setCarregando(false);
-    }
-   };
 
    // Estados dos Inputs
    const [usuarioId, setUsuarioId] = useState();
@@ -71,6 +40,71 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
    const [erro, setErro] = useState<string | null>(null);
    const [sucesso, setSucesso] = useState<string | null>(null);
 
+   useEffect(() => {
+  const tratarTokenExpirado = () => {
+    // 1. Limpa os estados locais do utilizador logado
+    setUsuarioSelecionado([]);
+    setErro('⚠️ A sua sessão expirou. Por favor, faça login novamente.');
+    
+    // 2. Volta para o ecrã de login de forma instantânea
+    setModoView('login');
+    setEtapaPrimeiroAcesso(1);
+  };
+
+  // Escuta o evento que o Axios vai disparar quando o token cair
+  window.addEventListener('token-expirado', tratarTokenExpirado);
+
+  // Limpa o ouvinte quando o componente for desmontado (boa prática de memória)
+  return () => window.removeEventListener('token-expirado', tratarTokenExpirado);
+  }, []);
+
+   // Função para a Etapa 1: Validar se o utilizador existe e tem direito ao primeiro acesso
+  // Alteração no bloco catch: troque (err) por (err: any)
+  const handleValidarUsuario = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setCarregando(true);
+  setErro(null);
+
+  try {
+    const resposta = await fetch('/api/auth/validarUsuario', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identificador: identificador.trim().toLowerCase() })
+    });
+
+    const dados = await resposta.json();
+    console.log("📡 [Fetch] Resposta do Servidor:", dados);
+
+    // 🌟 1. INTERCEPCÃO DE AÇÃO CONTROLADA: 
+    // Se o backend disser que o utilizador já está ativo, desvia o fluxo sem disparar um erro crítico
+    if (dados?.acao === 'recuperar_senha') {
+      setErro(dados.mensagem); // Exibe a mensagem amigável no ecrã (Ex: "Usuário já ativo...")
+      
+      // 💡 Ação opcional: Se tiver um estado ou modal de alteração de senha, pode ativá-lo aqui:
+      // setEtapaPrimeiroAcesso(5); // Por exemplo, pula para o ecrã de redefinição
+      return; // Para a execução aqui
+    }
+
+    // 2. Validação padrão de erro de comunicação ou dados inválidos (Status 4xx ou 5xx)
+    if (!resposta.ok) {
+      throw new Error(dados.erro || dados.message || 'Utilizador ou E-mail não encontrado.');
+    }
+
+    // 3. FLUXO DE SUCESSO PADRÃO: Primeiro acesso (Avança para o Token MFA)
+    setUsuarioId(dados.id || '');
+    setNome(dados.nome || '');
+    setUsuario(dados.usuario || '');
+    setEmail(dados.email || '');
+    
+    setEtapaPrimeiroAcesso(2); // Avança para o passo do código enviado por e-mail
+
+  } catch (err: any) {
+    setErro(err.message || 'Ocorreu um erro inesperado.');
+  } finally {
+    setCarregando(false);
+  }
+    };
+
    // 1. Processa a Autenticação Tradicional
    const handleDispararLogin = async (e: React.FormEvent) => {
      e.preventDefault();
@@ -81,7 +115,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
 
      console.log("📡 [Axios] Enviando credenciais para o Express...");
     
-     const resposta = await axios.post('http://localhost:3000/api/auth/login', {
+     const resposta = await axios.post('/api/auth/login', {
       usuario: usuario.trim(),
       senha: senha.trim()
      });
@@ -130,10 +164,10 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
       } finally {
       setCarregando(false);
       }
-     };
+    };
 
-      // 2. Processa a Criação da Primeira Conta
-      const handleDispararCadastro = async (e: any) => {
+    // 2. Processa a Criação da Primeira Conta
+    const handleDispararCadastro = async (e: any) => {
         e.preventDefault();
         if (senha !== confirmarSenha) {
           setErro('As senhas digitadas não coincidem.');
@@ -146,7 +180,7 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
           setSucesso(null);
       
           // O tipoAcao vai como 'solicitarMFA' ou a ação equivalente que dispara o e-mail no seu backend
-          const resposta = await axios.post('http://localhost:3000/api/auth/primeiro-acesso', {
+          const resposta = await axios.post('/api/auth/primeiro-acesso', {
             usuarioId: Number(usuarioId),
             nome: nome.trim(),
             usuario: usuario.trim(),
@@ -175,45 +209,58 @@ export const TelaLogin: React.FC<TelaLoginProps> = ({ onLoginSucesso }) => {
         } finally {
           setCarregando(false);
         }
-      };
-
-      const handleReenviarCodigoMFA = async () => {
-      try {
-        setCarregando(true);
-        setErro(null);
-        setSucesso(null);
-    
-        // Substitua a URL abaixo pela rota correta do seu backend
-        const resposta = await fetch('/api/autenticacao/mfa/reenviar', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // Envia o identificador (email/usuário) ou o ID do usuário para saber para quem reenviar
-          body: JSON.stringify({ 
-            usuario: usuario, 
-            email: email 
-          }),
-        });
-    
-        const dados = await resposta.json();
-    
-        if (!resposta.ok) {
-          throw new Error(dados.mensagem || 'Não foi possível reenviar o código.');
-        }
-    
-        // Exibe a mensagem de sucesso no topo do card
-        setSucesso('🚀 Um novo código de verificação foi enviado para o seu e-mail!');
-        setCodigoMFA(''); // Limpa o campo do código antigo para o utilizador digitar o novo
-    
-      } catch (err: any) {
-        console.error('Erro ao reenviar MFA:', err);
-        setErro(err.message || 'Ocorreu um erro ao tentar reenviar o código. Tente novamente.');
-      } finally {
-        setCarregando(false);
-      }
     };
+
+    const handleReenviarCodigoMFA = async () => {
+  try {
+    setCarregando(true);
+    setErro(null);
+    setSucesso(null);
+
+    // MECANISMO DE RESGATE: Se o estado 'email' estiver vazio, 
+    // ele resgata o que o usuário digitou na caixa de texto ('identificador')
+    const identificadorColetado = email?.trim() || usuario?.trim() || identificador?.trim();
+
+    console.log("-> ✉️ Coletando credencial para o reenvio:", identificadorColetado);
+
+    if (!identificadorColetado || identificadorColetado === '') {
+      throw new Error("Não foi possível localizar o seu Usuário ou E-mail. Por favor, volte à etapa anterior e digite novamente.");
+    }
+
+    // Faz a chamada para o mesmo endpoint que já sabe processar o MFA
+    const resposta = await fetch('/api/auth/validarUsuario', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        // Envia o e-mail ou login coletado de forma limpa na raiz do JSON
+        identificador: identificadorColetado.toLowerCase() 
+      }),
+    });
+
+    const dados = await resposta.json();
+
+    if (!resposta.ok) {
+      throw new Error(dados.mensagem || dados.erro || 'Não foi possível reenviar o código de verificação.');
+    }
+
+    // Exibe o feedback de sucesso no topo do card para o utilizador
+    setSucesso('🚀 Um novo código de verificação foi enviado para o seu e-mail!');
     
+    // Limpa o input do código antigo para o operador digitar o novo sem confusão
+    if (typeof setCodigoMFA === 'function') {
+      setCodigoMFA(''); 
+    }
+
+  } catch (err: any) {
+    console.error('Erro ao reenviar MFA:', err);
+    setErro(err.message || 'Ocorreu um erro ao tentar reenviar o código. Tente novamente.');
+  } finally {
+    setCarregando(false);
+  }
+    };
+  
     const handleConfirmarCodigoMFA = async (e: React.FormEvent) => {
       e.preventDefault(); // Evita o recarregamento automático da página
     

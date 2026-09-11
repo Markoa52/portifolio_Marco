@@ -28,7 +28,7 @@ export const DetalhesPedagio: React.FC<IDetalhesProps> = ({ contractId, onVoltar
         console.log(`🔍 [Banco] Buscando VPR  do Contrato ID: ${contractId}`);
 
         // 3. CORREÇÃO: Requisição movida para DENTRO do bloco try/catch
-        const respostaSaldoVPR = await axios.get(`http://localhost:3000/api/veiculo/VPR/${contractId}`);
+        const respostaSaldoVPR = await axios.get(`/api/veiculo/VPR/${contractId}`);
 
         if (respostaSaldoVPR && respostaSaldoVPR.data) {
           console.log('[Sucesso] Faturas recebidas do SQLite:', respostaSaldoVPR.data);

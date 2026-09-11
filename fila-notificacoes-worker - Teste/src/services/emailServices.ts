@@ -25,6 +25,7 @@ export class EmailServices {
     // Monta a assinatura padrão do remetente (Ex: "TollManagement Segurança <email@empresa.com>")
     this.remetentePadrao = `"${configEmail.remetente.nome}" <${configEmail.remetente.endereco}>`;
   }
+  
 
   /**
    * Método Geral para Envio de Qualquer E-mail
@@ -78,7 +79,7 @@ export class EmailServices {
     await this.enviarEmail(contextoMFA.email, assunto, html);
   }
 
-async salvaDadosMFA(dados: any) {
+  async salvaDadosMFA(dados: any) {
 
     const { payload } = dados;
     const { js } = payload;
@@ -117,7 +118,45 @@ async salvaDadosMFA(dados: any) {
      throw erro; // Lança o erro original para o RabbitMQ mandar a mensagem para a DLQ
 }
   }
-}
+  
+  }
+
+async enviarNotificaoNovoUsuario(dados: any): Promise<void> {
+
+    const { payload } = dados;
+    const { js } = payload;
+    const { metadata, contextoNotificacao } = js;
+    const contratoIdReal = Number(metadata.contratoId);
+
+    const emailDestinatario = contextoNotificacao?.emailLimpo || contextoNotificacao?.email;
+
+    if (!emailDestinatario) {
+     throw new Error("❌ Erro fatal: O e-mail do destinatário não foi localizado no payload da notificação.");
+    }
+
+    const assunto = "Acesso gestão de peságio - TollManagement";
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px;">
+        <h2 style="color: #212529; text-align: center;">Ativação de Conta</h2>
+        <p style="color: #495057; font-size: 14px; line-height: 1.5;">
+          Olá, <strong>${emailDestinatario}</strong>.<br><br>
+          Recebemos a sua solicitação de primeiro acesso ao ecossistema de vale-pedágio. Entre no portal TollManagemente para seguir com a criação do seu primeiro acesso !
+        </p>
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="font-family: monospace; font-size: 32px; font-weight: bold; letter-spacing: 10px; background-color: #f8f9fa; padding: 10px 20px; border: 1px solid #ced4da; border-radius: 4px; color: #0d6efd;">
+            Obrigado !!!
+          </span>
+        </div>
+        <p style="color: #6c757d; font-size: 12px; text-align: center;">
+          Este código é de uso único e expira em 15 minutos.<br>
+          Se não reconhece esta operação, ignore este e-mail de segurança.
+        </p>
+      </div>
+    `;
+
+    await this.enviarEmail(emailDestinatario, assunto, html);
+  }
+
 }
 
 // Exporta uma única instância (Padrão Singleton)

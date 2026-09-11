@@ -72,6 +72,92 @@ router.get('/auth/usuarios', (req, res) => geradorAuthController.listarTodos(req
 
 /**
  * @openapi
+ * /api/auth/usuario/buscar-por-username/{username}:
+ *   get:
+ *     tags:
+ *       - Autenticação
+ *     summary: Recupera o ID numérico do usuário pelo username
+ *     description: Rota utilizada pelo mecanismo de polling do frontend para resgatar o ID gerado pelo Worker do RabbitMQ após a persistência no SQLite.
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         required: true
+ *         description: O nome de usuário (login) do operador cadastrado.
+ *         schema:
+ *           type: string
+ *         example: "aurelio.teste"
+ *     responses:
+ *       200:
+ *         description: Usuário localizado no SQLite com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: O ID numérico (AUTOINCREMENT) gerado pelo banco de dados.
+ *                   example: 2
+ *       404:
+ *         description: Usuário ainda não foi processado pelo Worker ou é inexistente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 erro:
+ *                   type: string
+ *                   example: "Usuário ainda não processado ou inexistente."
+ *       500:
+ *         description: Falha interna no servidor ao consultar o banco de dados.
+ */
+router.get('/auth/usuario/buscar-por-username/:username', (req, res) => geradorAuthController.buscarPorUsername(req, res));
+
+/**
+ * @openapi
+ * /auth/usuario/noficacao:
+ *   post:
+ *     tags:
+ *       - Autenticação
+ *     summary: Recupera o ID numérico do usuário pelo username
+ *     description: Rota utilizada pelo mecanismo de polling do frontend para resgatar o ID gerado pelo Worker do RabbitMQ após a persistência no SQLite.
+ *     parameters:
+ *       - in: path
+ *         email: email
+ *         required: true
+ *         description: O nome de usuário (login) do operador cadastrado.
+ *         schema:
+ *           type: string
+ *         example: "aurelio.teste@teste.com"
+ *     responses:
+ *       200:
+ *         description: Usuário localizado no SQLite com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   description: O ID numérico (AUTOINCREMENT) gerado pelo banco de dados.
+ *                   example: 2
+ *       404:
+ *         description: Usuário ainda não foi processado pelo Worker ou é inexistente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 erro:
+ *                   type: string
+ *                   example: "Usuário ainda não processado ou inexistente."
+ *       500:
+ *         description: Falha interna no servidor ao consultar o banco de dados.
+ */
+router.post('/auth/usuario/noficacao', (req, res) => geradorAuthController.notificaUsario(req, res));
+
+/**
+ * @openapi
  * /api/auth/usuario/inativarAtivar:
  *   post:
  *     tags:
@@ -366,7 +452,7 @@ router.post('/auth/primeiro-acesso', (req, res) => geradorAuthController.registr
 
 /**
  * @openapi
- * /api/auth/primeiro-acesso:
+ * /api/auth/usuarios/vincular-contrato:
  *   post:
  *     tags:
  *       - Autenticação
@@ -453,6 +539,52 @@ router.post('/auth/usuarios/vincular-contrato', (req, res) => geradorAuthControl
  *         description: Erro interno ao processar a exclusão do vínculo.
  */
 router.delete('/auth/usuario/:usuarioId/contrato/:contratoId', (req, res) => geradorAuthController.deletarVinculoContratoUsuario(req, res));
+
+/**
+ * @openapi
+ * /api/auth/ExcluirUsuario:
+ *   delete:
+ *     tags:
+ *       - Autenticação
+ *     summary: Revoga o vínculo entre um usuário e um contrato
+ *     description: Remove a permissão de acesso de um operador a um contrato específico no ecossistema TollManagement.
+ *     parameters:
+ *       - in: path
+ *         name: usuarioId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuário operador
+ *         example: 1
+ *       - in: path
+ *         name: contratoId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do contrato que será revogado
+ *         example: 45
+ *     responses:
+ *       200:
+ *         description: Vínculo removido/revogado com sucesso.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 sucesso:
+ *                   type: boolean
+ *                   example: true
+ *                 mensagem:
+ *                   type: string
+ *                   example: "Vínculo removido com sucesso."
+ *       400:
+ *         description: Parâmetros obrigatórios ausentes ou inválidos na URL.
+ *       404:
+ *         description: Usuário ou vínculo de contrato não encontrado.
+ *       500:
+ *         description: Erro interno ao processar a exclusão do vínculo.
+ */
+router.delete('/auth/ExcluirUsuario', (req, res) => geradorAuthController.deletarUsuario(req, res));
 
 /**
  * @openapi

@@ -1,22 +1,239 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import type { IEmailRegistro } from '../types/index.ts';
 import '../styles/editarUsuario.css';
-import { ArrowLeft, Eye, Info, Pencil, Search, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Search, Trash2 } from 'lucide-react';
 import type { IGerenciadorProps } from '../types/IGerenciadorProps.ts';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAbaAtiva, dadosIniciais}) => {
 
-// 2. A função que o seu botão "Listar usuários" vai disparar
-const listarUsuarios = () => {
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState<any>(null);
+  const [carregando] = useState(false);
+
+  const [modalInserirAberto, setModalInserirAberto] = useState<boolean>(false);
+  const [modalAberto, setModalAberto] = useState<boolean>(false);
+  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
+  const [itemParaExcluir, setItemParaExcluir] = useState<any>(null);
+
+  const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
+  const [, setCarregando] = useState<boolean>(true);
+  const [, setUsuarios] = useState<any[]>([]);
+  
+  // MONITOR DE ÁREA ÚTIL: O React descobre o tamanho real do ecrã a cada milissegundo!
+
+  const [, setLarguraJanela] = useState<number>(window.innerWidth);
+
+  //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
+
+  const [dadosLocais, setDadosLocais] = useState<IEmailRegistro[]>(dadosIniciais ?? []);
+  const [pesquisa, setPesquisa] = useState<string>('');
+  const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
+  const [registroSelecionado, setRegistroSelecionado] = useState<IEmailRegistro | null>(null);
+  
+  const [, setIndexEdicao] = useState<number>(-1);
+  //const [inputData, setInputData] = useState<string>('');
+  const [inputNome, setInputNome] = useState<string>('');
+  const [inputUsuario, setInputUsuario] = useState<string>('');
+  const [inputPerfil, setInputPerfil] = useState<string>('');
+  const [inputStatus, setInputStatus] = useState<string>('');
+  const [inputEmail, setInputEmail] = useState<string>('');
+
+  //const [inputData] = useState<string>('');
+
+  const [inputInserirNome, setInputInserirNome] = useState<string>('');
+  const [inputInserirUsuario, setInputInserirUsuario] = useState<string>('');
+  const [inputInserirPerfil, setInputInserirPerfil] = useState<string>('');
+  const [, setInputInserirStatus] = useState<number>();
+  const [inputInserirEmail, setInputInserirEmail] = useState<string>('');
+  const [] = useState<string>('');
+
+  const [salvando, setSalvando] = useState<boolean>(false);
+  const [paginaAtualCRUD, setPaginaAtualCRUD] = useState<number>(1);
+  const registrosPorPaginaCRUD = 5;
+  const [, setErroLocal] = useState<string | null>(null);
+  const [inputId, setInputId] = useState<string | number | null>(null);
+  const fecharFormulario = () => { setModalAberto(false); };
+  
+  // 2. A função que o seu botão "Listar usuários" vai disparar
+  const listarUsuarios = () => {
   console.log("Navegando para a aba de listagem...");
   
   // O TypeScript agora aceita perfeitamente porque 'usuario' faz parte do tipo oficial AbaInferior!
   setAbaAtiva && setAbaAtiva('usuario');  
   };
 
-async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
+  const handleConfirmarExclusao = async () => {
+  if (itemParaExcluir) {
+    // Chame aqui a sua rotina atual que apaga do banco/fila
+    //removerLinha(itemParaExcluir); 
+
+  const idDoUsuario = inputId ? String(inputId).trim() : '0';
+  
+  console.log("-> Validando ID para o Axios PUT:", idDoUsuario);
+
+  const idContrato = payloadEnvio?.id || payloadEnvio?.dadosLimpos?.id || payloadEnvio?.contratoId || 0;
+
+  console.log("-> 🔍 ID do Contrato capturado para o vínculo:", idContrato);
+    
+
+    await axios.post('/api/auth/ExcluirUsuario', {
+      usuarioId: idDoUsuario,
+      contratoId: idContrato,
+      tipoAcao: 'vincularContrato'
+    });
+
+  }
+
+  // Fecha a modal e limpa o estado
+  setModalExclusaoAberto(false);
+  setItemParaExcluir(null);
+  };
+
+  const dadosFiltrados = useMemo(() => {
+    // Se você salvou em dadosSharePoint, ele deve filtrar em cima de dadosSharePoint!
+    return dadosSharePoint.filter((item) => {
+      return (
+        item.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
+        item.usuario?.toLowerCase().includes(pesquisa.toLowerCase())
+      );
+    });
+  }, [dadosSharePoint, pesquisa]);
+
+  const totalPaginasCRUD = Math.ceil(dadosFiltrados.length / registrosPorPaginaCRUD);
+  const indiceInicialCRUD = (paginaAtualCRUD - 1) * registrosPorPaginaCRUD;
+  
+  const itensDaPaginaCRUD = useMemo(() => {
+    return dadosFiltrados.slice(indiceInicialCRUD, indiceInicialCRUD + registrosPorPaginaCRUD);
+  }, [dadosFiltrados, paginaAtualCRUD]);
+
+  const abrirInclusao = () => {
+    setIndexEdicao(-1); setInputNome(''); setInputUsuario(''); setInputPerfil(''); setInputStatus('');
+    setModalInserirAberto(true);
+  };
+
+  const abrirEdicao = (item: any) => {
+  if (!item) return;
+
+  // 1. Encontra o índice real na lista local
+  const idxReal = dadosLocais.findIndex((o: any) => o.id === item.id);
+  setIndexEdicao(idxReal); 
+
+  console.log("=== DIAGNÓSTICO DE ABRE MODAL ===");
+  console.log("1. O que está dentro de 'item':", item);
+
+  // 2. Alimenta os estados locais com segurança
+  // Se o seu setInputId der erro com número, mude para: setInputId(String(item.id));
+  if (item.id) {
+    setInputId(item.id.toString()); 
+  }
+
+  setInputNome(item.nome || item.Nome || ''); 
+  setInputUsuario(item.usuario || item.Usuario || ''); 
+  setInputEmail(item.email || item.Email || ''); 
+  setInputPerfil(item.perfil || item.Perfil || ''); 
+  setInputStatus(item.status || item.Status || '');
+
+  // CORREÇÃO DE OURO: Salva o objeto 'item' real (os dados do Aurélio) 
+  // e não a função setInputId!
+  setUsuarioSelecionado(item); 
+  
+  // 3. Abre a modal flutuante
+  setModalAberto(true);
+  };
+
+  // const confirmarAcaoFormulario = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   const novoRegistro: IEmailRegistro = {
+  //     id: 0, nome: inputNome, usuario: inputUsuario, perfil: inputPerfil, status: inputStatus, email: inputEmail, data: inputData 
+  //   };
+  //   if (indexEdicao === -1) {
+  //     setDadosLocais([...dadosLocais, novoRegistro]);
+  //   } else {
+  //     const novaLista = [...dadosLocais];
+  //     novaLista[indexEdicao] = novoRegistro;
+  //     setDadosLocais(novaLista);
+  //   }
+  //   fecharFormulario();
+  // };
+
+  // const removerLinha = (item: any) => {
+  //   if (window.confirm("Deseja remover este registro?")) {
+  //     setDadosLocais(dadosLocais.filter((_, i) => i !== item));
+  //   }
+  // };
+
+  const enviarDadosParaServidor = async () => {
+    try {
+      setSalvando(true);
+      const payload = dadosLocais.map(item => ({ Nome: item.nome, Usuario: item.usuario, Perfil: item.perfil, Status: item.status }));
+
+      //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
+      await fetch('/api/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      
+      setMensagem({ texto: "🎉 Sincronizado com sucesso no SharePoint!", tipo: 'sucesso' });
+    } catch {
+      setMensagem({ texto: "❌ Falha ao salvar", tipo: 'erro' });
+    } finally { setSalvando(false); }
+  };
+
+  const handleSalvarUsuario = async (e?: React.FormEvent) => {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  if (carregando) return;
+
+  // DIAGNÓSTICO: Descobre se o ID do usuário selecionado está a chegar correto
+  const idDoUsuario = inputId ? String(inputId).trim() : '0';
+  
+  console.log("-> Validando ID para o Axios PUT:", idDoUsuario);
+
+  if (!idDoUsuario) {
+    console.error("❌ Erro: O objeto usuarioSelecionado não possui um ID válido!", usuarioSelecionado);
+    return; // Se não tiver ID, a função para aqui
+  }
+
+  if (!inputNome.trim() || !inputEmail.trim() || !inputUsuario.trim()) {
+    console.warn("❌ Erro: Existem campos de texto vazios.");
+    return;
+  }
+
+  try {
+    setCarregando(true);
+    setErroLocal(null);
+
+    // Usa o ID mapeado com segurança
+    const res = await axios.put(`/api/auth/atualizaUsuario/${idDoUsuario}`, {
+      nome: inputNome.trim(),
+      usuario: inputUsuario.trim(),
+      email: inputEmail.trim(),
+      perfil: inputPerfil
+    });
+
+    console.log("-> Resposta do servidor:", res.data);
+
+    if (res.data?.sucesso) {
+      setUsuarioSelecionado({
+        ...usuarioSelecionado,
+        nome: inputNome.trim(),
+        usuario: inputUsuario.trim(),
+        email: inputEmail.trim(),
+      });
+      
+      fecharFormulario(); // Fecha a janela após sucesso real
+    }
+  } catch (err: any) {
+    console.error('Erro ao atualizar usuário no Axios:', err);
+    setErroLocal(err.response?.data?.erro || 'Falha ao atualizar os dados.');
+  } finally {
+    setCarregando(false);
+  }
+  };
+
+  async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
+
   console.log("Enviando dados para fila de Ativação/Inativação usuário...");
 
   try {
@@ -43,7 +260,7 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
       }
     };
 
-    const resposta = await axios.post('http://localhost:3000/api/auth/usuario/inativarAtivar', payload);
+    const resposta = await axios.post('/api/auth/usuario/inativarAtivar', payload);
 
     const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
 
@@ -67,30 +284,95 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
     }
   };
 
-  const [modalExclusaoAberto, setModalExclusaoAberto] = useState(false);
-  const [itemParaExcluir, setItemParaExcluir] = useState<any>(null);
+  // Função auxiliar para criar uma pausa assíncrona (Ex: aguardar 1 segundo)
+  const aguardar = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const handleConfirmarExclusao = () => {
-  if (itemParaExcluir) {
-    // 🚀 Chame aqui a sua rotina atual que apaga do banco/fila
-    removerLinha(itemParaExcluir); 
+  async function InserirUsuario(dados?: any) {
+  console.log("🚀 [Microsserviço] Iniciando inserção de usuário...");
+
+  try {
+    const senhaLimpa = typeof dados?.senha === 'string' ? dados.senha.trim() : null;
+    const usernameDigitado = inputInserirUsuario.trim();
+  
+    const payloadInserir = {
+      nome: inputInserirNome.trim(),
+      usuario: usernameDigitado,
+      email: inputInserirEmail.trim(),
+      senha: senhaLimpa,
+      perfil: inputInserirPerfil || 'operador',
+      tipoAcao: "novoUsuario",
+    };
+
+    // 1. Envia a inserção para o microsserviço (entra na fila do RabbitMQ)
+    await axios.post('/api/auth/primeiro-acesso', payloadInserir);
+    
+    toast.info('⏳ Processando cadastro na fila... Aguarde um momento.');
+
+    // ====================================================================
+    // MECANISMO DE POLLING: Busca o ID gerado pelo Worker
+    // ====================================================================
+    let novoUsuarioId: number | null = null;
+    let tentativas = 3; // Tenta buscar até 3 vezes caso a fila esteja lenta
+
+    while (tentativas > 0 && !novoUsuarioId) {
+      console.log(`🔍 Tentando recuperar ID para o usuário '${usernameDigitado}' (${tentativas} tentativas restantes)...`);
+      
+      await aguardar(1000); // Aguarda 1 segundo para dar tempo ao Worker de gravar no SQLite
+
+      try {
+        // Faz a chamada para a nova rota que você sugeriu criando abaixo
+        const resBusca = await axios.get(`/api/auth/usuario/buscar-por-username/${usernameDigitado}`);
+        
+        if (resBusca.data?.id) {
+          novoUsuarioId = resBusca.data.id; // Encontrou o ID gerado pelo banco!
+          console.log("✅ ID localizado com sucesso pelo Polling:", novoUsuarioId);
+        }
+      } catch (err) {
+        // Ignora erros de "Não encontrado (404)" e continua tentando
+      }
+
+      tentativas--;
+    }
+
+    if (!novoUsuarioId) {
+      throw new Error("O microsserviço demorou muito a processar o cadastro. Tente vincular o contrato manualmente.");
+    }
+
+    // 2. Agora que temos o ID real gerado pelo SQLite, faz o vínculo de forma perfeita!
+    const idContrato = payloadEnvio?.id || payloadEnvio?.dadosLimpos?.id || payloadEnvio?.contratoId || 0;
+
+    console.log("-> 🔍 ID do Contrato capturado para o vínculo:", idContrato);
+    
+    if (!idContrato || idContrato === 0) {
+      throw new Error("Não foi possível localizar o ID do contrato nos dados fornecidos.");
+    }
+
+    console.log(`-> Vinculando Usuário ID ${novoUsuarioId} ao Contrato ID ${idContrato}...`);
+
+    await axios.post('/api/auth/usuarios/vincular-contrato', {
+      usuarioId: novoUsuarioId,
+      contratoId: idContrato,
+      tipoAcao: 'vincularContrato'
+    });
+
+    await axios.post('/api/auth/usuario/noficacao', {
+      usuarioId: novoUsuarioId,
+      email: inputInserirEmail.trim(),
+      tipoAcao: 'enviaNotificacaoNovoUsuario'
+    });
+
+    toast.success('🚀 Usuário registrado e contrato vinculado com sucesso(Enviamos um e-mail ao usuário comunicando sobre o acesso !');
+    if (typeof fecharFormulario === 'function') fecharFormulario();
+    
+  } catch (error: any) {
+    console.error('❌ Erro no fluxo híbrido:', error.message);
+    toast.error(`Falha no processo: ${error.response?.data?.erro || error.message}`);
+  } finally {
+    if (setAbaAtiva) setAbaAtiva('usuario');  
   }
-  
-  // Fecha a modal e limpa o estado
-  setModalExclusaoAberto(false);
-  setItemParaExcluir(null);
-};
+  }
 
-
-  const [dadosSharePoint, setDadosSharePoint] = useState<IEmailRegistro[]>([]);
-  const [, setCarregando] = useState<boolean>(true);
-  const [, setUsuarios] = useState<any[]>([]);
-  
-  // MONITOR DE ÁREA ÚTIL: O React descobre o tamanho real do ecrã a cada milissegundo!
-
-  const [, setLarguraJanela] = useState<number>(window.innerWidth);
-
-  useEffect(() => {
+   useEffect(() => {
     const tratarRedimensionamento = () => setLarguraJanela(window.innerWidth);
     window.addEventListener('resize', tratarRedimensionamento);
 
@@ -105,7 +387,7 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
     try {
       setCarregando(true);
 
-      const resposta = await axios.get(`http://localhost:3000/api/auth/usuarios/contrato/${idContrato}`);
+      const resposta = await axios.get(`/api/auth/usuarios/contrato/${idContrato}`);
       const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
 
       // CORREÇÃO 1: Mapeia diretamente a resposta vinda do Axios (dadosServidor)
@@ -132,34 +414,12 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
       setCarregando(false);
     }
   }
-
        carregarUsuarios();
 
-    }, [payloadEnvio]);
-
-  
-    //Deteta se o utilizador está num ecrã de computador ou num smartphone/tablet
-
-  const [dadosLocais, setDadosLocais] = useState<IEmailRegistro[]>(dadosIniciais ?? []);
-  const [pesquisa, setPesquisa] = useState<string>('');
-  const [modalAberto, setModalAberto] = useState<boolean>(false);
-  const [mensagem, setMensagem] = useState<{ texto: string; tipo: 'sucesso' | 'erro' } | null>(null);
-  const [registroSelecionado, setRegistroSelecionado] = useState<IEmailRegistro | null>(null);
-  
-  const [indexEdicao, setIndexEdicao] = useState<number>(-1);
-  //const [inputData, setInputData] = useState<string>('');
-  const [inputNome, setInputNome] = useState<string>('');
-  const [inputUsuario, setInputUsuario] = useState<string>('');
-  const [inputPerfil, setInputPerfil] = useState<string>('');
-  const [inputStatus, setInputStatus] = useState<string>('');
-  const [inputEmail] = useState<string>('');
-  const [inputData] = useState<string>('');
-
-  const [salvando, setSalvando] = useState<boolean>(false);
-  const [paginaAtualCRUD, setPaginaAtualCRUD] = useState<number>(1);
-  const registrosPorPaginaCRUD = 5;
+  }, [payloadEnvio]);
 
   useEffect(() => { setDadosLocais(dadosIniciais ?? []); }, [dadosIniciais]);
+
   useEffect(() => { setPaginaAtualCRUD(1); }, [pesquisa]);
 
   useEffect(() => {
@@ -169,79 +429,33 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
     }
   }, [mensagem]);
 
- const dadosFiltrados = useMemo(() => {
-    // Se você salvou em dadosSharePoint, ele deve filtrar em cima de dadosSharePoint!
-    return dadosSharePoint.filter((item) => {
-      return (
-        item.nome?.toLowerCase().includes(pesquisa.toLowerCase()) ||
-        item.usuario?.toLowerCase().includes(pesquisa.toLowerCase())
-      );
-    });
-  }, [dadosSharePoint, pesquisa]);
+  React.useEffect(() => {
+  // Mude para 'item' se a sua variável da modal se chamar 'item'
+  if (modalAberto && usuarioSelecionado) {
+    
+    // A LINHA QUE FALTAVA: Converte o ID 2 em texto e salva no estado
+    const idLimpo = usuarioSelecionado.id !== undefined && usuarioSelecionado.id !== null 
+      ? `${usuarioSelecionado.id}` 
+      : '';
+    setInputId(idLimpo);
 
-  const totalPaginasCRUD = Math.ceil(dadosFiltrados.length / registrosPorPaginaCRUD);
-  const indiceInicialCRUD = (paginaAtualCRUD - 1) * registrosPorPaginaCRUD;
+    // Alimenta os restantes campos normalmente
+    setInputNome(usuarioSelecionado.nome || '');
+    setInputUsuario(usuarioSelecionado.usuario || '');
+    setInputEmail(usuarioSelecionado.email || '');
+    setInputPerfil(usuarioSelecionado.perfil || 'operador');
+    setInputStatus(usuarioSelecionado.status || 1);
+    }
+  }, [modalAberto, usuarioSelecionado]);
+
+  React.useEffect(() => {
+
+  if (modalInserirAberto) {
   
-  const itensDaPaginaCRUD = useMemo(() => {
-    return dadosFiltrados.slice(indiceInicialCRUD, indiceInicialCRUD + registrosPorPaginaCRUD);
-  }, [dadosFiltrados, paginaAtualCRUD]);
-
-  const abrirInclusao = () => {
-    setIndexEdicao(-1); setInputNome(''); setInputUsuario(''); setInputPerfil(''); setInputStatus('');
-    setModalAberto(true);
-  };
-
-  const abrirEdicao = (item: any) => {
-
-    if (!item) return;
-
-   const idxReal = dadosLocais.findIndex((o: any) => o.id === item.id);
-   setIndexEdicao(idxReal); 
-    
-   setInputNome(item.nome || item.Nome || ''); 
-   setInputUsuario(item.usuario || item.Usuario || ''); 
-   setInputPerfil(item.perfil || item.Perfil || ''); 
-   setInputStatus(item.status || item.Status || '');
-    
-    setModalAberto(true);
-  };
-
-  const fecharFormulario = () => { setModalAberto(false); };
-
-  const confirmarAcaoFormulario = (e: React.FormEvent) => {
-    e.preventDefault();
-    const novoRegistro: IEmailRegistro = {
-      id: 0, nome: inputNome, usuario: inputUsuario, perfil: inputPerfil, status: inputStatus, email: inputEmail, data: inputData 
-    };
-    if (indexEdicao === -1) {
-      setDadosLocais([...dadosLocais, novoRegistro]);
-    } else {
-      const novaLista = [...dadosLocais];
-      novaLista[indexEdicao] = novoRegistro;
-      setDadosLocais(novaLista);
-    }
-    fecharFormulario();
-  };
-
-  const removerLinha = (item: any) => {
-    if (window.confirm("Deseja remover este registro?")) {
-      setDadosLocais(dadosLocais.filter((_, i) => i !== item));
-    }
-  };
-
-  const enviarDadosParaServidor = async () => {
-    try {
-      setSalvando(true);
-      const payload = dadosLocais.map(item => ({ Nome: item.nome, Usuario: item.usuario, Perfil: item.perfil, Status: item.status }));
-
-      //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
-      await fetch('/api/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      
-      setMensagem({ texto: "🎉 Sincronizado com sucesso no SharePoint!", tipo: 'sucesso' });
-    } catch {
-      setMensagem({ texto: "❌ Falha ao salvar", tipo: 'erro' });
-    } finally { setSalvando(false); }
-  };
+    setInputInserirPerfil('cliente');
+    setInputInserirStatus(Number(0));
+  }
+  }, [modalInserirAberto]);
 
   // SE O USUÁRIO CLICAR EM "VER DETALHES"
   if (registroSelecionado) {
@@ -505,15 +719,13 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
                   Cancelar
                 </button>
               </div>
-    
             </div>
-    
           </div>
         </div>
       </div>
     )}
 
-    {/* MODAL FLUTUANTE DE INCLUSÃO/EDIÇÃO DO BOOTSTRAP */}
+    {/* MODAL FLUTUANTE DE EDIÇÃO DO BOOTSTRAP */}
     {modalAberto && (
       // Classes 'modal d-block' e fundo escurecido 'rgba(0,0,0,0.5)' criam o efeito flutuante real nativo
       <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1060 }}>
@@ -522,45 +734,139 @@ async function InativarAtivarUsuarios(usuarioId: any, statusUsuario: any) {
             
             <div className="modal-header border-0 pb-1">
               <h5 className="modal-title fw-bold text-dark fs-5">
-                {indexEdicao === -1 ? '📝 Incluir Registro' : '✏️ Editar Registro'}
+                ✏️ Editar Registro
               </h5>
               <button type="button" className="btn-close" onClick={fecharFormulario}></button>
             </div>
             
-            <form onSubmit={confirmarAcaoFormulario} className="modal-body pt-2 text-start">
+            <form className="modal-body pt-2 text-start">
               <div className="mb-2.5">
-                <label className="form-label small fw-bold text-secondary mb-1">Data:</label>
+              <label className="form-label small fw-bold text-secondary mb-1">ID:</label>
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputId || ''} onChange={(e) => setInputNome(e.target.value)} required />
+              </div>
+                
+              <div className="mb-2.5">
+                <label className="form-label small fw-bold text-secondary mb-1">Nome:</label>
                 <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputNome} onChange={(e) => setInputNome(e.target.value)} required />
               </div>
+            
               <div className="mb-2.5">
-                <label className="form-label small fw-bold text-secondary mb-1">Assunto:</label>
+                <label className="form-label small fw-bold text-secondary mb-1">Usuário:</label>
                 <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputUsuario} onChange={(e) => setInputUsuario(e.target.value)} required />
               </div>
+            
               <div className="mb-2.5">
                 <label className="form-label small fw-bold text-secondary mb-1">E-mail:</label>
-                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputPerfil} onChange={(e) => setInputPerfil(e.target.value)} required />
+                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputEmail} onChange={(e) => setInputEmail(e.target.value)} required />
               </div>
+            
               <div className="mb-2.5">
-                <label className="form-label small fw-bold text-secondary mb-1">E-mail:</label>
-                <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputStatus} onChange={(e) => setInputStatus(e.target.value)} required />
+                <label className="form-label small fw-bold text-secondary mb-1">Perfil de acesso:</label>
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} disabled value={inputPerfil} />
               </div>
+            
+              <div className="mb-2.5"> 
+                <label className="form-label small fw-bold text-secondary mb-1">Status:</label>
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} disabled value={Number(inputStatus) === 1 ? 'Ativo' : 'Inativo'} />
+              </div>    
 
-              
               <div className="d-flex flex-column gap-2 border-top pt-3 mt-2">
-                <button type="submit" className="btn btn-dark fw-semibold py-2" style={{ fontSize: '0.9rem' }}>
-                  {indexEdicao === -1 ? 'Adicionar à Lista' : 'Atualizar Linha'}
-                </button>
-                <button type="button" className="btn btn-light border text-secondary fw-semibold py-2" style={{ fontSize: '0.9rem' }} onClick={fecharFormulario}>
+              {/* EXEMPLO de como deve estar o seu botão de Editar na tabela do componente Pai */}
+              <button
+                type="button"
+                className="btn btn-sm btn-outline-dark"
+                onClick={() => { 
+                  // SEGREDO DA CORREÇÃO: Grava o objeto do usuário clicado no estado ANTES de abrir a modal
+                  handleSalvarUsuario();
+                  
+                  // E depois abre a janela
+                  setModalAberto(true);
+                }}
+              >
+                ✏️ Editar
+              </button>
+              
+                <button 
+                  type="button" 
+                  className="btn btn-light border text-secondary fw-semibold py-2" 
+                  style={{ fontSize: '0.9rem' }} 
+                  onClick={fecharFormulario}
+                >
                   Cancelar e Fechar
                 </button>
               </div>
             </form>
-
+              
+            </div>
           </div>
         </div>
+        )}    
+
+        {/* MODAL FLUTUANTE DE INSERIR DO BOOTSTRAP */}
+        {modalInserirAberto && (
+          <div className="modal d-block" tabIndex={-1} style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1060 }}>
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content shadow border-0 p-2">
+                
+                <div className="modal-header border-0 pb-1">
+                  <h5 className="modal-title fw-bold text-dark fs-5">
+                    📝 Inserir Registro
+                  </h5>
+                  <button type="button" className="btn-close" onClick={fecharFormulario}></button>
+                </div>
+                
+                {/* CORREÇÃO 1: Adicionado o onSubmit para disparar a função e capturar o payload */}
+                <form className="modal-body pt-2 text-start">
+          
+                  <div className="mb-2.5">
+                    <label className="form-label small fw-bold text-secondary mb-1">Nome:</label>
+                    <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputInserirNome} onChange={(e) => setInputInserirNome(e.target.value)} required />
+                  </div>
+                
+                  <div className="mb-2.5">
+                    <label className="form-label small fw-bold text-secondary mb-1">Usuário:</label>
+                    <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputInserirUsuario} onChange={(e) => setInputInserirUsuario(e.target.value)} required />
+                  </div>
+                
+                  <div className="mb-2.5">
+                    <label className="form-label small fw-bold text-secondary mb-1">E-mail:</label>
+                    <input type="email" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputInserirEmail} onChange={(e) => setInputInserirEmail(e.target.value)} required />
+                  </div>
+                
+                  <div className="mb-2.5">
+                    <label className="form-label small fw-bold text-secondary mb-1">Perfil de acesso:</label>
+                    <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} disabled value={inputInserirPerfil} />
+                  </div>
+                
+                  <div className="d-flex flex-column gap-2 border-top pt-3 mt-2">
+                    {/* CORREÇÃO 2: Botão alterado para type="submit" e classes de botão primário esatizado */}
+                    <button
+                      type="button"
+                      disabled={carregando || !inputInserirNome.trim() || !inputInserirUsuario.trim() || !inputInserirEmail.trim()}
+                      className="btn btn-dark fw-semibold py-2"
+                      style={{ fontSize: '0.9rem' }}
+                      onClick={InserirUsuario}
+                    >
+                      {carregando ? 'A processar...' : '📝 Inserir usuário'}
+                    </button>
+                  
+                    <button 
+                      type="button" 
+                      className="btn btn-light border text-secondary fw-semibold py-2" 
+                      style={{ fontSize: '0.9rem' }} 
+                      onClick={fecharFormulario}
+                    >
+                      Cancelar e Fechar
+                    </button>
+                  </div>
+                </form>
+                  
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
-    )}
-  </div>
-);
+    );
 
 };

@@ -109,14 +109,14 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         //const respostaDados = await axios.get(`http://localhost:3000/api/contrato/${idContrato}`);
 
         const [respostaDados, respostaFaturas, respostaGastosAtuais, respostaVeiculo, respostaContaVeiculoVPR, respostaLimiteContrato, respostaPedidoRastreamento, repostaTag ] = await Promise.all([
-          axios.get(`http://localhost:3000/api/contrato/${idContrato}`),        
-          axios.get(`http://localhost:3000/api/contrato/fatura/${idContrato}`),  
-          axios.get(`http://localhost:3000/api/fatura/saldo/${idContrato}`),
-          axios.get(`http://localhost:3000/api/veiculo/${idContrato}`),
-          axios.get(`http://localhost:3000/api/veiculo/saldoVPR/${idContrato}`),
-          axios.get(`http://localhost:3000/api/contrato/limite/${idContrato}`),    
-          axios.get(`http://localhost:3000/api/pedido/rastreamento/${idContrato}`),
-          axios.get(`http://localhost:3000/api/tag/estoque/${idContrato}`)
+          axios.get(`/api/contrato/${idContrato}`),        
+          axios.get(`/api/contrato/fatura/${idContrato}`),  
+          axios.get(`/api/fatura/saldo/${idContrato}`),
+          axios.get(`/api/veiculo/${idContrato}`),
+          axios.get(`/api/veiculo/saldoVPR/${idContrato}`),
+          axios.get(`/api/contrato/limite/${idContrato}`),    
+          axios.get(`/api/pedido/rastreamento/${idContrato}`),
+          axios.get(`/api/tag/estoque/${idContrato}`)
         ]);
 
           // 3. CORREÇÃO: Alimenta o contratoCriado lendo direto as colunas do SQLite (id e nomeEmpresa)

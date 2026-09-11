@@ -116,7 +116,7 @@ async function enviarDadosCadastroContrato() {
     console.log(`[Configuração] Despachando nova informação para a fila:`, payloadEnvio);
 
     // Dispara para a API do Express que gerencia a fila
-    const resposta = await axios.post('http://localhost:3000/api/contrato/acoes', payloadEnvio);
+    const resposta = await axios.post('/api/contrato/acoes', payloadEnvio);
     
     // Verifica se a API aceitou a mensagem
     if (resposta.status === 200 || resposta.status === 202 || resposta.data?.sucesso) {
@@ -134,7 +134,7 @@ async function enviarDadosCadastroContrato() {
 
    async function carregarTodosOsCombos() {
     try {
-      const resposta = await axios.get("http://localhost:3000/api/configuracao/lookups");
+      const resposta = await axios.get("/api/configuracao/lookups");
       
       if (ativo && resposta.data) {
         const dados = resposta.data;
@@ -166,7 +166,7 @@ async function enviarDadosCadastroContrato() {
       <div className="card p-3 shadow-sm border border-light-subtle bg-white">
         
         {/* Título mais discreto e alinhado à esquerda para fazer sentido dentro do Atendimento */}
-        <div className="border-bottom pb-0 mb-1">
+        <div className="border-bottom pb-2 mb-1">
           <h2 className="fs-5 fw-bold text-dark m-0">📄 Incluir Novo Contrato</h2>
         </div>
 

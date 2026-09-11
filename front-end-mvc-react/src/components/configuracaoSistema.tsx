@@ -44,7 +44,7 @@ const gerenciarMudancaInput = (e: any) => {
 
       console.log(`[Configuração] Despachando nova informação para a fila:`, payloadEnvio);
 
-      const resposta = await axios.post('http://localhost:3000/api/parametrizacao', payloadEnvio);
+      const resposta = await axios.post('/api/parametrizacao', payloadEnvio);
 
       if (resposta.status === 200 || resposta.data?.sucesso) {
         alert(`Sucesso! Parâmetros enviados para a fila.\nProtocolo: ${payloadEnvio.protocoloId}`);

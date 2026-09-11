@@ -56,7 +56,7 @@ export const SolicitacaoPedido: React.FC<ISolicitacaoProps> = ({ onVoltar, contr
         }
       };
 
-      const resposta = await axios.post('http://localhost:3000/api/pedido/solicitar', payload);
+      const resposta = await axios.post('/api/pedido/solicitar', payload);
 
       if (resposta.data?.pedidoId) {
         setSucessoId(resposta.data.pedidoId);

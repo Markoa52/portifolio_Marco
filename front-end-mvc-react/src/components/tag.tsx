@@ -20,7 +20,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
  const buscarVeiculosInativos = async () => {
   try {
     setCarregando(true);
-    const resposta = await axios.get(`http://localhost:3000/api/veiculo/${contractId}`);
+    const resposta = await axios.get(`/api/veiculo/${contractId}`);
     const dados = Array.isArray(resposta.data) ? resposta.data : [];
 
     console.log("📥 [Debug Ativação] O que chegou do SQLite:", dados);
@@ -38,15 +38,13 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
   } finally {
     setCarregando(false);
   }
-};
-
-
+  };
 
   // 2. NOVO EFFECT: Busca as TAGs em estoque disponíveis para o contrato
   const buscarTagsDisponiveis = async () => {
     try {
       setCarregandoTags(true);
-      const resposta = await axios.get(`http://localhost:3000/api/tag/estoque/${contractId}`);
+      const resposta = await axios.get(`/api/tag/estoque/${contractId}`);
       setTagsEstoque(Array.isArray(resposta.data) ? resposta.data : []);
     } catch (error) {
       console.error('Erro ao carregar estoque de tags:', error);
@@ -78,7 +76,7 @@ export const AtivacaoTagVeiculo: React.FC<IVeiculoProps> = ({ onVoltar, contract
       };
 
       console.log('🚀 Disparando ativação atômica:', payload);
-      const resposta = await axios.post('http://localhost:3000/api/veiculos/acoes', payload);
+      const resposta = await axios.post('/api/veiculos/acoes', payload);
 
       if (resposta.data?.sucesso) {
         setSucesso(true);

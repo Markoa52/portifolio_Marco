@@ -59,6 +59,8 @@ export class Database {
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
 
+            await this.instance.exec(`DELETE FROM banco_user.usuario where id=40`);
+
             //await this.instance.exec(`UPDATE banco_user.usuario set email='nascimento.teste@yopmail.com' where id=4;`);
             //await this.instance.exec(`UPDATE banco_user.usuario set perfil='admin' where id=1;`);
             //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);

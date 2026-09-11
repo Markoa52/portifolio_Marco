@@ -58,25 +58,26 @@ export const MenuHamburguer: React.FC<IMenuHumProps> = ({
             </ul>
           </div>
 
-          {/* Seção Trocar Contrato */}
-          {(usuarioLogado?.perfil !=='cliente' &&
-
-                    <div className="menu-dropdown-secao-grupo mb-4">
-            <p className="menu-dropdown-secao-titulo d-flex align-items-center gap-2 fw-bold text-dark m-0 pb-1 fs-6">
-              <RefreshCcw size={18} className="text-secondary" /> Trocar contrato
-            </p>
-            <ul className="list-unstyled ps-1 mt-1">
-              <li 
-                onClick={() => { setPaginaAtiva('pesquisar-contrato'); setMenuGeralAberto(false); }}
-                style={{ cursor: 'pointer' }}
-                className="py-1 text-secondary small-hover"
-              >
-                Atendimento
-              </li>
-            </ul>
-          </div>
-
-          )}
+          {/* Seção Trocar Contrato Otimizada */}
+<div className="menu-dropdown-secao-grupo mb-4">
+  <p className="menu-dropdown-secao-titulo d-flex align-items-center gap-2 fw-bold text-dark m-0 pb-1 fs-6">
+    <RefreshCcw size={18} className="text-secondary" /> Trocar contrato
+  </p>
+  <ul className="list-unstyled ps-1 mt-1">
+    <li 
+      onClick={() => { 
+        // 🌟 Se for admin vai para 'atendimento', senão vai para 'pesquisar-contrato'
+        setPaginaAtiva(usuarioLogado?.perfil === 'admin' ? 'atendimento' : 'pesquisar-contrato'); 
+        setMenuGeralAberto(false); 
+      }}
+      style={{ cursor: 'pointer' }}
+      className="py-1 text-secondary small-hover"
+    >
+      {/* 🌟 Se for admin exibe 'Modulos', senão exibe 'Atendimento' */}
+      {usuarioLogado?.perfil === 'admin' ? 'Modulos' : 'Atendimento'}
+    </li>
+  </ul>
+</div>
 
 
           {/* 📊 SEÇÃO DE IDENTIFICAÇÃO E LOGOFF DENTRO DO SEU MenuHamburguer.tsx */}

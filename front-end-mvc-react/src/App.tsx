@@ -158,6 +158,9 @@ function App() {
     setContratosParaEscolha([]);
   }; 
 
+  // ====================================================================
+  // 1. INTERCEPTOR DE REQUISIÇÃO (O que você já tem configurado)
+  // ====================================================================
   axios.interceptors.request.use((config) => {
     const tokenSalvo = localStorage.getItem('@TollManagement:token');
     if (tokenSalvo && config.headers) {
@@ -167,7 +170,33 @@ function App() {
   }, (error) => {
     return Promise.reject(error);
   });
-  
+
+  // ====================================================================
+  // 2. NOVO INTERCEPTOR DE RESPOSTA (Cole exatamente aqui abaixo)
+  // ====================================================================
+  axios.interceptors.response.use(
+    (response) => {
+      // Se a API responder com sucesso (Status 200, 201, etc), apenas passa adiante
+      return response;
+    },
+    (error) => {
+      // Captura o status 401 que o seu Middleware do Node.js envia ao expirar
+      if (error.response && error.response.status === 401) {
+        console.log("🔒 [Axios Global] Sessão expirada detectada! Limpando credenciais...");
+
+        // 1. Limpa o token e toda a cache do navegador para segurança
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 2. Força um refresh completo redirecionando para a raiz do sistema
+        // Como a cache foi limpa, o React reinicia do zero e carrega a tela de login
+        window.location.href = '/';
+      }
+
+      return Promise.reject(error);
+    }
+  );
+
   return (
     <div>
       <div>     

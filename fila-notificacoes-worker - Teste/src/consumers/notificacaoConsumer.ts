@@ -58,10 +58,25 @@ export async function iniciarConsumer(): Promise<void> {
             try {
                 const dados = JSON.parse(msg.content.toString());
 
-                await EmailServices.salvaDadosMFA(dados);
+                const tipoAcaoReal = 
+                      dados?.js?.metadata?.tipoAcao || 
+                      dados?.payload?.js?.metadata?.tipoAcao ||
+                      dados?.tipoAcao;
                 
-                // Executa a lógica que gera a planilha Excel
-                await EmailServices.enviarCodigoMFA(dados);
+                // CORREÇÃO: Corrigido o erro de digitação de 'NovoUsaurio' para 'NovoUsuario'
+                if (tipoAcaoReal === 'enviaNotificacaoNovoUsuario') {
+                
+                    await EmailServices.enviarNotificaoNovoUsuario(dados);
+                
+                } else if (tipoAcaoReal === 'MFA') {
+                
+                    // Guarda os dados no SQLite antes de disparar o e-mail
+                    await EmailServices.salvaDadosMFA(dados);
+                    
+                    // Executa a lógica que gera a planilha Excel e envia o código token
+                    await EmailServices.enviarCodigoMFA(dados);
+                }
+
 
                 channel.ack(msg); // Sucesso: remove da fila em definitivo
             } catch (erro: any) {

@@ -18,7 +18,7 @@ export const ConsultaPedidosCards: React.FC<IConsultaPedidosProps> = ({onNovoPed
       setErro(null);
 
       // Configura os parâmetros de busca caso o operador tenha digitado algo
-      const url = `http://localhost:3000/api/pedidos/${contractId}`;
+      const url = `/api/pedidos/${contractId}`;
       const resposta = await axios.get(url, {
         params: idBusca ? { id: idBusca } : {}
       });

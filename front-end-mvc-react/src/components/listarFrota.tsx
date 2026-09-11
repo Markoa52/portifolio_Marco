@@ -99,7 +99,7 @@ async function enviarDadosCadastroVeiculo(acao: string, tipoAcao: string, dadosL
     }
 
     // Faz a requisição unificada para o mesmo endpoint
-    const resposta = await axios.post('http://localhost:3000/api/veiculo/acoes', payloadEnvio);
+    const resposta = await axios.post('/api/veiculo/acoes', payloadEnvio);
 
     if (resposta.status === 200 || resposta.data?.sucesso) {
       if (Array.isArray(payloadEnvio)) {
@@ -136,7 +136,7 @@ useEffect(() => {
 
    async function carregarTodosOsCombos() {
     try {
-      const resposta = await axios.get("http://localhost:3000/api/veiculo/lookups");
+      const resposta = await axios.get("/api/veiculo/lookups");
       
       if (ativo && resposta.data) {
         const dados = resposta.data;
@@ -148,7 +148,7 @@ useEffect(() => {
         setlistaTipoVeiculo(Array.isArray(dados.veiculoTipo) ? dados.veiculoTipo : []);
         setlistaEixoVeiculo(Array.isArray(dados.eixo) ? dados.eixo : []);
 
-        const respostaVeiculos = await axios.get(`http://localhost:3000/api/veiculo/${contractId}`)
+        const respostaVeiculos = await axios.get(`/api/veiculo/${contractId}`)
 
         setveiculoCriado(Array.isArray(respostaVeiculos.data) ? respostaVeiculos.data : [respostaVeiculos.data]);
         } else {
@@ -248,7 +248,7 @@ const handleBaixarModeloCSV = () => {
 const handleExportarTodosVeiculos = async () => {
   const cabecalhos = ["placa", "marca", "modelo", "tipoveiculo", "eixo"];
 
-  const respostaVeiculos = await axios.get(`http://localhost:3000/api/veiculo/${contractId}`)
+  const respostaVeiculos = await axios.get(`/api/veiculo/${contractId}`)
   setveiculoCriado(Array.isArray(respostaVeiculos.data) ? respostaVeiculos.data : [respostaVeiculos.data]);
   
   // dadosLocais ou usuarios é a sua lista que popula a tabela principal

@@ -23,7 +23,7 @@ export const HistoricoFaturas: React.FC<IPropsFaturas> = ({ contractId }) => {
         console.log(`🔍 [Banco] Buscando faturas em aberto para o Contrato ID: ${contractId}`);
 
           const [respostaFaturas] = await Promise.all([        // Endpoint 1: Dados base do SQLite
-          axios.get(`http://localhost:3000/api/contrato/faturas/${contractId}`) 
+          axios.get(`/api/contrato/faturas/${contractId}`) 
           ]);
 
         if (respostaFaturas && respostaFaturas.data) {

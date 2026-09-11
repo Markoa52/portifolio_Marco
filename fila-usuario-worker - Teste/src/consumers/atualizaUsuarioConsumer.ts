@@ -53,66 +53,58 @@ export async function iniciarConsumer(): Promise<void> {
 
         channel.prefetch(1);
 
-        channel.consume(atualizaUsuarioQueue.nome, async (msg: amqp.Message | null) => {
-        if (!msg) return;
+          channel.consume(atualizaUsuarioQueue.nome, async (msg: amqp.Message | null) => {
+            if (!msg) return;
 
-        try {
-        const conteudoBruto = msg.content.toString();
-        console.log('[Worker atualiza usuario] Conteúdo bruto recebido da fila:', conteudoBruto);
-
-        let dados: any;
-
-        // TRATAMENTO ANTIMALFORMAÇÃO: Protege contra dupla serialização ou strings quebradas
-        if (conteudoBruto.startsWith('"') && conteudoBruto.endsWith('"')) {
-            const stringLimpa = JSON.parse(conteudoBruto);
-            dados = typeof stringLimpa === 'string' ? JSON.parse(stringLimpa) : stringLimpa;
-        } else {
-            dados = JSON.parse(conteudoBruto);
-        }
-
-        // Recupera o payload legítimo envelopado pelo publisherEvent
-        const payload = dados.payload || dados;
-        console.log('[Worker atualiza usuario] Payload decodificado com sucesso:', payload);
-
-        // CORREÇÃO: Valida se 'js' existe e se é um objeto válido, checando suas chaves internas
-        if (payload.js && typeof payload.js === 'string') {
             try {
-                payload.js = JSON.parse(payload.js);
-            } catch (e) {
-                throw new Error("Falha ao converter a string 'js' em um objeto JSON válido.");
+                const conteudoBruto = msg.content.toString();
+                console.log('[Worker atualiza usuario] Conteúdo bruto recebido da fila:', conteudoBruto);
+
+                let dados: any;
+
+                // TRATAMENTO ANTIMALFORMAÇÃO
+                if (conteudoBruto.startsWith('"') && conteudoBruto.endsWith('"')) {
+                    const stringLimpa = JSON.parse(conteudoBruto);
+                    dados = typeof stringLimpa === 'string' ? JSON.parse(stringLimpa) : stringLimpa;
+                } else {
+                    dados = JSON.parse(conteudoBruto);
+                }
+
+                // Recupera o payload legítimo envelopado pelo publisherEvent
+                const payload = dados.payload || dados;
+                console.log('[Worker atualiza usuario] Payload decodificado com sucesso:', payload);
+
+                // Valida se 'js' existe e se é uma string a necessitar de parse
+                if (payload.js && typeof payload.js === 'string') {
+                    try {
+                        payload.js = JSON.parse(payload.js);
+                    } catch (e) {
+                        throw new Error("Falha ao converter a string 'js' em um objeto JSON válido.");
+                    }
+                }
+                
+                // Validações de integridade do objeto
+                if (!payload.js || typeof payload.js !== 'object' || Array.isArray(payload.js)) {
+                    throw new Error("O campo 'js' deve ser um objeto válido e não pode vir vazio.");
+                }
+                
+                if (!payload.js.metadata || !payload.js.contextoUsuario) {
+                    throw new Error("O objeto 'js' está incompleto: faltando 'metadata' ou 'contextoUsuario'.");
+                }
+
+                // CORREÇÃO 1: Envia o objeto diretamente contendo o 'js' e o 'contextoUsuario' na raiz
+                // de forma a bater exatamente com as condições "if(js.contextoUsuario...)" da sua Service!
+                await UsuarioService.processarCadastroRelacional(payload.js);
+                
+                // Confirmação de sucesso para o RabbitMQ remover a mensagem da fila
+                channel.ack(msg);
+
+            } catch (erro: any) {
+                console.error('Erro ao processar mensagem no Worker de Atualizar:', erro.message);
+                // O nack direciona a mensagem com erro de código direto para a sua DLQ
+                channel.nack(msg, false, false); 
             }
-        }
-        
-        // CORREÇÃO 2: Agora a sua validação existente vai passar com sucesso!
-        if (!payload.js || typeof payload.js !== 'object' || Array.isArray(payload.js)) {
-            throw new Error("O campo 'js' deve ser um objeto válido e não pode vir vazio.");
-        }
-        
-        // Opcional: Validar as chaves internas
-        if (!payload.js.metadata || !payload.js.contextoUsuario) {
-            throw new Error("O objeto 'js' está incompleto: faltando 'metadata' ou 'contextoUsuario'.");
-        }
-
-        //const payloadDecodificado = JSON.parse(msg.content.toString());
-
-        const objetoProntoParaAService = {
-            payload: {
-                js: payload.js // Aqui o 'js' já é o objeto real parseado!
-            }
-        };
-
-        // CORREÇÃO: Passamos o payload validado para o serviço gerar o arquivo
-        await UsuarioService.processarCadastroRelacional(objetoProntoParaAService);
-        
-        // Confirmação de sucesso para o RabbitMQ remover a mensagem da fila
-        channel.ack(msg);
-
-       } catch (erro: any) {
-           console.error('Erro ao processar mensagem no Worker de PDF:', erro.message);
-           // O nack direciona a mensagem com erro de código direto para a sua DLQ
-           channel.nack(msg, false, false); 
-       }
-       }, { noAck: false });
+        }, { noAck: false });
 
 
        } catch (error: any) {

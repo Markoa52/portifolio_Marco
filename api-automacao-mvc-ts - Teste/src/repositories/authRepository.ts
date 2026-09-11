@@ -3,7 +3,7 @@ import { Database } from '../config/sqlLiteConfig'; // Garanta que aponta para o
 
 export class authRepository {
 
-     async auth(usuario: string): Promise<any> {
+  async auth(usuario: string): Promise<any> {
 
     try { 
         
@@ -31,9 +31,9 @@ export class authRepository {
          console.error("Erro na consulta findById do repositório:", erro);
          throw erro;
        }
-     }
+  }
 
-     async validacaoUsuario(usuario: string): Promise<any> {
+  async validacaoUsuario(usuario: string): Promise<any> {
        try { 
          const db = await Database.getConnection();
      
@@ -50,8 +50,26 @@ export class authRepository {
          console.error("Erro na consulta do repositório:", erro);
          throw erro;
        }
-     }
+  }
 
+  async buscaPorUsername(usuario: string): Promise<any> {
+       try { 
+         const db = await Database.getConnection();
+     
+         // CORREÇÃO: Especificar a comparação individual para cada coluna
+         // E passar o parâmetro duas vezes no array [usuario, usuario]
+         const conta = await db.get(
+           'SELECT id, nome, usuario, email, senha, ativo FROM usuario WHERE usuario = ?', 
+           [usuario]
+         );
+     
+         return conta || null;
+         
+       } catch (erro) {
+         console.error("Erro na consulta do repositório:", erro);
+         throw erro;
+       }
+  }
     // Método usado pelo Service para checar se o usuário já existe
   async buscarPorUsuarioOuEmail(usuario: string, email: string): Promise<any> {
     const db = await Database.getConnection();
@@ -146,9 +164,9 @@ export class authRepository {
     console.error('Erro ao buscar usuários do contrato no repositório:', error.message);
     throw error;
   }
-}
+  }
 
-     async buscaMFAUsuario(identificador: any, codigo: any): Promise<any> {
+  async buscaMFAUsuario(identificador: any, codigo: any): Promise<any> {
        try { 
          const db = await Database.getConnection();
 
@@ -180,6 +198,6 @@ export class authRepository {
          console.error("Erro na consulta do repositório:", erro);
          throw erro;
        }
-     }
+  }
 
 }

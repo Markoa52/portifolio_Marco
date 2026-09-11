@@ -22,7 +22,7 @@ export const Atendimento: React.FC<IMenuProps> = ({usuarioLogado,  setPaginaAtiv
     setTitulo('Módulos de Atendimento');
   };
 
-         return (
+  return (
     /* TRAVA 1: Força o container a ocupar 100% da largura disponível na tela, limpando travas do pai */
     <div className="container my-3 my-md-0 px-1 pagina-layout-atendimento-blindado">
       
@@ -185,8 +185,8 @@ export const Atendimento: React.FC<IMenuProps> = ({usuarioLogado,  setPaginaAtiv
              <ConfiguracaoSistema />
            )}
 
-           {/* 💡 Exemplo de como deve estar a chamada do menu dentro do componente pai (Atendimento) */}
-           {Number(localStorage.getItem('@TollManagement:idContratoSelecionado')) > 0 && abaAtiva !== 'lista' && (
+           {/* Exemplo de como deve estar a chamada do menu dentro do componente pai (Atendimento) */}
+           {/* {Number(localStorage.getItem('@TollManagement:idContratoSelecionado')) > 0 && abaAtiva !== 'lista' && (
              <MenuHamburguer 
                setPaginaAtiva={setPaginaAtiva}
                setAbaAtiva={setAbaAtiva}
@@ -196,7 +196,7 @@ export const Atendimento: React.FC<IMenuProps> = ({usuarioLogado,  setPaginaAtiv
                usuario={usuario}
                onLogoff={onLogoff}
              />
-           )}
+           )} */}
 
           {/* CHAMADA DA NOVA TELA DE CONFIGURAÇÃO */}
            {abaAtiva === 'gestao-usuarios' && (

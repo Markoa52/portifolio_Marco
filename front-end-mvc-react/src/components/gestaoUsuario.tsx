@@ -6,6 +6,7 @@ export const GestaoUsuarios: React.FC = () => {
 
   const [modalEditarAberta, setModalEditarAberta] = useState(false);
   const [nomeEditado, setNomeEditado] = useState('');
+  const [usuarioEditado, setUsuarioEditado] = useState('');
   const [emailEditado, setEmailEditado] = useState('');
   const [perfilSelecionado, setPerfilSelecionado] = useState('operador');
 
@@ -38,7 +39,7 @@ export const GestaoUsuarios: React.FC = () => {
   const carregarUsuarios = async () => {
     try {
       setCarregando(true);
-      const resposta = await axios.get('http://localhost:3000/api/auth/usuarios');
+      const resposta = await axios.get('/api/auth/usuarios');
       setUsuarios(Array.isArray(resposta.data) ? resposta.data : []);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
@@ -51,7 +52,7 @@ export const GestaoUsuarios: React.FC = () => {
   // 2. Carrega todos os contratos do sistema para alimentar o Dropdown
   const carregarTodosContratos = async () => {
     try {
-      const res = await axios.get('http://localhost:3000/api/contratos');
+      const res = await axios.get('/api/contratos');
       setTodosContratos(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Erro ao buscar contratos globais:", err);
@@ -61,7 +62,7 @@ export const GestaoUsuarios: React.FC = () => {
   // 3. Carrega as carteiras que o usuário clicado possui direito
   const carregarContratosDoUsuario = async (usuarioId: number) => {
     try {
-      const res = await axios.get(`http://localhost:3000/api/auth/usuarios/${usuarioId}/contratos`);
+      const res = await axios.get(`/api/auth/usuarios/${usuarioId}/contratos`);
       setContratosVinculados(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error("Erro ao carregar vínculos:", err);
@@ -101,7 +102,7 @@ export const GestaoUsuarios: React.FC = () => {
         tipoAcao: "novoUsuario"
       };
 
-      const resposta = await axios.post('http://localhost:3000/api/auth/primeiro-acesso', payload);
+      const resposta = await axios.post('/api/auth/primeiro-acesso', payload);
 
       if (resposta.data?.sucesso) {
         setSucesso(`Usuário @${usuario} cadastrado com sucesso!`);
@@ -123,7 +124,7 @@ export const GestaoUsuarios: React.FC = () => {
     try {
       setCarregando(true);
       setErro(null);
-      const res = await axios.post('http://localhost:3000/api/auth/usuarios/vincular-contrato', {
+      const res = await axios.post('/api/auth/usuarios/vincular-contrato', {
         usuarioId: usuarioSelecionado.id,
         contratoId: Number(contratoSelecionadoId),
         tipoAcao: 'vincularContrato'
@@ -149,10 +150,10 @@ export const GestaoUsuarios: React.FC = () => {
   try {
     setCarregando(true);
     setErro(null);
-    setSucesso(null); // 💡 Boa prática: Limpa o sucesso anterior antes de iniciar
+    setSucesso(null); // Boa prática: Limpa o sucesso anterior antes de iniciar
 
     // CORREÇÃO Semântica: Alterado de .post para .delete
-    const res = await axios.delete(`http://localhost:3000/api/auth/usuario/${usuarioSelecionado.id}/contrato/${contratoId}`);
+    const res = await axios.delete(`/api/auth/usuario/${usuarioSelecionado.id}/contrato/${contratoId}`);
     
     if (res.data?.sucesso) {
       setSucesso('Acesso revogado com sucesso!');
@@ -167,17 +168,25 @@ export const GestaoUsuarios: React.FC = () => {
   }
 };
 
-const handleSalvarUsuario = async () => {
+  const handleSalvarUsuario = async (e?: React.FormEvent) => {
+  // 1. BLINDAGEM CRÍTICA: Se o evento nativo existir, anula o comportamento padrão do navegador
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  // 2. TRINCO FÍSICO: Se o estado já estiver a carregar, mata a segunda chamada imediatamente!
+  if (carregando) return;
   if (!usuarioSelecionado || !nomeEditado.trim() || !emailEditado.trim()) return;
 
   try {
-    setCarregando(true);
+    setCarregando(true); // Tranca a entrada de novos cliques na hora
     setErro(null);
     setSucesso(null);
 
-    // Faz a chamada PUT passando os dados editados no corpo (body)
-    const res = await axios.put(`http://localhost:3000/api/auth/atualizaUsuario/${usuarioSelecionado.id}`, {
+    const res = await axios.put(`/api/auth/atualizaUsuario/${usuarioSelecionado.id}`, {
       nome: nomeEditado.trim(),
+      usuario: usuarioEditado.trim(),
       email: emailEditado.trim(),
       perfil: perfilSelecionado
     });
@@ -185,24 +194,23 @@ const handleSalvarUsuario = async () => {
     if (res.data?.sucesso) {
       setSucesso('Dados do utilizador atualizados com sucesso!');
       
-      // Atualiza o objeto na tela para refletir o novo nome/perfil imediatamente
       setUsuarioSelecionado({
         ...usuarioSelecionado,
         nome: nomeEditado.trim(),
+        usuario: usuarioEditado.trim(),
         email: emailEditado.trim(),
         perfil: perfilSelecionado
       });
 
-      setModalEditarAberta(false); // Fecha a modal
+      setModalEditarAberta(false); // Só fecha a modal após o sucesso real da API
     }
   } catch (err: any) {
     console.error('Erro ao atualizar usuário:', err);
     setErro(err.response?.data?.erro || 'Falha ao atualizar os dados do utilizador.');
   } finally {
-    setCarregando(false);
+    setCarregando(false); // Só liberta o trinco quando a ligação terminar a 100%
   }
 };
-
 
   // Filtros locais
   const usuariosFiltrados = usuarios.filter(u => 
@@ -215,7 +223,7 @@ const handleSalvarUsuario = async () => {
   );
 
   return (
-    <div className="container my-4 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <div className="container my-7 text-start" style={{ maxWidth: "1200px", margin: "0 auto" }}>
       
       {/* CABEÇALHO */}
       <div className="pb-0 mb-0 d-flex justify-content-between align-items-end">
@@ -242,7 +250,7 @@ const handleSalvarUsuario = async () => {
             LADO ESQUERDO: LISTAGEM UNIFICADA DE USUÁRIOS
             ==================================================================== */}
         <div className="col-11 col-md-6 p-0 pr-md-3">
-          <div className="card p-3 border shadow-sm bg-white rounded-3" style={{ maxWidth: '537px' }}>
+          <div className="card p-2 border shadow-sm bg-white rounded-3" style={{ maxWidth: '537px' }}>
             
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="fs-6 fw-bold text-dark m-0">👥 Contas Ativas ({usuariosFiltrados.length})</h3>
@@ -281,7 +289,7 @@ const handleSalvarUsuario = async () => {
             LADO DIREITO: HUB DINÂMICO (CADASTRO OU GERENCIAMENTO DE CARTEIRA)
             ==================================================================== */}
         <div className="col-12 col-md-6 p-0 pl-md-3">
-          <div className="card p-4 border shadow-sm bg-white rounded-3 h-100">
+          <div className="card p-2 border shadow-sm bg-white rounded-3 h-100">
             
             {erro && <div className="alert alert-danger p-2 small rounded-3 mb-3">{erro}</div>}
             {sucesso && <div className="alert alert-success p-2 small rounded-3 mb-3">{sucesso}</div>}
@@ -311,12 +319,12 @@ const handleSalvarUsuario = async () => {
                     <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nome@empresa.com" className="form-control text-start form-control-sm" />
                   </div>
 
-                  <div className="mb-2.5">
+                  {/* <div className="mb-2.5">
                     <label className="text-muted small fw-semibold mb-1">Senha Inicial</label>
                     <input type="password" required value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="******" className="form-control text-start form-control-sm" />
-                  </div>
+                  </div> */}
 
-                  <div className="mb-3.5">
+                  <div className="mb-4">
                     <label className="text-muted small fw-semibold mb-1">Perfil de Acesso</label>
                     <select className="form-select form-select-sm text-start" value={perfil} onChange={(e) => setPerfil(e.target.value)}>
                       <option value="atendimento">🎧 Atendimento (Suporte Técnico)</option>
@@ -358,6 +366,7 @@ const handleSalvarUsuario = async () => {
                     onClick={() => {
                       // Carrega os dados atuais nos inputs da modal
                       setNomeEditado(usuarioSelecionado?.nome || '');
+                      setUsuarioEditado(usuarioSelecionado?.usuario || '');
                       setEmailEditado(usuarioSelecionado?.email || '');
                       setPerfilSelecionado(usuarioSelecionado?.perfil || 'operador');
                       setModalEditarAberta(true);
@@ -400,6 +409,19 @@ const handleSalvarUsuario = async () => {
                               placeholder="Digite o nome completo"
                             />
                           </div>
+
+                           {/*USUARIO EDITÁVEL */}
+                          <div className="mb-3">
+                            <label className="text-muted small fw-semibold mb-1">Usuario</label>
+                            <input 
+                              type="usuario" 
+                              required
+                              value={usuarioEditado} 
+                              onChange={(e) => setUsuarioEditado(e.target.value)} 
+                              className="form-control form-control-lg fs-6 text-start" 
+                              placeholder="Usuario"
+                            />
+                          </div>
                 
                           {/* E-MAIL EDITÁVEL */}
                           <div className="mb-3">
@@ -422,9 +444,9 @@ const handleSalvarUsuario = async () => {
                               value={perfilSelecionado}
                               onChange={(e) => setPerfilSelecionado(e.target.value)}
                             >
-                              <option value="administrador">🔑 admin</option>
-                              <option value="operador">📄 cliente</option>
-                              <option value="auditor">👁️ atendimento</option>
+                              <option value="admin">🔑 admin</option>
+                              <option value="cliente">📄 cliente</option>
+                              <option value="atendimento">👁️ atendimento</option>
                             </select>
                           </div>
                         </div>
@@ -438,31 +460,24 @@ const handleSalvarUsuario = async () => {
                           >
                             Cancelar
                           </button>
+                          
                           <button 
                             type="button" 
                             disabled={carregando || !nomeEditado.trim() || !emailEditado.trim()}
                             className="btn btn-primary fw-bold flex-grow-1" 
-                            onClick={async () => {
-                              // Preparado para chamar a sua API
-                              console.log("Dados prontos para salvar no backend:", {
-                                usuarioId: usuarioSelecionado?.id,
-                                nome: nomeEditado.trim(),
-                                email: emailEditado.trim(),
-                                perfil: perfilSelecionado
-                              });
-                              setModalEditarAberta(false);
-                              handleSalvarUsuario();
-                              
-                            }}
+                            onClick={(e) => handleSalvarUsuario(e)} // 🌟 PASSA O EVENTO AQUI
                           >
                             {carregando ? 'A salvar...' : 'Salvar Alterações'}
                           </button>
+
+                
                         </div>
                 
                       </div>
                     </div>
                   </div>
                 )}
+
 
                 {/* Dropdown de Adicionar Novo Vínculo */}
                 {usuarioSelecionado?.perfil === 'cliente' && 

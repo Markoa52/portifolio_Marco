@@ -39,7 +39,7 @@ export const FaturasAbertas: React.FC<IPropsFaturas> = ({ contractId }) => {
         console.log(`🔍 [Banco] Buscando faturas em aberto para o Contrato ID: ${contractId}`);
 
         // 3. CORREÇÃO: Requisição movida para DENTRO do bloco try/catch
-        const respostaFaturas = await axios.get(`http://localhost:3000/api/fatura/aberto/${contractId}`);
+        const respostaFaturas = await axios.get(`/api/fatura/aberto/${contractId}`);
 
         if (respostaFaturas && respostaFaturas.data) {
           console.log('✅ [Sucesso] Faturas recebidas do SQLite:', respostaFaturas.data);

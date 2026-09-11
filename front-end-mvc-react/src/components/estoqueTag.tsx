@@ -33,7 +33,7 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
     
     try {
       // 📡 Dispara garantindo que o ID vai preenchido na URL
-      const resposta = await axios.get(`http://localhost:3000/api/contrato/${usuarioLogado.id}/contratos-vinculados`);
+      const resposta = await axios.get(`/api/contrato/${usuarioLogado.id}/contratos-vinculados`);
       const dadosContratos = Array.isArray(resposta.data) ? resposta.data : [];
       
       setListaContratosBruta(dadosContratos);
@@ -54,7 +54,7 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
     try {
       setCarregandoTags(true);
       // Rota fictícia baseada nos seus padrões de listagem por ID de contrato
-      const resposta = await axios.get(`http://localhost:3000/api/tag/estoque/${idContratoOrigem}`);
+      const resposta = await axios.get(`/api/tag/estoque/${idContratoOrigem}`);
 
       console.log('idContratoOrigem', idContratoOrigem)
 
@@ -134,7 +134,7 @@ export function TransferenciaTag({ idContratoOrigem, usuarioLogado, setPaginaAti
       };
 
       // Dispara para a sua rota ou fila que processa ações relacionais
-      const resposta = await axios.post('http://localhost:3000/api/tag/acoes', payload);
+      const resposta = await axios.post('/api/tag/acoes', payload);
 
       if (resposta.data.sucesso || resposta.status === 200) {
         toast.success(`🎉 Tag transferida com sucesso para o Contrato ${contratoDestino.numero || contratoDestino.id}!`);

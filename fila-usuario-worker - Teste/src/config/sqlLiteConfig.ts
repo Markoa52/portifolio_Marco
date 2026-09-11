@@ -15,7 +15,7 @@ export class DatabaseConnection {
             }
 
             const caminhoPrincipal = path.join(pastaCompartilhada, 'TollManagement.db');
-            // 💡 PASSO Novo: Monta o caminho do segundo banco de dados
+            // PASSO Novo: Monta o caminho do segundo banco de dados
             const caminhoUsuarios = path.join(pastaCompartilhada, 'Usuario.db'); 
             
             console.log(`\n 💾 [SQLite] Abrindo arquivo de banco de dados: ${caminhoPrincipal}`);
@@ -25,7 +25,7 @@ export class DatabaseConnection {
                 driver: sqlite3.Database
             });
 
-            // 💡 PASSO Novo: Vincula o banco de contratos à conexão atual do Usuario.db
+            // PASSO Novo: Vincula o banco de contratos à conexão atual do Usuario.db
             // Usamos a cláusula 'as contrato' para que o SQLite saiba como procurar a tabela
             await this.instance.exec(`ATTACH DATABASE '${caminhoUsuarios.replace(/\\/g, '\\\\')}' AS contrato;`);
             console.log(`🔗 [SQLite] Banco secundário Contrato.db vinculado com sucesso!`);

@@ -38,7 +38,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
     try {
       setCarregando(true);
 
-      const resposta = await axios.get(`http://localhost:3000/api/auth/usuarios/contrato/${idContrato}`);
+      const resposta = await axios.get(`/api/auth/usuarios/contrato/${idContrato}`);
       const dadosServidor = Array.isArray(resposta.data) ? resposta.data : [];
 
       // CORREÇÃO 1: Mapeia diretamente a resposta vinda do Axios (dadosServidor)
@@ -103,7 +103,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
       setCarregando(true);
 
       // 1. Solicita a geração do arquivo enviando o formato
-      const resposta = await axios.post('http://localhost:3000/api/gerarArquivoSend', {
+      const resposta = await axios.post('/api/gerarArquivoSend', {
         tipoArquivo: formato 
       });
 

@@ -2,6 +2,7 @@ import { DatabaseConnection } from '../config/sqlLiteConfig.js';
 import { usuarioRepository } from '../repositories/usuarioRepository.js';
 
 const usuarioRepo = new usuarioRepository(); 
+const usuariosEmProcessamento = new Set<number>();
 
 class usuarioService {
 
@@ -10,7 +11,7 @@ class usuarioService {
     const { payload } = dadosDoUsuario;
     const { js } = payload;
     const { metadata, contextoUsuario } = js;
-    const contratoIdReal = Number(metadata.contratoId);
+    //const contratoIdReal = Number(metadata.contratoId);
     
     const db = await DatabaseConnection.getConnection();
 
@@ -21,22 +22,22 @@ class usuarioService {
      let usuario="";
 
       if(js.metadata.tipoAcao==='novoUsuario'){
-      console.log('⏳ 1/4 Gerando cadastro do usuario...');
+      console.log('⏳ 1/7 Gerando cadastro do usuario...');
       // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
       const usuario = await usuarioRepo.salvarNovoUsuario(payload);
 
       if (!isNaN(Number(usuario))) {
       throw new Error("Falha Crítica: O usuario não foi gerado pelo SQLite");
+      }
     }
-  }
 
     if(js.contextoUsuario.tipoAcao==='vincularContrato'){
-       console.log('⏳ 2/4 Vincular contrato ao usuário......');
+       console.log('⏳ 2/7 Vincular contrato ao usuário......');
        await usuarioRepo.vincularContrato(payload);
     }
 
     if(js.metadata.tipoAcao==='atualizarUsuario'){
-      console.log('⏳ 3/4 Gerando cadastro do usuario...');
+      console.log('⏳ 3/7 Atualizando cadastro do usuario...');
       // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
       const usuario = await usuarioRepo.atualizarUsuario(payload);
 
@@ -45,20 +46,25 @@ class usuarioService {
       }
      }
 
-    if(js.contextoUsuario.tipoAcao==='atualizarDadosUsuario'){
-      console.log('⏳ 3/4 Gerando cadastro do usuario...');
+    if(js.metadata.tipoAcao==='atualizarDadosUsuario'){
+      console.log('⏳ 4/7 Atualizando cadastro do usuario...');
       // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
-      const usuario = await usuarioRepo.atualizarDadosUsuario(payload);
+      await usuarioRepo.atualizarDadosUsuario(contextoUsuario);
     }
 
     if(js.contextoUsuario.tipoAcao==='ativarInativar'){
-       console.log('⏳ 4/4 InativarAtivar usuário......');
+       console.log('⏳ 5/7 InativarAtivar usuário......');
        await usuarioRepo.inativarAtivarUsuario(contextoUsuario);
     }
 
     if(js.contextoUsuario.tipoAcao==='excluirContratoUsuario'){
-       console.log('⏳ 4/4 InativarAtivar usuário......');
+       console.log('⏳ 6/7 Excluir contrato do usuário......');
        await usuarioRepo.excluirVinculoContrato(contextoUsuario);
+    }
+
+    if(js.contextoUsuario.tipoAcao==='excluirUsuario'){
+       console.log('⏳ 6/7 Excluir contrato do usuário......');
+       await usuarioRepo.excluirUsuario(contextoUsuario);
     }
 
       await db.exec('COMMIT');

@@ -20,7 +20,7 @@ export const DetalhesContrato: React.FC<IDetalhesContratoProps> = ({ contractId,
         setErro(null);
         
         // Requisição para buscar os dados consolidados do contrato
-        const resposta = await axios.get(`http://localhost:3000/api/contrato/${contractId}`, {
+        const resposta = await axios.get(`/api/contrato/${contractId}`, {
           params: { id: contractId }
         });
         
