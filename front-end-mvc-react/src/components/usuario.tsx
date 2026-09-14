@@ -104,25 +104,26 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
 
       // 1. Solicita a geração do arquivo enviando o formato
       const resposta = await axios.post('/api/gerarArquivoSend', {
+        protocolo: new Date(),
         tipoArquivo: formato 
       });
 
       // Captura o protocolo retornado pela nova controller
-      const protocoloId = resposta.data?.protocoloId;
+      const protocoloLimpo = String(resposta.data?.protocolo).replace(/:/g, '-');
 
-      if (!protocoloId) {
+      if (!protocoloLimpo) {
         alert('O servidor aceitou a requisição, mas não gerou um número de protocolo válido.');
         setCarregando(false);
         return;
       }
 
-      console.log(`Processamento iniciado. Protocolo: ${protocoloId}. Iniciando Polling...`);
+      console.log(`Processamento iniciado. Protocolo: ${protocoloLimpo}. Iniciando Polling...`);
 
       // 2. Inicia o Polling (Verificação contínua a cada 2 segundos)
       // 2. Inicia o Polling (Verificação contínua a cada 2 segundos)
       const checarIntervalo = setInterval(async () => {
         try {
-          const checagem = await axios.get(`/api/checar-arquivo/${protocoloId}/${formato}`);
+          const checagem = await axios.get(`/api/checar-arquivo/${protocoloLimpo}/${formato}`);
 
           // CORREÇÃO: Alinhado com o JSON de sucesso retornado pela API principal (sucesso: true)
           // Também validamos o status 200 para garantir que o arquivo foi encontrado de verdade
@@ -137,7 +138,7 @@ export const Usuario: React.FC<IVisaoGeralProps> = ({payloadEnvio}) => {
             linkVirtual.setAttribute('target', '_blank');
             
             const extensao = formato === 'excel' ? 'xlsx' : 'pdf';
-            linkVirtual.setAttribute('download', `relatorio_emails_${protocoloId}.${extensao}`);
+            linkVirtual.setAttribute('download', `relatorio_emails_${protocoloLimpo}.${extensao}`);
             
             document.body.appendChild(linkVirtual);
             linkVirtual.click(); 

@@ -8,12 +8,14 @@ import { GerarArquivoFilaController } from '../controllers/gerarArquivoFilaContr
 const router = express.Router();
 
 import { authMiddlewareInstance } from '../services/authMiddleware'; // Importa a instância da classe
+import { usuarioRepository } from '../repositories/usuarioRepository';
 router.use(authMiddlewareInstance.verificarJWT);
 
 // 2. A MONTAGEM CORRETA DA ENGRENAGEM (Injeção de Dependências em Cascata)
 const rabbitPublisher = new RabbitMqPublisher(); // Primeiro cria o entregador da fila
 const geradorService = new GeradorArquivosServices(rabbitPublisher); // Passa o entregador para o cérebro do serviço
-const geradorController = new GerarArquivoFilaController(geradorService); // Passa o serviço para o controlador de rotas
+const UsuarioRepository = new usuarioRepository();
+const geradorController = new GerarArquivoFilaController(geradorService, UsuarioRepository); // Passa o serviço para o controlador de rotas
 
 /**
  * @openapi

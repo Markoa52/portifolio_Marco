@@ -1,5 +1,5 @@
 export interface jobPayload{
-    protocoloId: string;
+    protocolo: string;
     task: string;
     tipoArquivo: 'pdf' | 'excel';
     solicitadoEm: string;

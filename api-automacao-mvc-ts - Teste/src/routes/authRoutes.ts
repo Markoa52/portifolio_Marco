@@ -550,14 +550,14 @@ router.delete('/auth/usuario/:usuarioId/contrato/:contratoId', (req, res) => ger
  *     description: Remove a permissão de acesso de um operador a um contrato específico no ecossistema TollManagement.
  *     parameters:
  *       - in: path
- *         name: usuarioId
+ *         name: idUsuario
  *         required: true
  *         schema:
  *           type: integer
  *         description: ID do usuário operador
  *         example: 1
  *       - in: path
- *         name: contratoId
+ *         name: idContrato
  *         required: true
  *         schema:
  *           type: integer
@@ -584,7 +584,7 @@ router.delete('/auth/usuario/:usuarioId/contrato/:contratoId', (req, res) => ger
  *       500:
  *         description: Erro interno ao processar a exclusão do vínculo.
  */
-router.delete('/auth/ExcluirUsuario', (req, res) => geradorAuthController.deletarUsuario(req, res));
+router.delete('/auth/ExcluirUsuario/:usuarioid/contrato/:contratoid', (req, res) => geradorAuthController.deletarUsuario(req, res));
 
 /**
  * @openapi

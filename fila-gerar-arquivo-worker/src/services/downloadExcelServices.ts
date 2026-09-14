@@ -28,14 +28,17 @@ if (!dados || !Array.isArray(dados) || dados.length === 0) {
     XLSX.utils.book_append_sheet(livro, planilha, "Dados");
 
     // Opcional: Ajuste de largura das colunas
+       // Opcional: Ajuste de largura das colunas
     const larguras = Object.keys(dados[0] || {}).map(chave => ({
       wch: Math.max(...dados.map((item: any) => String(item[chave] || '').length + 3), 10)
     }));
     planilha['!cols'] = larguras;
     
-    // CORREÇÃO CRÍTICA: O nome do arquivo agora usa obrigatoriamente o protocoloId
-    const nomeDoArquivo = `planilha_${mensagemReal.protocoloId}.xlsx`;
-     // CORREÇÃO 2: Ajuste no caminho absoluto para garantir que a pasta 'public' seja criada fora de 'src/'
+    // CORREÇÃO: Remove os ":" da string do protocolo para torná-la um nome de arquivo válido no Windows
+    const protocoloLimpo = String(mensagemReal.protocolo).replace(/:/g, '-');
+    const nomeDoArquivo = `planilha_${protocoloLimpo}.xlsx`;
+
+    // CORREÇÃO 2: Ajuste no caminho absoluto para garantir que a pasta 'public' seja criada fora de 'src/'
     const caminhoDestino = path.join(__dirname, '..', '..', 'public', 'downloads', 'excel', nomeDoArquivo);
     const urlGerada = `http://localhost:3001/downloads/excel/${nomeDoArquivo}`;
 
@@ -53,5 +56,6 @@ if (!dados || !Array.isArray(dados) || dados.length === 0) {
     console.error("Erro interno no serviço de Excel:", error.message);
     throw new Error(`Falha ao gerar o arquivo Excel: ${error.message}`);
   }
+
 };
 

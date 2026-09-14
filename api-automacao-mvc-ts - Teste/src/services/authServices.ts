@@ -3,12 +3,13 @@ import { RabbitMqPublisher } from '../queue/publisher';
 import { authRepository } from '../repositories/authRepository';
 import bcrypt from 'bcrypt';
 
-const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "notificar" | "consultar" | "atualizar" | "excluir"; routingKey: string }> = {
+const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "notificar" | "consultar" | "atualizar" | "excluir" | "excluirUsuario"; routingKey: string }> = {
   inserir:   { tipoArquivo: 'inserir',   routingKey: 'reports.v1.trigger.criar-usuario' },
   notificar: { tipoArquivo: 'notificar',routingKey: 'reports.v1.trigger.envia-notificacao'},
   consultar: { tipoArquivo: 'consultar', routingKey: 'reports.v1.trigger.consulta_contrato' },
   atualizar: { tipoArquivo: 'atualizar', routingKey: 'reports.v1.trigger.atualiza-usuario' },
-  excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui-ContratoUsuario' }
+  excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui-ContratoUsuario' },
+  excluirUsuario: { tipoArquivo: 'excluirUsuario',   routingKey: 'reports.v1.trigger.exclui-usuario' }
 };
 
 const JWT_SECRET = 'SuaChaveSecretaSuperProtegida123';

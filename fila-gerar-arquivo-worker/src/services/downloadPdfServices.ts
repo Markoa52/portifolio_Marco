@@ -21,13 +21,15 @@ const mensagemReal = payload?.payload ? payload.payload : payload;
 // 2. Extrai a lista do campo 'js' ou usa o próprio objeto se ele já for a lista
 const dados = mensagemReal?.js || mensagemReal;
 
+const protocoloLimpo = String(mensagemReal.protocolo).replace(/:/g, '-');
+
 // 3. Sua validação para o Excel (agora vai passar com sucesso!)
 if (!dados || !Array.isArray(dados) || dados.length === 0) {
   console.error("Estrutura recebida inválida para Excel:", payload);
   throw new Error("Os dados fornecidos para gerar o Excel não são um array ou estão vazios.");
 }
 
-    console.log(`[PDF] Iniciando processamento do protocolo: ${mensagemReal.protocoloId} com ${dados.length} linhas.`);
+    console.log(`[PDF] Iniciando processamento do protocolo: ${protocoloLimpo} com ${dados.length} linhas.`);
 
     const pdfDoc = await PDFDocument.create();
     
@@ -47,21 +49,26 @@ if (!dados || !Array.isArray(dados) || dados.length === 0) {
       color: rgb(0, 0.2, 0.4),
     });
 
-    // 2. Definição do espaçamento horizontal (Eixo X) das 4 colunas
-    const colX1 = 40;  // Coluna DATA
-    const colX2 = 180; // Coluna ASSUNTO
-    const colX3 = 450; // Coluna EMAIL
-    const colX4 = 680; // Coluna ACOES
-
+    // 2. Definição do espaçamento horizontal real (Eixo X) para não sobrepor
+    const colX1 = 40;   // ID
+    const colX2 = 80;   // NOME
+    const colX3 = 220;  // USUARIO
+    const colX4 = 320;  // EMAIL
+    const colX5 = 440;  // STATUS
+    const colX6 = 490;  // DATA
+    const colX7 = 550;  // PERFIL
+    
     let eixoY = height - 75;
-
-    // Desenha o Cabeçalho da tabela
-    pagina.drawText('DATA', { x: colX1, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
-    pagina.drawText('ASSUNTO', { x: colX2, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
-    pagina.drawText('EMAIL', { x: colX3, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
-
-    pagina.drawText('AÇÕES', { x: colX4, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
-
+    
+    // Desenha o Cabeçalho da tabela original na primeira página
+    pagina.drawText('ID', { x: colX1, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    pagina.drawText('NOME', { x: colX2, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    pagina.drawText('USUARIO', { x: colX3, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    pagina.drawText('EMAIL', { x: colX4, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    pagina.drawText('STATUS', { x: colX5, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    pagina.drawText('DATA', { x: colX6, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    pagina.drawText('PERFIL', { x: colX7, y: eixoY, size: 10, font: fonteHelveticaBold, color: rgb(0, 0.4, 0.8) });
+    
     // Linha divisória abaixo do cabeçalho
     eixoY -= 8;
     pagina.drawLine({
@@ -71,60 +78,66 @@ if (!dados || !Array.isArray(dados) || dados.length === 0) {
       color: rgb(0.8, 0.8, 0.8),
     });
     eixoY -= 18;
-
+    
     console.log("ESTRUTURA DA PRIMEIRA LINHA RECEBIDA NO WORKER PDF:", JSON.stringify(dados[0], null, 2));
-
-    // 3. Loop de registros dos dados enfileirados pelo RabbitMQ
-    // 1. Função utilitária no topo do arquivo (se já não tiver) para liberar o Event Loop
-
-
-// ... restante do seu código ...
-
-if (dados && Array.isArray(dados)) {
-  // CORREÇÃO: Alterado de .forEach para for...of para permitir o uso de await
-  for (const item of dados) {
-    if (eixoY <= 40) {
-
-      const pagina = pdfDoc.addPage(); // Cria nova página
-      eixoY = height - 40;       // Reinicia o topo do eixo Y
-      // Mapeamento flexível das chaves enviado pelo payload
-      const campoData = item.DATA || item.Data || item.data || 'N/A';
-      const campoAssunto = item.ASSUNTO || item.Assunto || item.assunto || 'Sem Assunto';
-      const campoEmail = item.EMAIL || item.Email || item.email || '-';
-      const campoAcao = item.ACOES || item.Acoes || item.acoes || item.ACAO || item.acao || '-';
-
-      // Ajuste de corte para evitar sobreposição de texto nas colunas deitadas
-      const txtData = String(campoData).substring(0, 22);
-      const txtAssunto = String(campoAssunto).substring(0, 48);
-      const txtEmail = String(campoEmail).substring(0, 38);
-      const txtAcao = String(campoAcao).substring(0, 25);
-
-      // Desenha todos os atributos alinhados na mesma linha horizontal (eixoY)
-      pagina.drawText(txtData, { x: colX1, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
-      pagina.drawText(txtAssunto, { x: colX2, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
-      pagina.drawText(txtEmail, { x: colX3, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
-      pagina.drawText(txtAcao, { x: colX4, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
-
-      // Linha divisória sutil entre os registros da tabela
-      pagina.drawLine({
-        start: { x: 40, y: eixoY - 6 },
-        end: { x: width - 40, y: eixoY - 6 },
-        thickness: 0.5,
-        color: rgb(0.9, 0.9, 0.9),
-      });
-
-      eixoY -= 20; 
-
-      // CORREÇÃO CRÍTICA: Interrompe a execução síncrona por 1 milissegundo 
-      // para o Node.js manter a conexão viva com o RabbitMQ
-      await deixarRespirar();
+    
+    // 3. Loop de registros dos dados
+    if (dados && Array.isArray(dados)) {
+      // Criamos uma variável mutável para referenciar em qual página estamos desenhando
+      let paginaAtual = pagina; 
+    
+      for (const item of dados) {
+        
+        // 🟢 CORREÇÃO 1: Cria nova página APENAS quando o eixoY atingir o limite inferior
+        if (eixoY <= 40) {
+          paginaAtual = pdfDoc.addPage(); // Cria e atualiza a página de desenho
+          eixoY = height - 40;            // Reinicia o topo do eixo Y na nova página
+        }
+    
+        // Mapeamento flexível das chaves
+        const campoId = item.ID || item.Id || item.id || 'N/A';
+        const campoNome = item.NOME || item.Nome || item.nome || 'Sem Nome';
+        const campoUsuario = item.USUARIO || item.Usuario || item.usuario || '-';
+        const campoEmail = item.EMAIL || item.Email || item.email || '-';
+        const campoStatus = item.ATIVO || item.Ativo || item.ativo || '-';
+        const campoData = item.DATACRIACAO || item.DataCriacao || item.dataCriacao || '-';
+        const campPerfil = item.PERFIL || item.Perfil || item.perfil || '-';
+    
+        // Ajuste de corte (substring) de acordo com o novo espaço das colunas
+        const txtId = String(campoId).substring(0, 6);
+        const txtNome = String(campoNome).substring(0, 28);
+        const txtUsuario = String(campoUsuario).substring(0, 18);
+        const txtEmail = String(campoEmail).substring(0, 22);
+        const txtStatus = String(campoStatus).substring(0, 10);
+        const txtData = String(campoData).substring(0, 10);
+        const txtPerfil = String(campPerfil).substring(0, 10);
+    
+        // 🟢 CORREÇÃO 2: Desenha na 'paginaAtual' (independente de ser a primeira ou as novas)
+        paginaAtual.drawText(txtId, { x: colX1, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+        paginaAtual.drawText(txtNome, { x: colX2, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+        paginaAtual.drawText(txtUsuario, { x: colX3, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+        paginaAtual.drawText(txtEmail, { x: colX4, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+        paginaAtual.drawText(txtStatus, { x: colX5, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+        paginaAtual.drawText(txtData, { x: colX6, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+        paginaAtual.drawText(txtPerfil, { x: colX7, y: eixoY, size: 9, font: fonteHelvetica, color: rgb(0.2, 0.2, 0.2) });
+    
+        // Linha divisória sutil entre os registros
+        paginaAtual.drawLine({
+          start: { x: 40, y: eixoY - 6 },
+          end: { x: width - 40, y: eixoY - 6 },
+          thickness: 0.5,
+          color: rgb(0.9, 0.9, 0.9),
+        });
+    
+        eixoY -= 20; 
+    
+        await deixarRespirar();
+      }
     }
-  }
-}
 
     // 2. CORREÇÃO CRÍTICA: Alinhe o nome exatamente com o que a rota de checagem procura
     // CORREÇÃO DO NOME E PASTA DESTINO
-    const nomeDoArquivo = `documento_${mensagemReal.protocoloId}.pdf`;
+    const nomeDoArquivo = `documento_${protocoloLimpo}.pdf`;
     const caminhoDestino = path.join(__dirname, '../../public/downloads/pdf', nomeDoArquivo);
     const urlGerada = `http://localhost:5173/public/downloads/pdf/${nomeDoArquivo}`;
 

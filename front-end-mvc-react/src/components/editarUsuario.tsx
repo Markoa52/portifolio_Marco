@@ -48,12 +48,15 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
   const [inputInserirEmail, setInputInserirEmail] = useState<string>('');
   const [] = useState<string>('');
 
-  const [salvando, setSalvando] = useState<boolean>(false);
+  //const [salvando, setSalvando] = useState<boolean>(false);
   const [paginaAtualCRUD, setPaginaAtualCRUD] = useState<number>(1);
   const registrosPorPaginaCRUD = 5;
   const [, setErroLocal] = useState<string | null>(null);
   const [inputId, setInputId] = useState<string | number | null>(null);
+
   const fecharFormulario = () => { setModalAberto(false); };
+  const fecharFormularioInserir = () => { setModalInserirAberto(false); };
+  
   
   // 2. A função que o seu botão "Listar usuários" vai disparar
   const listarUsuarios = () => {
@@ -63,34 +66,38 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
   setAbaAtiva && setAbaAtiva('usuario');  
   };
 
-  const handleConfirmarExclusao = async () => {
-  if (itemParaExcluir) {
-    // Chame aqui a sua rotina atual que apaga do banco/fila
-    //removerLinha(itemParaExcluir); 
-
-  const idDoUsuario = inputId ? String(inputId).trim() : '0';
-  
-  console.log("-> Validando ID para o Axios PUT:", idDoUsuario);
-
-  const idContrato = payloadEnvio?.id || payloadEnvio?.dadosLimpos?.id || payloadEnvio?.contratoId || 0;
-
-  console.log("-> 🔍 ID do Contrato capturado para o vínculo:", idContrato);
-    
-
-    await axios.post('/api/auth/ExcluirUsuario', {
-      usuarioId: idDoUsuario,
-      contratoId: idContrato,
-      tipoAcao: 'vincularContrato'
-    });
-
+  const handleConfirmarExclusao = async (e?: React.FormEvent) => {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
-  // Fecha a modal e limpa o estado
-  setModalExclusaoAberto(false);
-  setItemParaExcluir(null);
+  if (itemParaExcluir) {
+    
+    
+    console.log("-> Validando ID para o Axios PUT:", itemParaExcluir);
+  
+    const idContrato = payloadEnvio?.id || payloadEnvio?.dadosLimpos?.id || payloadEnvio?.contratoId || 0;
+  
+    console.log("-> 🔍 ID do Contrato capturado para o vínculo:", idContrato);
+
+    const res = await axios.delete(`/api/auth/ExcluirUsuario/${itemParaExcluir?.id}/contrato/${idContrato}`);
+
+
+    if (res.data?.sucesso) {
+      toast.success('Usuário excluído com sucesso!');
+    }else{
+      toast.error('Falha ao excluir usuário!');
+    }
+
+   }
+
+    // Fecha a modal e limpa o estado
+    setModalExclusaoAberto(false);
+    setItemParaExcluir(null);
   };
 
-  const dadosFiltrados = useMemo(() => {
+    const dadosFiltrados = useMemo(() => {
     // Se você salvou em dadosSharePoint, ele deve filtrar em cima de dadosSharePoint!
     return dadosSharePoint.filter((item) => {
       return (
@@ -163,19 +170,19 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
   //   }
   // };
 
-  const enviarDadosParaServidor = async () => {
-    try {
-      setSalvando(true);
-      const payload = dadosLocais.map(item => ({ Nome: item.nome, Usuario: item.usuario, Perfil: item.perfil, Status: item.status }));
+  // const enviarDadosParaServidor = async () => {
+  //   try {
+  //     setSalvando(true);
+  //     const payload = dadosLocais.map(item => ({ Nome: item.nome, Usuario: item.usuario, Perfil: item.perfil, Status: item.status }));
 
-      //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
-      await fetch('/api/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  //     //Nesse ponto faz a ligação do front-end com a rota da API(back-end)
+  //     await fetch('/api/salvar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       
-      setMensagem({ texto: "🎉 Sincronizado com sucesso no SharePoint!", tipo: 'sucesso' });
-    } catch {
-      setMensagem({ texto: "❌ Falha ao salvar", tipo: 'erro' });
-    } finally { setSalvando(false); }
-  };
+  //     setMensagem({ texto: "🎉 Sincronizado com sucesso no SharePoint!", tipo: 'sucesso' });
+  //   } catch {
+  //     setMensagem({ texto: "❌ Falha ao salvar", tipo: 'erro' });
+  //   } finally { setSalvando(false); }
+  // };
 
   const handleSalvarUsuario = async (e?: React.FormEvent) => {
   if (e) {
@@ -607,9 +614,7 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
           <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0"  onClick={abrirInclusao}>
             ➕ Incluir Registro
           </button>
-          <button className="btn btn-light border btn-sm text-secondary fw-semibold py-2 px-3 flex-grow-1 flex-md-grow-0"  onClick={enviarDadosParaServidor} disabled={salvando}>
-            {salvando ? "⏳ Sincronizando..." : "💾 Salvar Registro"}
-          </button>
+
         </div>
       </div>
 
@@ -696,7 +701,7 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
               </div>
               <h5 className="fw-bold text-dark fs-6 mb-2">Confirmar Exclusão</h5>
               <p className="text-muted small mb-4">
-                Tem a certeza que deseja excluir o registo de <strong>{itemParaExcluir?.nome || itemParaExcluir?.usuario}</strong>? Esta ação não pode ser desfeita.
+                Tem a certeza que deseja excluir o registo de <strong>{itemParaExcluir?.id || itemParaExcluir?.nome || itemParaExcluir?.usuario}</strong>? Esta ação não pode ser desfeita.
               </p>
               
               {/* Botões de Ação */}
@@ -742,7 +747,7 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
             <form className="modal-body pt-2 text-start">
               <div className="mb-2.5">
               <label className="form-label small fw-bold text-secondary mb-1">ID:</label>
-                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputId || ''} onChange={(e) => setInputNome(e.target.value)} required />
+                <input type="text" className="form-control" style={{ padding: '0.45rem 0.6rem', fontSize: '0.85rem' }} value={inputId || ''} onChange={(e) => setInputId(e.target.value)} required />
               </div>
                 
               <div className="mb-2.5">
@@ -774,7 +779,7 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
               {/* EXEMPLO de como deve estar o seu botão de Editar na tabela do componente Pai */}
               <button
                 type="button"
-                className="btn btn-sm btn-outline-dark"
+                className="btn btn-dark fw-semibold py-2"
                 onClick={() => { 
                   // SEGREDO DA CORREÇÃO: Grava o objeto do usuário clicado no estado ANTES de abrir a modal
                   handleSalvarUsuario();
@@ -854,7 +859,7 @@ export const EditarUsuario: React.FC<IGerenciadorProps> = ({payloadEnvio, setAba
                       type="button" 
                       className="btn btn-light border text-secondary fw-semibold py-2" 
                       style={{ fontSize: '0.9rem' }} 
-                      onClick={fecharFormulario}
+                      onClick={fecharFormularioInserir}
                     >
                       Cancelar e Fechar
                     </button>

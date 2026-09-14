@@ -309,45 +309,43 @@ async deletarVinculoContratoUsuario(req: Request, res: Response): Promise<Respon
 
   async deletarUsuario(req: Request, res: Response): Promise<Response> {
   try {
-    // 1. CORREÇÃO CRÍTICA: Coleta os IDs dos parâmetros da URL (req.params) em vez do req.body
-    const { usuarioId, contratoId } = req.params;
+    //  CORREÇÃO: Lendo os parâmetros diretamente da URL (req.params)
+    // Certifique-se de que os nomes abaixo (id, contratoId, etc.) sejam IGUAIS aos da sua rota
+    // Exemplo se sua rota for: /ExcluirUsuario/:usuarioId/contrato/:contratoId
+    const { usuarioid, contratoid } = req.params;
 
-    // Coleta as outras opções do corpo ou define valores padrão padrão para auditoria
-    const { 
-      tipoAcao = 'excluirUsuario', 
-      protocolo = new Date().toISOString().split('T')[0], 
-      acao = 'excluir' 
-    } = req.body || {}; 
-
-    // 2. Validação dos campos obrigatórios que vieram da URL
-    if (!contratoId || !usuarioId) {
+    if (!usuarioid || !contratoid) {
       return res.status(400).json({ erro: 'O ID do usuário e o ID do contrato são obrigatórios na URL.' });
     }
 
+    // Coleta as outras opções do corpo (se houver) ou define valores padrão
+    const { 
+      tipoAcao = 'excluirUsuario', 
+      protocolo = new Date().toISOString().split('T')[0], 
+      acao = 'excluirUsuario' 
+    } = req.body || {}; 
+
     // 3. Invoca o serviço para processar a revogação/exclusão do vínculo
-    // Convertemos para Number() caso o seu Service ou Repository exijam números e não strings
     const resultado = await this.auth.ExcluirUsuario({
-      contratoId: Number(contratoId), 
+      contratoId: Number(contratoid), 
       tipoAcao, 
-      usuarioId: Number(usuarioId), 
+      usuarioId: Number(usuarioid), 
       acao
     });
     
-    // Retorna sucesso 200 com o objeto de resultado ({ sucesso: true })
     return res.status(200).json(resultado);
 
   } catch (error: any) {
     console.error("Erro na controller ao deletar vínculo:", error);
 
-    // 4. CORREÇÃO DE UX: Se o Service lançar um erro específico (ex: "Vínculo não encontrado"),
-    // devolvemos a mensagem real com status 400 ou 404 em vez de um erro 500 genérico.
     if (error.message) {
       return res.status(400).json({ erro: error.message });
     }
 
     return res.status(500).json({ erro: 'Erro interno ao processar a exclusão do vínculo.' });
   }
-  }
+}
+
 
 async atualizarUsuario(req: Request, res: Response): Promise<Response> {
   try {

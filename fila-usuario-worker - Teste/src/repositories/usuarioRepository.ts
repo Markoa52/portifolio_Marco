@@ -113,7 +113,7 @@ export class usuarioRepository {
       await db.run(query1, [dados.usuarioId, dados.contratoId]);
 
       const query2 = `
-        DELETE FROM usuario where usuarioId=?;  
+        DELETE FROM usuario where id=?;  
       `;
       await db.run(query2, [dados.usuarioId]);
       
@@ -122,4 +122,5 @@ export class usuarioRepository {
       throw error;
     }
   }
+  
 }
