@@ -7,7 +7,7 @@ import XLSX from 'xlsx';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const geraArquivoExcelDw = async (payload: any): Promise<string> => {
+export const transacaoService = async (payload: any): Promise<string> => {
   try {
      
 // CAPTURA O ID ENVIADO PELA CONTROLLER (Ou gera um fallback se não vier)

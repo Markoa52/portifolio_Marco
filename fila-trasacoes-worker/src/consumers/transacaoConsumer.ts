@@ -1,16 +1,16 @@
 import { connectRabbit } from '../config/rabbitConfig.js';
-import DwExcelQueue from '../queues/downloadExcelQueue.js';
-import { geraArquivoExcelDw } from '../services/downloadExcelServices.js';
+import transacaoQueue from '../queues/transacaoQueue.js';
+import { transacaoService } from '../services/transacaoServices.js';
 
 // DEFINIÇÃO DOS NOMES DA DLX (Padrão de mercado baseado na sua fila atual)
-const DLX_EXCHANGE_NAME = `${DwExcelQueue.nome}.dlx`;
-const DLQ_QUEUE_NAME = `${DwExcelQueue.nome}.dlq`;
-const DLQ_ROUTING_KEY = `${DwExcelQueue.nome}.failed`;
+const DLX_EXCHANGE_NAME = `${transacaoQueue.nome}.dlx`;
+const DLQ_QUEUE_NAME = `${transacaoQueue.nome}.dlq`;
+const DLQ_ROUTING_KEY = `${transacaoQueue.nome}.failed`;
 
 export async function iniciarConsumer(): Promise<void> {
     try {
         // Coleta o canal retornado diretamente
-        const channel = await connectRabbit(DwExcelQueue.nome);
+        const channel = await connectRabbit(transacaoQueue.nome);
 
         // ==========================================
         // STEP 1: CONFIGURAÇÃO DA DEAD LETTER (DLX / DLQ)
@@ -29,7 +29,7 @@ export async function iniciarConsumer(): Promise<void> {
         // STEP 2: VINCULAR A FILA PRINCIPAL À DLX
         // ==========================================
         // Garante a existência da fila correta incluindo os argumentos que apontam para a DLX criada acima
-        await channel.assertQueue(DwExcelQueue.nome, { 
+        await channel.assertQueue(transacaoQueue.nome, { 
             durable: true,
             arguments: {
                 'x-dead-letter-exchange': DLX_EXCHANGE_NAME,
@@ -40,26 +40,26 @@ export async function iniciarConsumer(): Promise<void> {
         // >>> ADICIONE ESTA LINHA LOGO ABAIXO <<<
         // Ela vincula a sua fila principal à rota que o seu Agendador vai disparar às 2h da manhã
         await channel.bindQueue(
-            DwExcelQueue.nome, 
+            transacaoQueue.nome, 
             'reports.exchange',                // Mesma Exchange usada no Agendador
-            'reports.v1.trigger.download_excel'  // Mesma Routing Key usada no Agendador
+            'reports.v1.trigger.gravar-transacao'  // Mesma Routing Key usada no Agendador
         );
 
-        console.log(`Aguardando mensagens na fila: ${DwExcelQueue.nome}`);
+        console.log(`Aguardando mensagens na fila: ${transacaoQueue.nome}`);
         console.log(`Proteção Dead Letter ativa. Falhas irão para: ${DLQ_QUEUE_NAME}`);
 
         channel.prefetch(1);
 
-        channel.consume(DwExcelQueue.nome, async (msg) => {
+        channel.consume(transacaoQueue.nome, async (msg) => {
             if (!msg) return;
 
-            console.log(`[Excel Worker] Nova mensagem detectada na fila ${DwExcelQueue.nome}!`);
+            console.log(`[Excel Worker] Nova mensagem detectada na fila ${transacaoQueue.nome}!`);
 
             try {
                 const dados = JSON.parse(msg.content.toString());
                 
                 // Executa a lógica que gera a planilha Excel
-                await geraArquivoExcelDw(dados);
+                await transacaoService(dados);
 
                 channel.ack(msg); // Sucesso: remove da fila em definitivo
             } catch (erro: any) {

@@ -66,13 +66,16 @@ export class Database {
             //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo where contratoId=2`);
             //await this.instance.exec(`DELETE FROM Veiculo where contratoId=2`);
-            //await this.instance.exec(`DROP TABLE contaContrato`);
+            //await this.instance.exec(`DROP TABLE relatorioExtrato`);
+            //await this.instance.exec(`DROP TABLE relatorioPassagem`);
+            
             //await this.instance.exec(`INSERT INTO tag (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
 
             //await this.instance.exec(`INSERT INTO pedidoTagRastreamento (dataRegistro, statusPedidoId, pedidoTagId) VALUES ('2026-08-28', 3, 1)`);
             //await this.instance.exec(`UPDATE pedidoTagRastreamento set statusPedidoId=2 where id=3;`);
           
-            //await this.instance.exec(` ALTER TABLE banco_user.usuario ADD COLUMN perfil;`);
+            //await this.instance.exec(` ALTER TABLE banco_fat.billItem ADD COLUMN transacaoId;`);
+            //await this.instance.exec(` ALTER TABLE banco_fat.billItem ADD COLUMN placaVeiculo;`);
 
             //   await this.instance.exec(`
             //   ALTER TABLE contrato ADD COLUMN diaSemanaCorte;
@@ -145,10 +148,13 @@ export class Database {
                 valorCobradoPedagio REAL,
                 valorCobradoValePedagio REAL,
                 valorReembolso REAL,
+                placaVeiculo TEXT,
+                transacaoVeiculoTipo TEXT,
                 pracaPedagio TEXT,
                 documentoEmbarcador TEXT,
                 recargaValePedagioId INETEGER,
                 statusViagemTipo INTEGER,
+                dataRegistro TEXT,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id),
                 FOREIGN KEY (recargaValePedagioId) REFERENCES recargaValePedagio(id)
               );
@@ -258,8 +264,9 @@ export class Database {
               CREATE TABLE IF NOT EXISTS relatorioBillItem (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 billItemId INTEGER,
-                billItemTipo REAL,
+                billItemTipo INTEGER,
                 contratoId INTEGER,
+                transactionId INTEGER,
                 valor REAL,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id)
               );
@@ -279,6 +286,7 @@ export class Database {
                 trasacaoProcessamentoId INTEGER,
                 status INTEGER,
                 valor REAL,
+                placaVeiculo TEXT,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id),
                 FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
               );
@@ -296,6 +304,7 @@ export class Database {
                 pracaPedagio TEXT,
                 trasacaoProcessamentoId INTEGER,
                 extratoTipo INTEGER,
+                placaVeiculo TEXT,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id),
                 FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
               );
@@ -462,6 +471,8 @@ export class Database {
                 billId INTEGER,
                 billItemTipo INTEGER,
                 contractId INTEGER,
+                transacaoId INTEGER,
+                placaVeiculo TEXT,
                 dataRegistro TEXT,
                 valor TEXT,
                 FOREIGN KEY (billId) REFERENCES bill(id)
