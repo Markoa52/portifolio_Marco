@@ -77,7 +77,7 @@ export class ContratoRepository {
     }
   }
 
-    async buscaDadosDoContrato(contractId: number): Promise<any> {
+  async buscaDadosDoContrato(contractId: number): Promise<any> {
     try {
       const db = await Database.getConnection();
       
@@ -133,7 +133,7 @@ export class ContratoRepository {
     console.error('❌ Erro ao buscar contratos vinculados na base:', error.message);
     throw error;
   }
-}
+  }
 
   async buscaFatura(contractId: number): Promise<any> {
   try {
@@ -166,7 +166,7 @@ export class ContratoRepository {
     console.error("Erro na consulta buscaFatura do repositório:", erro);
     throw erro;
   }
-}
+  }
 
   async buscaFaturasEmAberto(contractId: number): Promise<any[]> {
   try {
@@ -208,9 +208,9 @@ export class ContratoRepository {
     console.error("Erro na consulta buscaFaturasEmAberto:", erro);
     throw erro;
   }
-}
+  }
 
-async buscaFaturas(contractId: number): Promise<any[]> {
+  async buscaFaturas(contractId: number): Promise<any[]> {
   try {
     const db = await Database.getConnection();
     
@@ -249,7 +249,7 @@ async buscaFaturas(contractId: number): Promise<any[]> {
     console.error("Erro na consulta buscaFaturasEmAberto:", erro);
     throw erro;
   }
-}
+  }
 
   async buscaSaldoFatura(contractId: number): Promise<any> {
   try {
@@ -281,6 +281,6 @@ async buscaFaturas(contractId: number): Promise<any[]> {
     console.error("Erro na consulta buscaSaldoFatura do repositório:", erro);
     throw erro;
   }
-}
+  }
 
 }

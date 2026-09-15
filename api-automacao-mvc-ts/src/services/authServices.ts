@@ -3,11 +3,13 @@ import { RabbitMqPublisher } from '../queue/publisher';
 import { authRepository } from '../repositories/authRepository';
 import bcrypt from 'bcrypt';
 
-const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "consultar" | "atualizar" | "excluir"; routingKey: string }> = {
+const MAPA_DE_ACOES: Record<string, { tipoArquivo: "inserir" | "notificar" | "consultar" | "atualizar" | "excluir" | "excluirUsuario"; routingKey: string }> = {
   inserir:   { tipoArquivo: 'inserir',   routingKey: 'reports.v1.trigger.criar-usuario' },
+  notificar: { tipoArquivo: 'notificar',routingKey: 'reports.v1.trigger.envia-notificacao'},
   consultar: { tipoArquivo: 'consultar', routingKey: 'reports.v1.trigger.consulta_contrato' },
   atualizar: { tipoArquivo: 'atualizar', routingKey: 'reports.v1.trigger.atualiza-usuario' },
-  excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui_usuario' }
+  excluir:   { tipoArquivo: 'excluir',   routingKey: 'reports.v1.trigger.exclui-ContratoUsuario' },
+  excluirUsuario: { tipoArquivo: 'excluirUsuario',   routingKey: 'reports.v1.trigger.exclui-usuario' }
 };
 
 const JWT_SECRET = 'SuaChaveSecretaSuperProtegida123';
@@ -76,7 +78,7 @@ export class authServices {
     console.error('❌ Erro no processamento do login no Service:', error.message);
     throw error;
   }
-}
+  }
 
   async validarLoginUsuario(dadosLogin: any): Promise<{ token: string; usuario: any }> {
     // CORREÇÃO 2: Adicionado a abertura do bloco try
@@ -219,7 +221,150 @@ export class authServices {
       }
   }
 
-async enviarDadosInativarAtivarUsuarios(dadosVinculo: any): Promise<{ sucesso: boolean }> {
+  async ExcluirVinculoContratoUsuario(dadosVinculo: any): Promise<{ sucesso: boolean }> {
+    try {
+      const { contratoId, usuarioId, tipoAcao, protocolo = new Date().toISOString().split('T')[0], acao = 'excluir' } = dadosVinculo;
+
+      // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
+      const estrategiaAtual = MAPA_DE_ACOES[dadosVinculo.acao] ?? {
+      tipoArquivo: 'consultar',
+      routingKey: 'reports.v1.trigger.consulta_contrato'
+      };
+
+      // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
+      const payloadParaAFila = {
+        js: {
+          metadata: {
+            protocolo, // Seu Worker lê essa data para controle
+            acao,      // Seu Worker lê isso para saber se roda INSERT ou UPDATE
+          },
+          contextoUsuario: {
+            contratoId,
+            usuarioId,
+            tipoAcao
+          }
+        }
+      };
+
+      const EXCHANGE = 'reports.exchange';
+      const ROUTING_KEY = estrategiaAtual.routingKey;
+
+      console.log(`[Agendador] Montando payload para o protocolo: ${protocolo} | Fila: ${ROUTING_KEY}`);
+
+      // 5. Envia para o RabbitMQ em segundo plano
+      await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payloadParaAFila);
+
+      // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+      // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
+      return { 
+      sucesso: true, 
+      protocolo, 
+      ...dadosVinculo // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
+      };
+      
+      } catch (error: any) {
+      console.error('❌ Erro no Service de primeiro acesso:', error.message);
+      throw error;
+      }
+  }
+
+  async ExcluirUsuario(dadosVinculo: any): Promise<{ sucesso: boolean }> {
+    try {
+      const { contratoId, usuarioId, tipoAcao, protocolo = new Date().toISOString().split('T')[0], acao = 'excluir' } = dadosVinculo;
+
+      // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
+      const estrategiaAtual = MAPA_DE_ACOES[dadosVinculo.acao] ?? {
+      tipoArquivo: 'consultar',
+      routingKey: 'reports.v1.trigger.consulta_contrato'
+      };
+
+      // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
+      const payloadParaAFila = {
+        js: {
+          metadata: {
+            protocolo, // Seu Worker lê essa data para controle
+            acao,      // Seu Worker lê isso para saber se roda INSERT ou UPDATE
+          },
+          contextoUsuario: {
+            contratoId,
+            usuarioId,
+            tipoAcao
+          }
+        }
+      };
+
+      const EXCHANGE = 'reports.exchange';
+      const ROUTING_KEY = estrategiaAtual.routingKey;
+
+      console.log(`[Agendador] Montando payload para o protocolo: ${protocolo} | Fila: ${ROUTING_KEY}`);
+
+      // 5. Envia para o RabbitMQ em segundo plano
+      await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payloadParaAFila);
+
+      // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+      // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
+      return { 
+      sucesso: true, 
+      protocolo, 
+      ...dadosVinculo // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
+      };
+      
+      } catch (error: any) {
+      console.error('❌ Erro no Service de primeiro acesso:', error.message);
+      throw error;
+      }
+  }
+
+  async atualizaUsuario(dadosVinculo: any): Promise<{ sucesso: boolean }> {
+    try {
+      const { usuarioId, nome, usuario, email, perfil, acao, tipoAcao, protocolo } = dadosVinculo;
+
+      // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
+      const estrategiaAtual = MAPA_DE_ACOES[dadosVinculo.acao] ?? {
+      tipoArquivo: 'consultar',
+      routingKey: 'reports.v1.trigger.consulta_contrato'
+      };
+
+      // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
+      const payloadParaAFila = {
+        js: {
+          metadata: {
+            acao,      // Seu Worker lê isso para saber se roda INSERT ou UPDATE
+            tipoAcao
+          },
+          contextoUsuario: {
+            usuarioId,
+            nome,
+            usuario,
+            email,
+            perfil       
+          }
+        }
+      };
+
+      const EXCHANGE = 'reports.exchange';
+      const ROUTING_KEY = estrategiaAtual.routingKey;
+
+      console.log(`[Agendador] Montando payload para o protocolo: ${protocolo} | Fila: ${ROUTING_KEY}`);
+
+      // 5. Envia para o RabbitMQ em segundo plano
+      await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payloadParaAFila);
+
+      // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+      // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
+      return { 
+      sucesso: true, 
+      protocolo, 
+      ...dadosVinculo // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
+      };
+      
+      } catch (error: any) {
+      console.error('❌ Erro no Service de primeiro acesso:', error.message);
+      throw error;
+      }
+  }
+
+  async enviarDadosInativarAtivarUsuarios(dadosVinculo: any): Promise<{ sucesso: boolean }> {
   try {
 
     const { metadata, contextoUsuario } = dadosVinculo.js || {};
@@ -273,16 +418,125 @@ async enviarDadosInativarAtivarUsuarios(dadosVinculo: any): Promise<{ sucesso: b
       }
   }
 
-async obterTodosUsuarios(): Promise<any[]> {
+  async obterTodosUsuarios(): Promise<any[]> {
     return await this.authRepository.listarUsuariosGerais();
   }
 
-async obterUsuariosContrato(contratoId: any): Promise<any[]> {
+  async obterPorUsername(nomeUsuario: any): Promise<any[]> {
+    return await this.authRepository.buscaPorUsername(nomeUsuario);
+  }
+
+  async obterUsuariosContrato(contratoId: any): Promise<any[]> {
     return await this.authRepository.listarUsuariosContrato(contratoId);
   }
 
-async obterTodosContratosUsuarios(usuarioId: any): Promise<any[]> {
+  async obterTodosContratosUsuarios(usuarioId: any): Promise<any[]> {
       return await this.authRepository.listarContratosUsuario(usuarioId);
+  }
+
+  async obterMFAUsuario(identificador: any, codigo: any): Promise<any[]> {
+      return await this.authRepository.buscaMFAUsuario(identificador, codigo);
+  }
+
+  async enviaCodigoMFA(dadosCadastro: any): Promise<{ sucesso: boolean }> {
+    try {
+      const { usuarioId, codigoMFA, email, nome, criadoEm, tempoExpiracao, acaoFinal , tipoAcao } = dadosCadastro;
+
+      //const MFACriptografada = await bcrypt.hash(codigoMFA.trim(), 10);
+
+      // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
+      const estrategiaAtual = MAPA_DE_ACOES[dadosCadastro.acaoFinal] ?? {
+      tipoArquivo: 'consultar',
+      routingKey: 'reports.v1.trigger.consulta_contrato'
+      };
+
+      // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
+      const payloadParaAFila = {
+        js: {
+          metadata: {
+            acaoFinal, // Seu Worker lê isso para saber se roda INSERT ou UPDATE
+            tipoAcao
+          },
+          contextoMFA: {
+            usuarioId,
+            nome,
+            codigoMFA,
+            email,
+            criadoEm,
+            tempoExpiracao
+            
+          }
+        }
+      };
+
+      const EXCHANGE = 'reports.exchange';
+      const ROUTING_KEY = estrategiaAtual.routingKey;
+
+      console.log(`[Agendador] Montando payload para o protocolo: ${criadoEm} | Fila: ${ROUTING_KEY}`);
+
+      // 5. Envia para o RabbitMQ em segundo plano
+      await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payloadParaAFila);
+
+      // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+      // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
+      return { 
+      sucesso: true, 
+      criadoEm, 
+      ...dadosCadastro // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
+      };
+      
+      } catch (error: any) {
+      console.error('❌ Erro no Service de primeiro acesso:', error.message);
+      throw error;
+      }
+  }
+
+  async enviaNotificacaoUsuario(dadosCadastro: any): Promise<{ sucesso: boolean }> {
+    try {
+      const { usuarioId, emailLimpo, acao, tipoAcao } = dadosCadastro;
+
+      //const MFACriptografada = await bcrypt.hash(codigoMFA.trim(), 10);
+
+      // 3. Recupera a estratégia com base na ação enviada ou usa o 'consultar' como padrão
+      const estrategiaAtual = MAPA_DE_ACOES[dadosCadastro.acao] ?? {
+      tipoArquivo: 'consultar',
+      routingKey: 'reports.v1.trigger.consulta_contrato'
+      };
+
+      // 4. Monta o payload injetando os dados legítimos que vieram das tabelas do banco
+      const payloadParaAFila = {
+        js: {
+          metadata: {
+            acao, // Seu Worker lê isso para saber se roda INSERT ou UPDATE
+            tipoAcao
+          },
+          contextoNotificacao: {
+            usuarioId,
+            emailLimpo
+          }
+        }
+      };
+
+      const EXCHANGE = 'reports.exchange';
+      const ROUTING_KEY = estrategiaAtual.routingKey;
+
+      console.log(`[Agendador] Montando payload para o protocolo: ${emailLimpo} | Fila: ${ROUTING_KEY}`);
+
+      // 5. Envia para o RabbitMQ em segundo plano
+      await this.rabbitPublisher.publishEvent(EXCHANGE, ROUTING_KEY, payloadParaAFila);
+
+      // C) RETORNO COMPLETO: Devolve os dados do banco junto com o protocolo.
+      // O seu Axios no React vai ler isso e preencher o cabeçalho e a aba detalhes na hora!
+      return { 
+      sucesso: true, 
+      emailLimpo, 
+      ...dadosCadastro // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
+      };
+      
+      } catch (error: any) {
+      console.error('❌ Erro no Service de primeiro acesso:', error.message);
+      throw error;
+      }
   }
 
 }

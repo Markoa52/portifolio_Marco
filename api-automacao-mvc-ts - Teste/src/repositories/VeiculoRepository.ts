@@ -25,7 +25,8 @@ export class veiculoRepository {
       throw error;
     }
   }
-    async buscaVeiculosPorId(contratoId: number): Promise<any> {
+  
+  async buscaVeiculosPorId(contratoId: number): Promise<any> {
     try {
       const db = await Database.getConnection();
       
@@ -41,7 +42,7 @@ export class veiculoRepository {
     }
   }
 
-    async buscaVeiculosVPR(contractId: number): Promise<any>{
+  async buscaVeiculosVPR(contractId: number): Promise<any>{
      try {
       const db = await Database.getConnection();
       
@@ -66,7 +67,7 @@ export class veiculoRepository {
     }
   }
 
-    async buscaSaldoVeiculoVPR(contratoId: number): Promise<any> {
+  async buscaSaldoVeiculoVPR(contratoId: number): Promise<any> {
     try {
       const db = await Database.getConnection();
       
@@ -102,8 +103,5 @@ export class veiculoRepository {
     console.error("Erro ao checar placa no repositório:", error.message);
     throw error;
   }
-}
-
-
-
+  }
 }

@@ -2,7 +2,7 @@ import { Database } from '../config/sqlLiteConfig'; // Garanta que aponta para o
 
 export class tagRepository {
 
-    async buscarTagsEstoque(contratoId: number): Promise<any> {
+async buscarTagsEstoque(contratoId: number): Promise<any> {
     try {
       const db = await Database.getConnection();
       

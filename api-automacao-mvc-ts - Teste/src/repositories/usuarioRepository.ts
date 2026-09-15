@@ -2,7 +2,7 @@ import { Database } from '../config/sqlLiteConfig'; // Garanta que aponta para o
 
 export class usuarioRepository {
 
-    async buscarUsuariosDownload(): Promise<any> {
+  async buscarUsuariosDownload(): Promise<any> {
     try {
       const db = await Database.getConnection();
       

@@ -344,8 +344,7 @@ async deletarVinculoContratoUsuario(req: Request, res: Response): Promise<Respon
 
     return res.status(500).json({ erro: 'Erro interno ao processar a exclusão do vínculo.' });
   }
-}
-
+  }
 
 async atualizarUsuario(req: Request, res: Response): Promise<Response> {
   try {

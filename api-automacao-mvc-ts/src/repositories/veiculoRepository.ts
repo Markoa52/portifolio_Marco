@@ -89,7 +89,7 @@ async buscaSaldoVeiculoVPR(contratoId: number): Promise<any> {
     console.error("Erro na consulta buscaSaldoVeiculoVPR do repositório:", erro);
     throw erro;
   }
- }
+}
 
  async verificarPlacaExiste(placa: string): Promise<boolean> {
   // TRAVA CRÍTICA: Se a placa for vazia ou nula, assume que não existe para não quebrar o loop

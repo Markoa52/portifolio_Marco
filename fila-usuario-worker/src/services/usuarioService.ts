@@ -52,10 +52,26 @@ class usuarioService {
         }
       }
 
+      if(js.metadata.tipoAcao==='atualizarDadosUsuario'){
+      console.log('⏳ 4/7 Atualizando cadastro do usuario...');
+      // 3. Injeta o ID do contrato dentro dos dados da empresa antes de criar
+      await usuarioRepo.atualizarDadosUsuario(contextoUsuario);
+      }
+
       if (js.contextoUsuario.tipoAcao === 'ativarInativar') {
          console.log('⏳ 4/4 Inativar/Ativar usuário no SQL Server...');
          await usuarioRepo.inativarAtivarUsuario(contextoUsuario, transaction);
       }
+
+      if(js.contextoUsuario.tipoAcao==='excluirContratoUsuario'){
+       console.log('⏳ 6/7 Excluir contrato do usuário......');
+       await usuarioRepo.excluirVinculoContrato(contextoUsuario);
+      }
+
+      if(js.contextoUsuario.tipoAcao==='excluirUsuario'){
+       console.log('⏳ 6/7 Excluir contrato do usuário......');
+       await usuarioRepo.excluirUsuario(contextoUsuario);
+    }
 
       // 4. Confirma todas as alterações no banco de dados de vez
       await transaction.commit();

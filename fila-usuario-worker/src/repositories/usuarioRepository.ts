@@ -39,7 +39,6 @@ export class usuarioRepository {
     }
   }
 
-
   async atualizarUsuario(dados: any, transaction?: sql.Transaction): Promise<number> {
     try {
       // 1. Usa a transação se fornecida, caso contrário o pool global
@@ -71,6 +70,38 @@ export class usuarioRepository {
       console.error('❌ Erro ao atualizar usuário no repositório:', error.message);
       throw error;
     }
+  }
+
+  async atualizarDadosUsuario(dados: any): Promise<void> {
+  try {
+    // 1. Obtém o pool de conexão do SQL Server
+    const pool = await Database.getConnection();
+    
+    // 2. Monta a query com os parâmetros nomeados do MSSQL
+    const query = `
+      UPDATE usuario 
+      SET nome = @nome, 
+          usuario = @usuario, 
+          email = @email, 
+          perfil = @perfil 
+      WHERE id = @id;
+    `;
+
+    // 3. Executa a requisição mapeando as propriedades do objeto 'dados' de forma segura
+    await pool.request()
+      .input('nome', dados?.nome || dados?.contextoUsuario?.nome)
+      .input('usuario', dados?.usuario || dados?.contextoUsuario?.usuario)
+      .input('email', dados?.email || dados?.contextoUsuario?.email)
+      .input('perfil', dados?.perfil || dados?.contextoUsuario?.perfil)
+      .input('id', dados?.usuarioId || dados?.contextoUsuario?.usuarioId)
+      .query(query);
+
+    console.log(`[MSSQL] Dados do usuário ID ${dados?.usuarioId || dados?.contextoUsuario?.usuarioId} atualizados com sucesso.`);
+
+  } catch (error: any) {
+    console.error('Erro ao atualizar dados do usuário no repositório MSSQL:', error.message);
+    throw error;
+  }
   }
 
   async inativarAtivarUsuario(dados: any, transaction?: sql.Transaction): Promise<void> {
@@ -130,4 +161,79 @@ export class usuarioRepository {
       throw error;
     }
   }
+
+  async excluirVinculoContrato(dados: any): Promise<void> {
+  try {
+    // 1. Obtém o pool de conexão do SQL Server
+    const pool = await Database.getConnection();
+    
+    // 2. Monta a query com parâmetros nomeados (@usuarioId, @contratoId)
+    const query = `
+      DELETE FROM usuarioContrato 
+      WHERE usuarioId = @usuarioId AND contratoId = @contratoId;
+    `;
+
+    // 3. Executa a requisição vinculando as variáveis de forma segura
+    await pool.request()
+      .input('usuarioId', dados.usuarioId)
+      .input('contratoId', dados.contratoId)
+      .query(query);
+
+    console.log(`[MSSQL] Vínculo removido com sucesso: Usuário ${dados.usuarioId} -> Contrato ${dados.contratoId}`);
+
+  } catch (error: any) {
+    console.error('❌ Erro ao deletar contrato do usuário no repositório MSSQL:', error.message);
+    throw error;
+  }
+  }
+
+  async excluirUsuario(dados: any): Promise<void> {
+  // 1. Obtém o pool de conexão do SQL Server
+  const pool = await Database.getConnection();
+  
+  // 2. Cria a instância da transação
+  const transacao = pool.transaction();
+
+  try {
+    // Inicia a transação no banco de dados
+    await transacao.begin();
+
+    // Cria a request atrelada a esta transação específica
+    const request = transacao.request();
+    
+    // Injeta os parâmetros mapeados que serão usados nas queries
+    request.input('usuarioId', dados.usuarioId);
+    request.input('contratoId', dados.contratoId);
+
+    // 1. Remove o vínculo na tabela intermediária
+    const query1 = `
+      DELETE FROM usuarioContrato 
+      WHERE usuarioId = @usuarioId AND contratoId = @contratoId;
+    `;
+    await request.query(query1);
+
+    // 2. Remove o usuário da tabela principal (Note que usei 'id' conforme sua query original)
+    const query2 = `
+      DELETE FROM usuario 
+      WHERE id = @usuarioId;
+    `;
+    await request.query(query2);
+
+    // 🟢 Se tudo deu certo, confirma as alterações no banco
+    await transacao.commit();
+    console.log(`[MSSQL] Usuário ${dados.usuarioId} e seus vínculos foram excluídos com sucesso.`);
+
+  } catch (error: any) {
+    // 🔴 Se houver qualquer erro, desfaz os DELETEs para não corromper o banco
+    try {
+      await transacao.rollback();
+    } catch (rollbackError) {
+      console.error('Erro ao executar ROLLBACK no MSSQL:', rollbackError);
+    }
+
+    console.error('Erro ao deletar contrato do usuário no repositório MSSQL:', error.message);
+    throw error;
+  }
+  }
+
 }

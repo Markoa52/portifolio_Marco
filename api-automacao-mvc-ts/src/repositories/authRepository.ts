@@ -40,7 +40,7 @@ export class authRepository {
     console.error("Erro na consulta auth do repositório:", erro);
     throw erro;
   }
-}
+  }
 
   async validacaoUsuario(usuario: string): Promise<any> {
   try { 
@@ -74,7 +74,33 @@ export class authRepository {
     console.error("Erro na consulta validacaoUsuario do repositório:", erro);
     throw erro;
   }
-}
+  }
+
+async buscaPorUsername(usuario: string): Promise<any> {
+  try {
+    // 1. Obtém o pool de conexão do SQL Server
+    const pool = await Database.getConnection();
+
+    // 2. Monta a query utilizando a sintaxe de parâmetros do MSSQL (@usuario)
+    const query = `
+      SELECT id, nome, usuario, email, senha, ativo 
+      FROM usuario 
+      WHERE usuario = @usuario
+    `;
+
+    // 3. Executa a requisição injetando o parâmetro
+    const resultado = await pool.request()
+      .input('usuario', usuario) // Vincula a variável ao @usuario da query
+      .query(query);
+
+    // 4. Retorna o primeiro registro encontrado ou null se estiver vazio (equivalente ao db.get)
+    return resultado.recordset[0] || null;
+         
+  } catch (erro) {
+    console.error("Erro na consulta do repositório MSSQL:", erro);
+    throw erro;
+  }
+  }
 
   async buscarPorContratoVinculadoUsuario(contratoId: string, usuarioId: string): Promise<any> {
   try {
@@ -102,7 +128,7 @@ export class authRepository {
     console.error('Erro ao buscar vinculo no repositório:', error.message);
     throw error;
   }
-}
+  }
 
   async listarUsuariosGerais(): Promise<any[]> {
   try {
@@ -123,7 +149,7 @@ export class authRepository {
     console.error('❌ Erro ao listar usuários gerais no repositório:', error.message);
     throw error;
   }
-}
+  }
 
   async listarContratosUsuario(usuarioId: any): Promise<any[]> {
   try {
@@ -156,7 +182,7 @@ export class authRepository {
     console.error('Erro ao buscar usuário ou e-mail no repositório:', error.message);
     throw error;
   }
-}
+  }
 
   async listarUsuariosContrato(contratoId: any): Promise<any[]> {
   try {
@@ -192,7 +218,7 @@ export class authRepository {
     console.error('❌ Erro ao buscar usuários do contrato no repositório:', error.message);
     throw error;
   }
-}
+  }
 
   async buscarPorUsuarioOuEmail(usuario: string, email: string): Promise<any> {
   try {
@@ -219,6 +245,6 @@ export class authRepository {
     console.error('❌ Erro ao buscar usuário ou e-mail no repositório:', error.message);
     throw error;
   }
-}
+  }
 
 }

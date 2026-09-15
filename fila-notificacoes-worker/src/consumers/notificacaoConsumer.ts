@@ -1,16 +1,16 @@
 import { connectRabbit } from '../config/rabbitConfig.js';
-import excelQueue from '../queues/geraExcelQueue.js';
-import { geraArquivoExcel } from '../services/geraExcelService.js';
+import notificacaoQueue from '../queues/notificacaoQueue.js';
+import EmailServices from '../services/emailServices.js'; 
 
 // DEFINIÇÃO DOS NOMES DA DLX (Padrão de mercado baseado na sua fila atual)
-const DLX_EXCHANGE_NAME = `${excelQueue.nome}.dlx`;
-const DLQ_QUEUE_NAME = `${excelQueue.nome}.dlq`;
-const DLQ_ROUTING_KEY = `${excelQueue.nome}.failed`;
+const DLX_EXCHANGE_NAME = `${notificacaoQueue.nome}.dlx`;
+const DLQ_QUEUE_NAME = `${notificacaoQueue.nome}.dlq`;
+const DLQ_ROUTING_KEY = `${notificacaoQueue.nome}.failed`;
 
 export async function iniciarConsumer(): Promise<void> {
     try {
         // Coleta o canal retornado diretamente
-        const channel = await connectRabbit(excelQueue.nome);
+        const channel = await connectRabbit(notificacaoQueue.nome);
 
         // ==========================================
         // STEP 1: CONFIGURAÇÃO DA DEAD LETTER (DLX / DLQ)
@@ -24,11 +24,12 @@ export async function iniciarConsumer(): Promise<void> {
         // Vincula a Fila de Falha à Exchange de Falha através de uma Routing Key
         await channel.bindQueue(DLQ_QUEUE_NAME, DLX_EXCHANGE_NAME, DLQ_ROUTING_KEY);
 
+
         // ==========================================
         // STEP 2: VINCULAR A FILA PRINCIPAL À DLX
         // ==========================================
         // Garante a existência da fila correta incluindo os argumentos que apontam para a DLX criada acima
-        await channel.assertQueue(excelQueue.nome, { 
+        await channel.assertQueue(notificacaoQueue.nome, { 
             durable: true,
             arguments: {
                 'x-dead-letter-exchange': DLX_EXCHANGE_NAME,
@@ -39,30 +40,47 @@ export async function iniciarConsumer(): Promise<void> {
         // >>> ADICIONE ESTA LINHA LOGO ABAIXO <<<
         // Ela vincula a sua fila principal à rota que o seu Agendador vai disparar às 2h da manhã
         await channel.bindQueue(
-            excelQueue.nome, 
+            notificacaoQueue.nome, 
             'reports.exchange',                // Mesma Exchange usada no Agendador
-            'reports.v1.trigger.processa_excel'  // Mesma Routing Key usada no Agendador
+            'reports.v1.trigger.envia-notificacao'  // Mesma Routing Key usada no Agendador
         );
 
-        console.log(`Aguardando mensagens na fila: ${excelQueue.nome}`);
+        console.log(`Aguardando mensagens na fila: ${notificacaoQueue.nome}`);
         console.log(`Proteção Dead Letter ativa. Falhas irão para: ${DLQ_QUEUE_NAME}`);
 
         channel.prefetch(1);
 
-        channel.consume(excelQueue.nome, async (msg) => {
+        channel.consume(notificacaoQueue.nome, async (msg) => {
             if (!msg) return;
 
-            console.log(`[Excel Worker] Nova mensagem detectada na fila ${excelQueue.nome}!`);
+            console.log(`[Excel Worker] Nova mensagem detectada na fila ${notificacaoQueue.nome}!`);
 
             try {
                 const dados = JSON.parse(msg.content.toString());
+
+                const tipoAcaoReal = 
+                      dados?.js?.metadata?.tipoAcao || 
+                      dados?.payload?.js?.metadata?.tipoAcao ||
+                      dados?.tipoAcao;
                 
-                // Executa a lógica que gera a planilha Excel
-                await geraArquivoExcel(dados);
+                // CORREÇÃO: Corrigido o erro de digitação de 'NovoUsaurio' para 'NovoUsuario'
+                if (tipoAcaoReal === 'enviaNotificacaoNovoUsuario') {
+                
+                    await EmailServices.enviarNotificaoNovoUsuario(dados);
+                
+                } else if (tipoAcaoReal === 'MFA') {
+                
+                    // Guarda os dados no SQLite antes de disparar o e-mail
+                    await EmailServices.salvaDadosMFA(dados);
+                    
+                    // Executa a lógica que gera a planilha Excel e envia o código token
+                    await EmailServices.enviarCodigoMFA(dados);
+                }
+
 
                 channel.ack(msg); // Sucesso: remove da fila em definitivo
             } catch (erro: any) {
-                console.error('Erro ao processar mensagem do Excel:', erro.message);
+                console.error('Erro ao processar mensagem da notificação:', erro.message);
                 
                 // O nack com requeue=false direciona a mensagem automaticamente para a DLQ criada no STEP 1
                 channel.nack(msg, false, false); 

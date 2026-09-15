@@ -3,7 +3,7 @@ import sql from 'mssql';
 
 export class tagRepository {
 
-    async buscarTagsEstoque(contratoId: number): Promise<any[]> {
+async buscarTagsEstoque(contratoId: number): Promise<any[]> {
   try {
     // 1. Obtém a conexão com o SQL Server
     const pool = await Database.getConnection();
@@ -31,5 +31,5 @@ export class tagRepository {
     console.error("❌ Erro na consulta buscarTagsEstoque do repositório:", erro);
     throw erro;
   }
-}
+ }
 }
