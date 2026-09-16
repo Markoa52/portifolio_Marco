@@ -1,28 +1,30 @@
 import { DatabaseConnection } from '../config/sqlLiteConfig.js'; 
 import { transacaoRepository } from '../repositories/transacaoRepository.js';
-import amqp from 'amqplib';
+import { rabbitMqPublisherInstance } from '../queues/publisher.js';
 
 const transacaoRepo = new transacaoRepository(); 
 
 export class transacaoService {
 
-  async processarCadastroRelacional(dadosDoPedido: any, canalRabbit?: amqp.Channel) {
+  async processarCadastroRelacional(dadosDoPedido: any) {
     const payload = dadosDoPedido.payload || dadosDoPedido;
     const { js } = payload;
     
     const db = await DatabaseConnection.getConnection();
 
+    // 🟢 Criamos variáveis de escopo no topo para que o RabbitMQ consiga lê-las fora do bloco IF
+    let idFinalGuardado = 0; 
+
     try {
       // 1. Inicia a transação centralizada global (SQLite)
       await db.exec('BEGIN TRANSACTION');
 
-      //let transacaoId = payload.id || js.id || 0;
-
-      if (js.contratoId && js.valorCobradoPedagio !== undefined) {
+      if (js.contratoId && js.valorTransacao !== undefined) {
         console.log('⏳ 2/2 Processando saldos (Cobrança Mista) via Repositório...');
       
         const contratoId = Number(js.contratoId);
-        const valorTotalNecessario = Number(js.valorTransacao); // Ex: 150
+        const placa = String(js.placaVeiculo);
+        const valorTotalNecessario = Number(js.valorTransacao); 
         const valorEstorno = Number(js.valorReembolso || 0);
       
         // 1. FLUXO ISOLADO: REEMBOLSO / ESTORNO
@@ -31,28 +33,51 @@ export class transacaoService {
 
           await transacaoRepo.reembolsarSaldoContrato(contratoId, valorEstorno);
 
-          const transacaoId = await transacaoRepo.inserirTransacaoViagem({
-            contratoId, valorPedagio: js.valorTransacao, valorVPR: js.valorCobradoValePedagio,  valorEstorno: valorEstorno, placa: js.placaVeiculo, 
-            transacaoTipo: js.transacaoVeiculoTipo,  praca: `REEMBOLSO - ${js.pracaPedagio}`, documento: js.documentoEmbarcador, recargaVPR: js.recargaValePedagio, 
-            status: js.statusViagemTipo, data: js.dataRegistro
+          const idGeradoNoBanco = await transacaoRepo.inserirTransacaoViagem({
+            contratoId, 
+            valorPedagio: js.valorTransacao, 
+            valorCobradoPedagio: js.valorCobradoPedagio,
+            valorVPR: js.valorCobradoValePedagio,  
+            valorEstorno: valorEstorno, 
+            placa: js.placaVeiculo, 
+            transacaoTipo: js.transacaoVeiculoTipo,  
+            praca: `REEMBOLSO - ${js.pracaPedagio}`, 
+            documento: js.documentoEmbarcador, 
+            recargaVPR: js.recargaValePedagioId, 
+            status: js.statusViagemTipo, 
+            data: js.dataRegistro
           });
+
+          idFinalGuardado = idGeradoNoBanco; // Alimenta o escopo global
+
           await transacaoRepo.inserirRelatorioExtrato({
-            contratoId, data: js.dataViagem, valorPedagio: js.valorTransacao, valorCobrado: js.valorCobradoPedagio, valorVPR: js.valorCobradoValePedagio,  valorEstorno: valorEstorno, 
-            praca: `REEMBOLSO - ${js.pracaPedagio}`, placa: js.placaVeiculo, id: transacaoId, tipo: 'extrato'
+            contratoId, 
+            data: js.dataViagem, 
+            valorPedagio: js.valorTransacao, 
+            valorCobrado: js.valorCobradoPedagio, 
+            valorVPR: js.valorCobradoValePedagio,  
+            valorEstorno: valorEstorno, 
+            praca: `REEMBOLSO - ${js.pracaPedagio}`, 
+            placa: js.placaVeiculo, 
+            id: idGeradoNoBanco, 
+            tipo: 'extrato'
           });
-          return; // Encerra o fluxo de reembolso
+
+          // Confirma o reembolso no banco antes de sair da função
+          await db.exec('COMMIT');
+          return; 
         }
       
         // 2. BUSCA DE SALDOS ATUAIS
         const registroSaldo = await transacaoRepo.buscarSaldoContrato(contratoId);
-        const registroSaldoVeiculo = await transacaoRepo.buscarSaldoVeiculo(contratoId);
+        const registroSaldoVeiculo = await transacaoRepo.buscarSaldoVeiculo(contratoId, placa);
       
         if (!registroSaldo) {
           throw new Error(`Falha Crítica: Registro de saldo do contrato não encontrado para o ID ${contratoId}.`);
         }
       
-        const saldoContratoDisponivel = Number(registroSaldo.saldoContrato || 0); // Ex: 50
-        const saldoVeiculoDisponivel = registroSaldoVeiculo ? Number(registroSaldoVeiculo.saldoVeiculo || 0) : 0; // Ex: 200
+        const saldoContratoDisponivel = Number(registroSaldo.saldoContrato || 0); 
+        const saldoVeiculoDisponivel = registroSaldoVeiculo ? Number(registroSaldoVeiculo.saldoContaVeiculo || 0) : 0; 
       
         let valorDebitadoDoContrato = 0;
         let valorDebitadoDoVeiculo = 0;
@@ -61,38 +86,34 @@ export class transacaoService {
       
         // 3. ENGENHARIA DA COBRANÇA MISTA
         if (saldoContratoDisponivel >= valorTotalNecessario) {
-          // Cenário A: O contrato cobre tudo sozinho (150 de 150)
           valorDebitadoDoContrato = valorTotalNecessario;
           cobrouComSucesso = true;
         } 
         else {
-          // Cenário B: O contrato não cobre tudo. Vamos ver se o veículo cobre o RESTANTE
-          const restanteNecessario = valorTotalNecessario - saldoContratoDisponivel; // Ex: 150 - 50 = 100
+          const restanteNecessario = valorTotalNecessario - saldoContratoDisponivel; 
       
           if (saldoVeiculoDisponivel >= restanteNecessario) {
-            // O veículo tem saldo suficiente para pagar o que sobrou (ex: tem 200, só precisa de 100)
-            valorDebitadoDoContrato = saldoContratoDisponivel; // Raspa os 50 do contrato
-            valorDebitadoDoVeiculo = restanteNecessario;       // Pega os 100 do veículo
+            valorDebitadoDoContrato = saldoContratoDisponivel; 
+            valorDebitadoDoVeiculo = restanteNecessario;       
             cobrouComSucesso = true;
             statusFinal = 'Processada - Cobrança Mista';
           } else {
-            // Cenário C: Mesmo juntando o saldo do contrato + veículo, não dá para pagar os 150
             statusFinal = 'Não processada erro - Saldo Insuficiente Total';
           }
         }
       
-        // 4. EXECUÇÃO DOS DÉBITOS NO BANCO (Apenas se a cobrança foi autorizada)
+        // 4. EXECUÇÃO DOS DÉBITOS NO BANCO
         if (cobrouComSucesso) {
           if (valorDebitadoDoContrato > 0) {
             await transacaoRepo.debitarSaldoContrato(contratoId, valorDebitadoDoContrato);
           }
           if (valorDebitadoDoVeiculo > 0) {
-            await transacaoRepo.debitarSaldoVeiculo(contratoId, valorDebitadoDoVeiculo);
+            await transacaoRepo.debitarSaldoVeiculo(contratoId, valorDebitadoDoVeiculo, placa);
           }
         }
       
-        // 5. GRAVAÇÕES HISTÓRICAS E AUDITORIA (Mantém o rastro no banco independente de ter saldo ou não)
-        const transacao = await transacaoRepo.inserirTransacaoViagem({
+        // 5. GRAVAÇÕES HISTÓRICAS E AUDITORIA
+        const idPassagemSucesso = await transacaoRepo.inserirTransacaoViagem({
             contratoId, 
             valorPedagio: valorTotalNecessario, 
             valorCobradoPedagio: valorDebitadoDoContrato,
@@ -100,13 +121,15 @@ export class transacaoService {
             valorEstorno: valorEstorno, 
             placa: js.placaVeiculo, 
             transacaoTipo: js.transacaoVeiculoTipo,  
-            praca: `REEMBOLSO - ${js.pracaPedagio}`, 
+            praca: js.pracaPedagio ? js.pracaPedagio : `REEMBOLSO - ${js.pracaPedagio}`, 
             documento: js.documentoEmbarcador, 
-            recargaVPR: js.recargaValePedagio, 
+            recargaVPR: js.recargaValePedagioId, 
             status: js.statusViagemTipo,
             data: js.dataRegistro
         });
       
+        idFinalGuardado = idPassagemSucesso; // Alimenta o escopo global
+
         if (cobrouComSucesso) {
           await transacaoRepo.inserirRelatorioPassagem({
             contratoId, 
@@ -114,26 +137,25 @@ export class transacaoService {
             dataFim: null, 
             valorPedagio: js.valorTransacao, 
             valorCobradoPedagio: valorDebitadoDoContrato,
-            valorVPR: js.valorCobradoValePedagio,  
+            valorVPR: valorDebitadoDoVeiculo,  
             valorEstorno: valorEstorno, 
-            placa: js.placaVeiculo, 
-            praca: js.pracaPedagio, 
-            trasacaoId: transacao,
+            praca: js.pracaPedagio,        
+            trasacaoId: idPassagemSucesso,
             status: js.statusViagemTipo,
-            valor: null
+            valor: null,
+            placa: js.placaVeiculo,
           });
       
-          // Registra no extrato detalhado o débito total aplicado
           await transacaoRepo.inserirRelatorioExtrato({
             contratoId, 
             dataInicio: js.dataRegistro, 
             valorCobradoPedagio: valorDebitadoDoContrato,
             valorPedagio: js.valorTransacao, 
-            valorVPR: js.valorCobradoValePedagio,  
+            valorVPR: valorDebitadoDoVeiculo,  
             valorEstorno: valorEstorno, 
             placa: js.placaVeiculo, 
             praca: js.pracaPedagio, 
-            trasacaoId: transacao,
+            trasacaoId: idPassagemSucesso,
             extratoTipo: null
           });
         }
@@ -141,30 +163,40 @@ export class transacaoService {
 
       // 2. Se nenhuma query falhou em nenhuma tabela, confirma tudo de vez no arquivo SQLite!
       await db.exec('COMMIT');
-      console.log(`\n🚀 [Sucesso Total] Todo o ecossistema local foi salvo para a Transação ID: ${transacao}`);
+      console.log(`\n🚀 [Sucesso Total] Todo o ecossistema local foi salvo para a Transação ID: ${idFinalGuardado}`);
+
+      console.log("🔍 [Debug Check] Dados para envio da fila:", {
+        contratoId: js?.contratoId,
+        valorTransacao: js?.valorTransacao,
+        transacaoVeiculoTipo: js?.transacaoVeiculoTipo,
+        tipoDesteCampo: typeof js?.transacaoVeiculoTipo
+      });
 
       // --- FASE EXTERNA: ENVIO PARA O SEGUNDO WORKER (Faturamento) ---
-      if (canalRabbit && js.contratoId && js.valorCobradoPedagio !== undefined) {
-        const filaFaturamento = 'fila-faturamento-cliente';
-        await canalRabbit.assertQueue(filaFaturamento, { durable: true });
+      if (rabbitMqPublisherInstance && js.contratoId && js.valorTransacao !== undefined && Number(js.transacaoVeiculoTipo) === 1) {
+        
+        const filaFaturamento = 'reports.v1.trigger.fila-faturamento-cliente';
+        const EXCHANGE = 'reports.exchange';
+        const ROUTING_KEY = filaFaturamento; 
 
         const payloadFatura = {
           task: 'registrar-passagem-fatura',
-          passagemId: transacao,
+          billId: null,
+          billItemTipo: js.transacaoVeiculoTipo,
           contratoId: Number(js.contratoId),
-          valorA_Faturar: Number(js.valorCobradoPedagio),
-          documentoCliente: js.documentoEmbarcador || '',
-          detalhes: `Passagem em ${js.pracaPedagio || 'Praça Não Informada'}`
+          data: new Date().toISOString(),
+          valor: Number(js.valorTransacao),
+          passagemId: Number(idFinalGuardado), // 🟢 CORREÇÃO: Usa a variável unificada correta
+          placa: js.placaVeiculo || '-'
         };
 
-        canalRabbit.sendToQueue(filaFaturamento, Buffer.from(JSON.stringify(payloadFatura)), { persistent: true });
-        console.log(`🚀 [Mensageria] Evento enviado para a '${filaFaturamento}'`);
+        await rabbitMqPublisherInstance.publishEvent(EXCHANGE, ROUTING_KEY, payloadFatura);
+        console.log(`🚀 [Mensageria] Evento enviado com sucesso para a Exchange: ${EXCHANGE} com o ID primitivo: ${idFinalGuardado}`);
       }
 
-      return { sucesso: true, transacao };
+      return { sucesso: true, transacaoId: idFinalGuardado };
 
     } catch (erro) {
-      // 3. Se qualquer método do repositório falhar, o rollback desfaz todas as alterações locais
       try { await db.exec('ROLLBACK'); } catch (rbErr) {}
       console.error("↩️ [Rollback Executado] Transação cancelada por completo no SQLite.", erro);
       throw erro; 

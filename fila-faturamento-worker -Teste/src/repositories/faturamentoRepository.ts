@@ -7,9 +7,9 @@ export class faturamentoRepository {
     const db = await Database.getConnection();
     const query = `
       INSERT INTO billItem (billId, billitemTipo, contractId, dataRegistro, valor, transacaoId, placaVeiculo)
-      VALUES (?, ?, ?, datetime('now'), ?, ?, ?);
+      VALUES (?, ?, ?, ? , ?, ?, ?);
     `;
-    const resultado = await db.run(query, [dados.billId, dados.billitemTipo, dados.contractId, dados.valor, dados.transacaoId, dados.placaVeiculo]); 
+    const resultado = await db.run(query, [dados.billId, dados.itemTipo, dados.contratoId, dados.dataRegistro, dados.valorDebito, dados.transacaoId, dados.placaVeiculo]); 
     const idGerado = resultado.lastID || 0;
 
     return idGerado;
@@ -19,9 +19,9 @@ export class faturamentoRepository {
     async inserirRegistroReportBillItem(dados: any): Promise<void> {
     const db = await Database.getConnection();
     const query = `
-      INSERT INTO reportBillItem (billId, billitemTipo, contractId, dataRegistro, valor, transacaoId, placaVeiculo)
-      VALUES (?, ?, ?, datetime('now'), ?, ?, ?);
+      INSERT INTO relatorioBillItem (billItemId, billitemTipo, contratoId, transacaoId, valor)
+      VALUES (?, ?, ?, ?, ?);
     `;
-    await db.run(query, [dados.billId, dados.billitemTipo, dados.contractId, dados.valor, dados.transacaoId, dados.placaVeiculo]);
+    await db.run(query, [dados.billItemId, dados.itemTipo, dados.contratoId, dados.transacaoId, dados.valorDebito]);
   }
 }

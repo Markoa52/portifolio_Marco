@@ -1,14 +1,13 @@
 import { Database } from '../config/sqlLiteConfig.js'; 
 import { faturamentoRepository } from '../repositories/faturamentoRepository.js';
-import amqp from 'amqplib';
 
 const faturamentoRepo = new faturamentoRepository(); 
 
 export class faturamentoService {
 
-  async processarCadastroRelacional(dadosDoPedido: any, canalRabbit?: amqp.Channel) {
+  async processarCadastroRelacional(dadosDoPedido: any) {
+    // O seu publicador envelopa os dados dentro de 'payload'
     const payload = dadosDoPedido.payload || dadosDoPedido;
-    const { js } = payload;
     
     const db = await Database.getConnection();
 
@@ -16,43 +15,50 @@ export class faturamentoService {
       // 1. Inicia a transação centralizada global (SQLite)
       await db.exec('BEGIN TRANSACTION');
 
-      let transacaoId = payload.id || js.id || 0;
+      // 🟢 CORREÇÃO 1: Mapeamento direto do payload enviado pela fila do Worker 1
+      const transacaoId = Number(payload.passagemId || 0);
+      const contratoId = Number(payload.contratoId || 0);
+      const valorDebito = Number(payload.valor || 0);
+      const placaVeiculo = payload.placa || '-';
+      const itemTipo = payload.billItemTipo || 'Passagem';
 
-      
-        const contratoId = Number(js.contratoId);
-        const valorDebito = Number(js.valorCobradoPedagio);
+      console.log(`⏳ [Worker 2] Processando faturamento para a Transação ID: ${transacaoId}`);
 
-        // 3. Grava o registro da viagem
-        const billItemId = await faturamentoRepo.inserirRegistroFatura({
-          billId: null,
-          billItemTipo: 
-          contratoId,
-          dataRegistro: new Date,
-          valor: valorDebito,   
-          id: transacaoId,
-          placaVeiculo: js.placaVeiculo || '-'
-          
-        });
+      // 🟢 CORREÇÃO 2: Grava o registro principal da fatura (billItem)
+      const billItemId = await faturamentoRepo.inserirRegistroFatura({
+        billId: null,
+        itemTipo,
+        contratoId,
+        dataRegistro: payload.data || new Date().toISOString(), // Fallback caso não venha data
+        valorDebito,
+        transacaoId,
+        placaVeiculo
+      });
 
+      // 🟢 CORREÇÃO 3: Gravação do Histórico/Relatório linha a linha da Fatura
+      // Substitua 'inserirHistoricoFaturamento' pelo nome real do seu método de logs/relatórios se for diferente
+      if (typeof faturamentoRepo.inserirRegistroReportBillItem === 'function') {
         await faturamentoRepo.inserirRegistroReportBillItem({
-          id: billItemId,
+          billItemId, // Usa o ID auto-incremental gerado na inserção acima
+          itemTipo,
           contratoId,
-          valor: valorDebito,
-          prplacaVeiculo: js.prplacaVeiculo || '-',
-          dataRegistro: new Date
+          transacaoId,
+          valorDebito
         });
+      } else {
+        console.log(`[Worker 2] ℹ️ Ignorando segunda gravação ou ajuste o método no repositório.`);
+      }
 
-
-      // 2. Se nenhuma query falhou em nenhuma tabela, confirma tudo de vez no arquivo SQLite!
+      // 2. Confirma as gravações no arquivo SQLite
       await db.exec('COMMIT');
-      console.log(`\n🚀 [Sucesso Total] Todo o ecossistema local foi salvo para a Transação ID: ${transacaoId}`);
+      console.log(`\n🚀 [Sucesso Total] Faturamento salvo para a Transação ID: ${transacaoId} | BillItem: ${billItemId}`);
 
       return { sucesso: true, transacaoId };
 
     } catch (erro) {
-      // 3. Se qualquer método do repositório falhar, o rollback desfaz todas as alterações locais
+      // 3. Em caso de erro, desfaz as alterações para manter a consistência
       try { await db.exec('ROLLBACK'); } catch (rbErr) {}
-      console.error("↩️ [Rollback Executado] Transação cancelada por completo no SQLite.", erro);
+      console.error("↩️ [Rollback Executado] Faturamento cancelado no SQLite.", erro);
       throw erro; 
     }
   }

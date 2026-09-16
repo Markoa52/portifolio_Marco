@@ -2,11 +2,12 @@ import { Request, Response } from 'express';
 import { TransacaoService } from '../services/transacaoServices';
 
 export class TransacaoController {
-  private transacaoService = new TransacaoService();
+  constructor(private transacaoService: TransacaoService) {}
 
   async receberDadosViagem(req: Request, res: Response): Promise<Response> {
     try {
-      const dados = req.body;
+      const dados = req.body;   
+      const metadata = {acao: 'inserir', protocolo: new Date};
 
       if (!dados.contratoId || !dados.statusViagemTipo) {
         return res.status(400).json({ 
@@ -16,7 +17,7 @@ export class TransacaoController {
       }
 
       // Envia os dados para a camada de serviço enfileirar
-      await this.transacaoService.enfileirarTransacao(dados);
+      await this.transacaoService.enfileirarTransacao(dados, metadata);
 
       // Status 202 significa: "Aceito para processamento, mas ainda não finalizado"
       return res.status(202).json({

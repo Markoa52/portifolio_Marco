@@ -142,23 +142,27 @@ export class ContratoRepository {
     // CORREÇÃO 1: Usamos COALESCE(SUM(...), 0) para somar os itens e garantir o 0 se estiver vazio
     // CORREÇÃO 2: Movemos o filtro 'bi.billItemTipo = 9' para dentro do 'ON' do LEFT JOIN
     // CORREÇÃO 3: Adicionamos o GROUP BY para o SUM() não misturar faturas de contratos diferentes
-    const resultado = await db.get(`
-      SELECT 
-        COALESCE((bi.valor), 0) AS totalValor,
-        b.id AS billId,
-        b.contractId,
-        b.dataAbertura,
-        b.dataFechamento,
-        b.dataVencimento,
-        b.status
-      FROM banco_fat.bill b 
-      LEFT JOIN banco_fat.billitem bi 
-        ON b.contractId = bi.contractId AND bi.billItemTipo = 9 -- 💡 Filtro movido para cá!
-      WHERE b.contractId = ?
-      GROUP BY b.id
-      ORDER BY b.dataAbertura DESC -- Traz a fatura mais recente primeiro
-      LIMIT 1;
-    `, [contractId]);
+      const resultado = await db.get(`
+     SELECT 
+       b.id,
+       b.contractId,
+       b.dataAbertura,
+       b.dataFechamento AS fechamento,
+       b.dataVencimento AS vencimento,
+       b.status,
+       -- 🟢 SUBQUERY ISOLADA: Soma apenas os itens do contrato que ainda não foram faturados (billId IS NULL)
+       COALESCE((
+         SELECT SUM(bi.valor)
+         FROM banco_fat.billitem bi
+         WHERE bi.contractId = b.contractId 
+           AND bi.billId IS NULL 
+           AND bi.billItemTipo = 1
+       ), 0) AS totalValor
+     FROM banco_fat.bill b
+     WHERE b.contractId = ? 
+       AND b.status = 1 -- 🟢 Filtra estritamente o status da fatura "Em Aberto" (Ajuste o ID se não for 1)
+     LIMIT 1;
+   `, [contractId]);
 
     // CORREÇÃO 4: Retorna o resultado real do banco, ou null se a FATURA em si não existir
     return resultado || null;
@@ -176,32 +180,27 @@ export class ContratoRepository {
     // usamos uma lógica que descobre todos os itens do tipo 9 daquele contrato.
     // Se for a primeira fatura do cliente (Menor ID), exibe o primeiro valor (100).
     // Se for a segunda fatura (Maior ID), exibe o segundo valor (630).
-    const resultado = await db.all(`
-      SELECT 
-        b.id,
-        b.contractId,
-        b.dataAbertura,
-        b.dataFechamento AS fechamento,
-        b.dataVencimento AS vencimento,
-        b.status,
-        -- Desempate inteligente: se for a primeira fatura cadastrada para o contrato,
-        -- traz o menor valor lançado (100). Se for a segunda, traz o maior valor (630).
-        CASE 
-          WHEN b.id = (SELECT MIN(id) FROM banco_fat.bill WHERE contractId = b.contractId AND status IN (1,4,5))
-            THEN COALESCE((SELECT MIN(valor) FROM banco_fat.billitem WHERE contractId = b.contractId AND billItemTipo = 9), 0)
-          ELSE 
-            COALESCE((SELECT MAX(valor) FROM banco_fat.billitem WHERE contractId = b.contractId AND billItemTipo = 9), 0)
-        END AS totalValor,
-        -- Regra de Urgência automática
-        CASE 
-          WHEN (julianday(b.dataVencimento) - julianday('now')) <= 3 AND b.status IN (1,4) THEN 1 
-          ELSE 0 
-        END AS Urgente
-      FROM banco_fat.bill b
-      WHERE b.contractId = ? 
-        AND b.status IN (1, 4, 5)
-      ORDER BY b.id ASC
-    `, [contractId]);
+      const resultado = await db.get(`
+     SELECT 
+       b.id,
+       b.contractId,
+       b.dataAbertura,
+       b.dataFechamento AS fechamento,
+       b.dataVencimento AS vencimento,
+       b.status,
+       -- 🟢 SUBQUERY ISOLADA: Soma apenas os itens do contrato que ainda não foram faturados (billId IS NULL)
+       COALESCE((
+         SELECT SUM(bi.valor)
+         FROM banco_fat.billitem bi
+         WHERE bi.contractId = b.contractId 
+           AND bi.billId IS NULL 
+           AND bi.billItemTipo = 1
+       ), 0) AS totalValor
+     FROM banco_fat.bill b
+     WHERE b.contractId = ? 
+       AND b.status = 1 -- 🟢 Filtra estritamente o status da fatura "Em Aberto" (Ajuste o ID se não for 1)
+     LIMIT 1;
+   `, [contractId]);
 
     return resultado || []; 
   } catch (erro) {
@@ -226,13 +225,23 @@ export class ContratoRepository {
         b.dataFechamento AS fechamento,
         b.dataVencimento AS vencimento,
         b.status,
-        -- Desempate inteligente: se for a primeira fatura cadastrada para o contrato,
-        -- traz o menor valor lançado (100). Se for a segunda, traz o maior valor (630).
+        -- 🟢 SOMA INTELIGENTE: Avalia se a fatura está aberta ou fechada para buscar os itens correspondentes
         CASE 
-          WHEN b.id = (SELECT MIN(id) FROM banco_fat.bill WHERE contractId = b.contractId AND status IN (1,4,5))
-            THEN COALESCE((SELECT MIN(valor) FROM banco_fat.billitem WHERE contractId = b.contractId AND billItemTipo = 9), 0)
+          WHEN b.status = 1 THEN -- 💡 Ajuste o número '1' para o ID real do seu status "Em Aberto"
+            COALESCE((
+              SELECT SUM(bi.valor) 
+              FROM banco_fat.billitem bi 
+              WHERE bi.contractId = b.contractId 
+                AND bi.billId IS NULL -- 👈 Pega os itens órfãos que ainda não foram faturados
+                AND bi.billItemTipo = 1
+            ), 0)
           ELSE 
-            COALESCE((SELECT MAX(valor) FROM banco_fat.billitem WHERE contractId = b.contractId AND billItemTipo = 9), 0)
+            COALESCE((
+              SELECT SUM(bi.valor) 
+              FROM banco_fat.billitem bi 
+              WHERE bi.billId = b.id -- 👈 Para faturas fechadas/pagas, busca pelo ID carimbado
+                AND bi.billItemTipo = 1
+            ), 0)
         END AS totalValor,
         -- Regra de Urgência automática
         CASE 
@@ -260,21 +269,23 @@ export class ContratoRepository {
     // Se você pagar a fatura de 100 (mudar status para 3), ela sai do WHERE e a soma passa a dar apenas 630!
     const resultado = await db.get(`
       SELECT 
-        COALESCE(
-          SUM(
-            CASE 
-              WHEN b.id = (SELECT MIN(id) FROM banco_fat.bill WHERE contractId = b.contractId AND status IN (1,4,5))
-                THEN COALESCE((SELECT MIN(valor) FROM banco_fat.billitem WHERE contractId = b.contractId AND billItemTipo = 9), 0)
-              ELSE 
-                COALESCE((SELECT MAX(valor) FROM banco_fat.billitem WHERE contractId = b.contractId AND billItemTipo = 9), 0)
-            END
-          ), 
-          0
+        (
+          -- Parte 1: Soma os itens antigos que já foram carimbados nas faturas em aberto (status 1, 4, 5)
+          COALESCE((
+            SELECT SUM(bi.valor)
+            FROM banco_fat.billitem bi
+            INNER JOIN banco_fat.bill b ON bi.billId = b.id
+            WHERE b.contractId = ? AND b.status IN (1, 4, 5) AND bi.billItemTipo = 1
+          ), 0)
+          +
+          -- Parte 2: Soma os novos itens em aberto que ainda NÃO têm fatura (billId IS NULL)
+          COALESCE((
+            SELECT SUM(bi.valor)
+            FROM banco_fat.billitem bi
+            WHERE bi.contractId = ? AND bi.billId IS NULL AND bi.billItemTipo = 1
+          ), 0)
         ) AS totalValor
-      FROM banco_fat.bill b
-      WHERE b.contractId = ? 
-        AND b.status IN (1, 4, 5) -- 👈 Filtro crucial: faturas pagas (status 3) são excluídas da soma automaticamente!
-    `, [contractId]);
+    `, [contractId, contractId]); // 🟢 Passamos o contractId duas vezes, uma para cada subconsulta
 
     return resultado; 
   } catch (erro) {

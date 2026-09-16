@@ -60,6 +60,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
   const [limiteContrato, setlimiteContrato] = useState<any>(null);
   const [pedidoRastreamento, setPedidoRastreamento] = useState<any>(null);
   const [, setTagContrato] = useState<any>(null);
+  const [exibirLimite, setExibirLimite] = useState(false);
 
   const formatarDataBr = (dataBruta: any) => {
     if (!dataBruta) return "---";
@@ -338,7 +339,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           </div>  
 
           {/* GASTOS ATUAIS COM VALOR TRAVADO À DIREITA */}
-         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', textAlign: 'right', minWidth: '140px', maxWidth: '140px' }}>
+         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', textAlign: 'right', minWidth: '150px', maxWidth: '150px' }}>
   
          <div className="d-flex justify-content-between w-100 align-items-center">
          <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>GASTOS ATUAIS</span>
@@ -348,22 +349,71 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
          </div>
 
          {/* CORREÇÃO CHAVE: 'd-block w-100 text-end' força o valor financeiro a pular para a ponta direita */}
-         <span className="fs-5 fw-bold mt-1 text-dark d-block w-100 text-start" style={{ textAlign: 'left' }}>
-           {formatarMoeda(valorGasto)}
-         </span>
+        <div className="w-100 text-start position-relative">
+    
+    {/* 1. Valor Gasto */}
+    <span className="fs-5 fw-bold mt-1 text-dark d-block w-100" style={{ textAlign: 'left' }}>
+      {formatarMoeda(valorGasto)}
+    </span>
 
-         <div className="progress w-100 bg-light mt-1 rounded-pill" style={{ height: '10px', border: '1px solid #e2e8f0',marginRight: '5px' }}>
-           <div 
-             className={`progress-bar rounded-pill ${porcentagemConsumida >= 90 ? 'bg-danger' : 'bg-primary'}`}
-             role="progressbar"
-             style={{ width: `${porcentagemConsumida}%` }}
-             aria-valuenow={porcentagemConsumida}
-           ></div>
-         </div>
+    {/* 2. Barra de Progresso */}
+    <div className="progress w-100 bg-light mt-1 rounded-pill" style={{ height: '9px', border: '1px solid #e2e8f0' }}>
+      <div 
+        className={`progress-bar rounded-pill ${porcentagemConsumida >= 90 ? 'bg-danger' : 'bg-primary'}`}
+        role="progressbar"
+        style={{ width: `${porcentagemConsumida}%` }}
+        aria-valuenow={porcentagemConsumida}
+      ></div>
+    </div>
+
+    {/* 3. Disponível + Ícone de Informação */}
+    <div className="d-flex align-items-center gap-2 mt-1 text-nowrap" style={{ fontSize: '11px' }}>
+      <span className="fw-bold text-dark">         
+        Disponível: {formatarMoeda(valorMeta - valorGasto)}
+      </span>
+
+      {/* Botão circular de Informação */}
+      <button
+        type="button"
+        className="d-flex align-items-center justify-content-center border-0 text-white fw-bold"
+        onClick={() => setExibirLimite(!exibirLimite)}
+        title="Clique para ver o limite"
+        style={{
+          width: '13px',   
+          height: '13px',
+          borderRadius: '50%',
+          backgroundColor: exibirLimite ? '#0d6efd' : '#6c757d',
+          fontSize: '8px',
+          cursor: 'pointer',
+          transition: 'background-color 0.2s ease',
+          lineHeight: 1,
+          flexShrink: 0
+        }}
+      >
+        i
+      </button>
+    </div>
+
+    {/* 4. 🟢 Limite Aberto para Baixo com Posicionamento Absoluto */}
+    {/* Ele flutua por cima do layout, garantindo que o Header não cresça de tamanho */}
+    {exibirLimite && (
+      <span 
+        className="fw-bold text-muted bg-white px-1 rounded shadow-sm" 
+        style={{ 
+          fontSize: '10px',
+          position: 'absolute',
+          left: '0',
+          top: '100%', // Coloca o texto exatamente abaixo da linha do "Disponível"
+          zIndex: 10,  // Garante que fica por cima de outros elementos de fundo
+          border: '1px solid #e2e8f0'
+        }}
+      >         
+        Limite: {formatarMoeda(valorMeta)}
+      </span>
+    )}
+  </div>
+
          
-         <span className="fs-10 fw-bold mt-1 text-dark d-block w-100 text-start" style={{  textAlign: 'left' }}>
-           Limite: {formatarMoeda(valorMeta)}
-         </span>
 
            </div>
            </div>

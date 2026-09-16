@@ -9,32 +9,20 @@ export class transacaoRepository {
     return await db.get(`SELECT saldoContrato FROM contaContrato WHERE contratoId = ?;`, [contratoId]);
   }
 
-  async buscarSaldoVeiculo(contratoId: number): Promise<any> {
+  async buscarSaldoVeiculo(contratoId: number, placa: string): Promise<any> {
     const db = await DatabaseConnection.getConnection();
-    return await db.get(`SELECT saldoVeiculo FROM contaVeiculo WHERE contratoId = ?;`, [contratoId]);
+    return await db.get(`SELECT saldoContaVeiculo FROM contaVeiculo cv inner join veiculo v on cv.veiculoId = v.id WHERE v.contratoId = ? AND placa = ? ;`, [contratoId, placa]);
   }
 
   // 2. Deduz o valor do saldo do contrato
   async debitarSaldoContrato(contratoId: number, valor: number): Promise<void> {
     const db = await DatabaseConnection.getConnection();
     await db.run(`UPDATE contaContrato SET saldoContrato = saldoContrato - ? WHERE contratoId = ?;`, [valor, contratoId]);
-
-    const query = `
-      INSERT INTO transacaoViagem (id, contratoId, valorCobradoPedagio, pracaPedagio, statusViagemTipo, dataGravacao)
-      VALUES (?, ?, ?, ?, ?, datetime('now'));
-    `;
-    //await db.run(query, [dados.id, dados.contratoId, dados.valor, dados.praca, dados.status]);
   }
 
-    async debitarSaldoVeiculo(contratoId: number, valor: number): Promise<void> {
+    async debitarSaldoVeiculo(contratoId: number, valor: number, placa: any): Promise<void> {
     const db = await DatabaseConnection.getConnection();
-    await db.run(`UPDATE contaContrato SET saldoContrato = saldoContrato - ? WHERE contratoId = ?;`, [valor, contratoId]);
-
-    const query = `
-      INSERT INTO transacaoViagem (id, contratoId, valorCobradoPedagio, pracaPedagio, statusViagemTipo, dataGravacao)
-      VALUES (?, ?, ?, ?, ?, datetime('now'));
-    `;
-    //await db.run(query, [dados.id, dados.contratoId, dados.valor, dados.praca, dados.status]);
+    await db.run(`UPDATE ContaVeiculo set saldoContaVeiculo = saldoContaVeiculo - ? WHERE ID = (SELECT veiculoId FROM contaVeiculo cv inner join veiculo v on cv.veiculoId = v.id WHERE v.contratoId = ? AND placa = ?);`, [valor, contratoId, placa]);
   }
 
   async reembolsarSaldoContrato(contratoId: number, valor: number): Promise<void> {
@@ -43,25 +31,34 @@ export class transacaoRepository {
   }
 
   // 3. Insere a transação mestre da passagem
-  async inserirTransacaoViagem(dados: any): Promise<number> {
+  async inserirTransacaoViagem(dados: any): Promise<any> {
     const db = await DatabaseConnection.getConnection();
     const query = `
-      INSERT INTO transacaoViagem (contratoId, valorTransacaoPedagio, valorCobradoPedagio, valorCobradoValePedagio, valorReembolso, placaVeiculo, pracaPedagio,  documentoEmbarcador, recargaValePedagioId, statusViagemTipo, dataRegistro)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
+      INSERT INTO transacaoProcessamento (contratoId, valorTransacaoPedagio, valorCobradoPedagio, valorCobradoValePedagio, valorReembolso, placaVeiculo, transacaoVeiculoTipo, pracaPedagio, documentoEmbarcador, recargaValePedagioId, statusViagemTipo, dataRegistro)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
     `;
-    const resultado = await db.run(query, [dados.contratoId, dados.valorPedagio, dados.valorCobradoPedagio, dados.valorVPR, dados.valorEstorno, dados.placa, dados.transacaoTipo, dados.praca, dados.documento, dados.recargaVPR, dados.status, dados.data]);
-    
-    const idGerado = resultado.lastID || 0;
+    const resultado = await db.run(query, [
+      dados.contratoId, 
+      dados.valorPedagio, 
+      dados.valorCobradoPedagio, 
+      dados.valorVPR, 
+      dados.valorEstorno, 
+      dados.placa, 
+      dados.transacaoTipo, 
+      dados.praca, 
+      dados.documento, 
+      dados.recargaVPR, 
+      dados.status]);
 
-    return idGerado;
+    return resultado.lastID;
   }
 
   // 4. Insere o registro simples na tabela de relatório linha a linha
   async inserirRelatorioPassagem(dados: any): Promise<void> {
     const db = await DatabaseConnection.getConnection();
     const query = `
-      INSERT INTO relatorioPassagem (contratoId, dataInicio, dataFim valorTransacaoPedagio, valorCobradoPedagio, valorCobradoValePedagio, valorReembolso, pracaPedagio, transacaoProcessamentoId, status, valor, placaVeiculo)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
+      INSERT INTO relatorioPassagem (contratoId, dataInicio, dataFim, valorTransacaoPedagio, valorCobradoPedagio, valorCobradoValePedagio, valorReembolso, pracaPedagio, transacaoProcessamentoId, status, valor, placaVeiculo)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
     await db.run(query, [dados.contratoId, dados.dataInicio, dados.dataFim, dados.valorPedagio, dados.valorCobradoPedagio, dados.valorVPR, dados.valorEstorno, dados.praca, dados.trasacaoId, dados.status, dados.valor, dados.placa]);
 
@@ -71,10 +68,10 @@ export class transacaoRepository {
   async inserirRelatorioExtrato(dados: any): Promise<void> {
     const db = await DatabaseConnection.getConnection();
     const query = `
-      INSERT INTO relatorioPassagem (contratoId, dataInicio, dataFim valorTransacaoPedagio, valorCobradoPedagio, valorCobradoValePedagio, valorReembolso, pracaPedagio, transacaoProcessamentoId, status, valor, extratoTipo, placaVeiculo)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'));
+      INSERT INTO relatorioExtrato (contratoId, dataViagem, valorTransacaoPedagio, valorCobradoPedagio, valorCobradoValePedagio, valorReembolso, pracaPedagio, transacaoProcessamentoId, extratoTipo, placaVeiculo)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
-    await db.run(query, [dados.contratoId, dados.dataInicio, dados.valorPedagio, dados.valorCobradoPedagio, dados.valorVPR, dados.valorEstorno, dados.praca, dados.trasacaoId, dados.status, dados.valor, dados.extratoTipo, dados.placa]);
+    await db.run(query, [dados.contratoId, dados.dataInicio, dados.valorPedagio, dados.valorCobradoPedagio, dados.valorVPR, dados.valorEstorno, dados.praca, dados.trasacaoId, dados.extratoTipo, dados.placa]);
 
   }
 }

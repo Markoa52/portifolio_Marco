@@ -65,7 +65,7 @@ async obterLimiteContrato(contractId: number): Promise<any> {
   return contrato;
 }
 
-  async contratoPesquisa(dadosDoPedido: any) {
+async contratoPesquisa(dadosDoPedido: any) {
     const { protocoloId, acao, dadosLimpos } = dadosDoPedido;
 
     // A) EXTRAI O ID DO CONTRATO ENVIADO PELO INPUT DA PESQUISA
@@ -117,9 +117,9 @@ async obterLimiteContrato(contractId: number): Promise<any> {
       protocoloId, 
       ...contratoLocalizado // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
     };
-  }
+}
 
-  async acoes(dadosDoPedido: any) {
+async acoes(dadosDoPedido: any) {
 
     const { metadata } = dadosDoPedido;
     const { protocoloId, acao } = metadata;
@@ -154,6 +154,6 @@ async obterLimiteContrato(contractId: number): Promise<any> {
       protocoloId, 
       ...dadosDoPedido // Mescla as colunas (id, start_date, gastos, limiteMeta) na resposta JSON
     };
-  }
+}
 
 }

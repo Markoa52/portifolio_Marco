@@ -56,8 +56,11 @@ export class Database {
             // 4. CRIAÇÃO DAS TABELAS (Garantindo a execução síncrona dos blocos)
             console.log('Criando tabelas no banco de dados...');
 
-            //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=68.90 where id=1;`);
-            //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=50 where id=2;`);
+            //await this.instance.exec(`UPDATE contaContrato set saldoContrato=650 where id=2;`);
+            //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=300.00 where id=1;`);
+
+            //await this.instance.exec(`UPDATE banco_fat.billItem set billId=3 where id in (2);`);
+            await this.instance.exec(`UPDATE banco_fat.bill set status=4 where id in (3);`);
 
             //await this.instance.exec(`DELETE FROM banco_user.usuario where id=40`);
 
@@ -66,8 +69,8 @@ export class Database {
             //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo where contratoId=2`);
             //await this.instance.exec(`DELETE FROM Veiculo where contratoId=2`);
-            //await this.instance.exec(`DROP TABLE relatorioExtrato`);
-            //await this.instance.exec(`DROP TABLE relatorioPassagem`);
+            //await this.instance.exec(`DROP TABLE trasacaoProcessamento`);
+            //await this.instance.exec(`DROP TABLE relatorioBillItem`);
             
             //await this.instance.exec(`INSERT INTO tag (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
 
@@ -141,7 +144,7 @@ export class Database {
             `);
 
             await this.instance.exec(`
-              CREATE TABLE IF NOT EXISTS trasacaoProcessamento (
+              CREATE TABLE IF NOT EXISTS transacaoProcessamento (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 contratoId INTEGER,
                 valorTransacaoPedagio REAL,
@@ -266,7 +269,7 @@ export class Database {
                 billItemId INTEGER,
                 billItemTipo INTEGER,
                 contratoId INTEGER,
-                transactionId INTEGER,
+                transacaoId INTEGER,
                 valor REAL,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id)
               );
@@ -283,12 +286,12 @@ export class Database {
                 valorCobradoValePedagio REAL,
                 valorReembolso REAL,
                 pracaPedagio TEXT,
-                trasacaoProcessamentoId INTEGER,
+                transacaoProcessamentoId INTEGER,
                 status INTEGER,
                 valor REAL,
                 placaVeiculo TEXT,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id),
-                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
+                FOREIGN KEY (transacaoProcessamentoId) REFERENCES transacaoProcessamento(id)
               );
             `);
 
@@ -302,11 +305,11 @@ export class Database {
                 valorCobradoValePedagio REAL,
                 valorReembolso REAL,
                 pracaPedagio TEXT,
-                trasacaoProcessamentoId INTEGER,
+                transacaoProcessamentoId INTEGER,
                 extratoTipo INTEGER,
                 placaVeiculo TEXT,
                 FOREIGN KEY (contratoId) REFERENCES contrato(id),
-                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
+                FOREIGN KEY (transacaoProcessamentoId) REFERENCES transacaoProcessamento(id)
               );
             `);
 

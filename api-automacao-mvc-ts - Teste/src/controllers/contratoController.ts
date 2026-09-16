@@ -27,7 +27,6 @@ export class contratoController {
     }
   }
 
-  
   async pesquisa(req: Request, res: Response): Promise<Response> {
     try {
       const dadosDoContrato = req.body;
@@ -128,7 +127,7 @@ export class contratoController {
     }
   }
 
-    async buscarFaturasId(req: Request, res: Response): Promise<Response> {
+  async buscarFaturasId(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
       const contractId = parseInt(String(id ?? ''));
@@ -173,9 +172,9 @@ export class contratoController {
     console.error('❌ Erro no método ContratosDoUsuario:', error.message);
     return res.status(500).json({ erro: 'Erro interno ao listar contratos.' });
   }
-}
+  }
 
-    async buscarSaldoFaturaId(req: Request, res: Response): Promise<Response> {
+  async buscarSaldoFaturaId(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
       const contractId = parseInt(String(id ?? ''));
@@ -201,7 +200,7 @@ export class contratoController {
     }
   }
 
-   async contrato(req: Request, res: Response): Promise<Response> {
+  async contrato(req: Request, res: Response): Promise<Response> {
     try {
 
       console.log(`[Controller] Efetuando busca rápida no SQL Server para a tela. ID:`);
@@ -221,7 +220,7 @@ export class contratoController {
     }
   }
 
-      async contratoLimite(req: Request, res: Response): Promise<Response> {
+  async contratoLimite(req: Request, res: Response): Promise<Response> {
     try {
       const { id } = req.params;
       const contractId = parseInt(String(id ?? ''));

@@ -141,7 +141,6 @@ router.get('/contrato/fatura/:id', authMiddlewareInstance.verificarJWT,(req, res
  *       500:
  *         description: Erro interno no servidor.
  */
-
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
 router.get('/fatura/aberto/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarFaturaAbertoId(req, res));
 
@@ -168,7 +167,6 @@ router.get('/fatura/aberto/:id', authMiddlewareInstance.verificarJWT,(req, res) 
  *       500:
  *         description: Erro interno no servidor.
  */
-
 // 2. CORREÇÃO DE ESCOPO: O .bind() garante que o Controller consiga acessar seus próprios métodos e serviços internos
 router.get('/contrato/faturas/:id', authMiddlewareInstance.verificarJWT,(req, res) => geradorController.buscarFaturasId(req, res));
 
