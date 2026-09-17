@@ -224,12 +224,12 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
 
           {/* ITEM 1: INÍCIO */}
           <div 
-            className="btn btn-menu-limpo d-flex flex-column align-items-center p-2 text-decoration-none text-dark border-0" 
+            className="btn btn-menu-limpo d-flex flex-column align-items-center fs-5 fw-bold text-dark border-0" 
             onClick={() => { setAbaAtiva('cards-gerais'); setMenuAberto(null); }}
             style={{ minWidth: '90px', transition: 'background-color 0.2s' }}
           >
-            <Home size={26} color="#475569" strokeWidth={2} className="mb-2" />
-            <span className="fs-5 fw-bold">Início</span>
+            <Home size={26} color="#475569" strokeWidth={2} className="mb-1" />
+            <span className="fs-5 fw-bold mb-1">Início</span>
           </div>
 
           {/* ITEM 2: FROTA */}
