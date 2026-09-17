@@ -19,6 +19,7 @@ import { TransferenciaTag } from './estoqueTag';
 
 // 1. IMPORTA O SEU NOVO COMPONENTE (Ajuste o caminho do arquivo se necessário)
 import { MenuHamburguer } from './menuHumburguer'; 
+import { MenuMobileModulos } from './menuHumbugerMobile'; 
 
 export type AbaInferior = 'cards-gerais' | 'detalhes-pedagio' | 'historico-fatura' | 'faturas-abertas' | 'listar-frota' | 'relatorio-passagem' | 'relatorio-extrato' | 'editar-usuario' | 'usuario' | 'contrato-detalhe' | 'pesquisar-contrato' | 'cadastro-contrato' | 'configuracao-sistema' | 'consultaPedidosCards' | 'solicitacaoPedido' | 'tag' | 'login' | 'estoque-tag';
 
@@ -186,19 +187,27 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         boxSizing: 'border-box'
       }}
     >
-
+      
       {/* d-flex flex-column flex-md-row faz o menu ficar em linha no PC e empilhar bonito no celular */}
       <div className="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center gap-3 p-0 w-100">
-        
+          
+        {/* MENU HAMBÚRGUER MOBILE */}
+        <div className="d-block d-md-none mx-2 mx-md-3" style={{ marginTop: '-12px' }} >
+          <MenuMobileModulos usuarioLogado={usuarioLogado}
+               setAbaAtiva={setAbaAtiva} 
+               setPaginaAtiva={setPaginaAtiva} 
+               setIdContratoSelecionado={setIdContratoSelecionado} 
+               setPayloadGlobal={setPayloadGlobal} 
+                usuario={undefined} 
+                onLogoff={function (): void {
+                throw new Error('Function not implemented.');
+              } }  />
+        </div>
+
         {/* LADO ESQUERDO: MENUS E NAVEGAÇÃO */}
         {/* 'justify-content-center justify-content-md-start' centraliza os ícones apenas no celular */}
-        <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-0 gap-md-2 flex-wrap" style={{ marginTop: '-20px' }}>
+        <div className="d-none d-md-flex align-items-center justify-content-start justify-content-md-start gap-0 gap-md-2 flex-wrap" style={{ marginTop: '-25px' }}>
           
-          {/* MENU HAMBÚRGUER MOBILE */}
-          {/* <div className="d-block d-md-none me-2 text-dark" style={{ marginTop: '-37px' }} >
-            <MenuMobileModulos setAbaAtiva={setAbaAtiva} />
-          </div> */}
-
           {/* MENU HAMBÚRGUER DESKTOP */}
           <div className="d-none d-md-block mx-2 mx-md-3">
             <MenuHamburguer 
@@ -315,7 +324,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
         </div>
 
         {/* LADO DIREITO: BLOCOS INFORMATIVOS FINANCEIROS (BLINDADO VIA STYLES INLINE) */}
-        <div className="d-flex align-items-center justify-content-end text-dark mt-2 mt-md-0 px-2 px-md-0" style={{ gap: '40px' }}>
+        <div className="d-flex text-dark mt-2 mt-md-0 px-2 px-md-1" style={{ gap: '50px' }}>
           
           {/* CONTRATO */}
           {/* MUDANÇA: Forçado margin-right de 24px para afastar do Saldo Pedágio */}
@@ -328,7 +337,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           {/* MUDANÇA: Alterado 'alignItems' de 'flex-end' para 'flex-start' para puxar o texto para a esquerda */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
             <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>VALE PEDÁGIO</span>
-            <div className="d-flex align-items-center gap-2 mt-1">
+            <div className="d-flex align-items-center gap-2 mt-0">
               <span className="fs-7 fw-bold text-dark">{veiculoContaVPR != null ? 
               (new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(typeof veiculoContaVPR === 'object' ? veiculoContaVPR.total : veiculoContaVPR)) 
               : ("R$ 0,00")}</span>     
@@ -341,90 +350,75 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
           {/* GASTOS ATUAIS COM VALOR TRAVADO À DIREITA */}
          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', textAlign: 'right', minWidth: '150px', maxWidth: '150px' }}>
   
-         <div className="d-flex justify-content-between w-100 align-items-center">
+         <div className="d-flex justify-content-between w-100 align-items-justify">
          <span className="text-muted fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '0.05em' }}>GASTOS ATUAIS</span>
-         <span className="fw-bold text-primary" style={{ fontSize: '0.85rem', marginRight: '10px' }}>
+         <span className="fw-bold text-primary" style={{ fontSize: '0.85rem', marginRight: '10px', marginTop:'-3px' }}>
            {Math.round(porcentagemConsumida)}%
          </span>
          </div>
-
-         {/* CORREÇÃO CHAVE: 'd-block w-100 text-end' força o valor financeiro a pular para a ponta direita */}
-        <div className="w-100 text-start position-relative">
-    
-    {/* 1. Valor Gasto */}
-    <span className="fs-5 fw-bold mt-1 text-dark d-block w-100" style={{ textAlign: 'left' }}>
-      {formatarMoeda(valorGasto)}
-    </span>
-
-    {/* 2. Barra de Progresso */}
-    <div className="progress w-100 bg-light mt-1 rounded-pill" style={{ height: '9px', border: '1px solid #e2e8f0' }}>
-      <div 
-        className={`progress-bar rounded-pill ${porcentagemConsumida >= 90 ? 'bg-danger' : 'bg-primary'}`}
-        role="progressbar"
-        style={{ width: `${porcentagemConsumida}%` }}
-        aria-valuenow={porcentagemConsumida}
-      ></div>
-    </div>
-
-    {/* 3. Disponível + Ícone de Informação */}
-    <div className="d-flex align-items-center gap-2 mt-1 text-nowrap" style={{ fontSize: '11px' }}>
-      <span className="fw-bold text-dark">         
-        Disponível: {formatarMoeda(valorMeta - valorGasto)}
-      </span>
-
-      {/* Botão circular de Informação */}
-      <button
-        type="button"
-        className="d-flex align-items-center justify-content-center border-0 text-white fw-bold"
-        onClick={() => setExibirLimite(!exibirLimite)}
-        title="Clique para ver o limite"
-        style={{
-          width: '13px',   
-          height: '13px',
-          borderRadius: '50%',
-          backgroundColor: exibirLimite ? '#0d6efd' : '#6c757d',
-          fontSize: '8px',
-          cursor: 'pointer',
-          transition: 'background-color 0.2s ease',
-          lineHeight: 1,
-          flexShrink: 0
-        }}
-      >
-        i
-      </button>
-    </div>
-
-    {/* 4. 🟢 Limite Aberto para Baixo com Posicionamento Absoluto */}
-    {/* Ele flutua por cima do layout, garantindo que o Header não cresça de tamanho */}
-    {exibirLimite && (
-      <span 
-        className="fw-bold text-muted bg-white px-1 rounded shadow-sm" 
-        style={{ 
-          fontSize: '10px',
-          position: 'absolute',
-          left: '0',
-          top: '100%', // Coloca o texto exatamente abaixo da linha do "Disponível"
-          zIndex: 10,  // Garante que fica por cima de outros elementos de fundo
-          border: '1px solid #e2e8f0'
-        }}
-      >         
-        Limite: {formatarMoeda(valorMeta)}
-      </span>
-    )}
-  </div>
-
          
+         {/* CORREÇÃO CHAVE: 'd-block w-100 text-end' força o valor financeiro a pular para a ponta direita */}
+         <div className="w-100 text-start position-relative">
+    
+         {/* 1. Valor Gasto */}
+         <span className="fs-5 fw-bold mt-1 text-dark d-block w-100" style={{ textAlign: 'left' }}>
+           {formatarMoeda(valorGasto)}
+         </span>
+     
+         {/* 2. Barra de Progresso */}
+         <div className="progress w-100 bg-light mt-1 rounded-pill" style={{ height: '9px', border: '1px solid #e2e8f0' }}>
+           <div 
+             className={`progress-bar rounded-pill ${porcentagemConsumida >= 90 ? 'bg-danger' : 'bg-primary'}`}
+             role="progressbar"
+             style={{ width: `${porcentagemConsumida}%` }}
+             aria-valuenow={porcentagemConsumida}
+           ></div>
+         </div>
+     
+         {/* 3. Disponível + Ícone de Informação */}
+         <div className="d-flex align-items-center gap-2 mt-1 text-nowrap" style={{ fontSize: '11px' }}>
+           <span className="fw-bold text-dark">         
+             Disponível: {formatarMoeda(valorMeta - valorGasto)}
+           </span>
 
-           </div>
-           </div>
-           </div>
-           </header>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left', marginRight: '16px' }}>
+            <div className="d-flex align-items-center gap-2 mt-0">
+              <div onClick={() => setExibirLimite(!exibirLimite)} className="cp d-flex align-items-center" style={{ cursor: 'pointer' }}>
+                <Info size={14} color="#64748b" strokeWidth={2.5} />
+              </div>
+            </div>
+          </div>  
+
+         </div>
+
+         {/* 4. Limite Aberto para Baixo com Posicionamento Absoluto */}
+         {/* Ele flutua por cima do layout, garantindo que o Header não cresça de tamanho */}
+         {exibirLimite && (
+           <span 
+             className="fw-bold text-muted bg-white px-3 py-2 rounded shadow-sm" 
+             style={{ 
+               fontSize: '11px',
+               position: 'absolute',
+               left: '0',
+               top: '100%', // Coloca o texto exatamente abaixo da linha do "Disponível"
+               zIndex: 10,  // Garante que fica por cima de outros elementos de fundo
+               border: '1px solid #e2e8f0'
+             }}
+           >         
+             Limite: {formatarMoeda(valorMeta)}
+           </span>
+         )}
+       </div>
+       </div>
+       </div>
+       </div>
+       </header>
 
        {/* ==========================================================================
           CONTEÚDO PRINCIPAL DINÂMICO (GRID TOTALMENTE RESPONSIVO)
           ========================================================================== */}
        {/* CONTEÚDO PRINCIPAL (Muda dinamicamente conforme a aba) */}
-       <main className="container my-1 p-0" style={{ maxWidth: "1200px", margin: "0 auto", width: 'calc(100% - 33px)'}}>
+       <main className="container my-0 p-0" style={{ maxWidth: "1200px", margin: "0 auto", width: 'calc(100% - 33px)'}}>
       
         {/* ABA 1: PAINEL GERAL (CARDS) */}
         {abaAtiva === 'cards-gerais' && (
@@ -475,10 +469,10 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
 
         {/* 2. Exibição das Datas de Fechamento e Vencimento Formatadas */}
         <span className="d-block mb-1">
-          FECHAMENTO: {formatarDataBr(faturaCriado?.dataFechamento)}
+          FECHAMENTO: {formatarDataBr(faturaCriado?.fechamento)}
         </span>
         <span className="d-block mb-1">
-          VENCIMENTO: {formatarDataBr(faturaCriado?.dataVencimento)}
+          VENCIMENTO: {formatarDataBr(faturaCriado?.vencimento)}
         </span>
         
         {/* VALOR FORMATADO EM REAIS (R$) */}
@@ -800,7 +794,7 @@ export const Contrato: React.FC<IContratoProps> = ({usuarioLogado, payloadEnvio,
             // Garante que o ID do contrato de origem é convertido para número
             idContratoOrigem={Number(payloadEnvio?.dadosLimpos?.id || payloadEnvio?.id || 0)}
             
-            // 💡 PASSO CRUCIAL: Passe o objeto do usuário logado que recebemos no topo do contrato.tsx
+            // PASSO CRUCIAL: Passe o objeto do usuário logado que recebemos no topo do contrato.tsx
             usuarioLogado={usuarioLogado} // ou usuarioLogado dependendo do nome da prop no seu contrato.tsx
             
             setPaginaAtiva={setPaginaAtiva} 

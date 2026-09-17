@@ -76,7 +76,7 @@ function App() {
     }
     }, [paginaAtiva, usuarioLogado]);
 
-    // 💡 CORREÇÃO AQUI: Função inteligente de sucesso de autenticação
+    // CORREÇÃO AQUI: Função inteligente de sucesso de autenticação
    const handleSucessoAutenticacao = (dadosUsuario: any) => {
   if (!dadosUsuario) {
     handleLogoff();

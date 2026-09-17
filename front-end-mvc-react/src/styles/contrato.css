@@ -455,7 +455,7 @@ header.navbar {
 /* Adiciona 170px de respiro no celular e 120px no computador, compensando a altura do menu */
 body, 
 .pagina-container {
-  padding-top: 115px !important;
+  padding-top: 90px !important;
 }
 
 @media (min-width: 768px) {

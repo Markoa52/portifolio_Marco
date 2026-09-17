@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, DollarSign, Calendar, Search, ArrowLeft, Layers } from 'lucide-react';
+import { Eye, DollarSign, Calendar, Search } from 'lucide-react';
 import axios from 'axios';
 
 import type { IConsultaPedidosProps } from '../types/IConsultaPedidoProps';

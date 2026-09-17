@@ -59,31 +59,30 @@ export const MenuHamburguer: React.FC<IMenuHumProps> = ({
           </div>
 
           {/* Seção Trocar Contrato Otimizada */}
-<div className="menu-dropdown-secao-grupo mb-4">
-  <p className="menu-dropdown-secao-titulo d-flex align-items-center gap-2 fw-bold text-dark m-0 pb-1 fs-6">
-    <RefreshCcw size={18} className="text-secondary" /> Trocar contrato
-  </p>
-  <ul className="list-unstyled ps-1 mt-1">
-    <li 
-      onClick={() => { 
-        // 🌟 Se for admin vai para 'atendimento', senão vai para 'pesquisar-contrato'
-        setPaginaAtiva(usuarioLogado?.perfil === 'admin' ? 'atendimento' : 'pesquisar-contrato'); 
-        setMenuGeralAberto(false); 
-      }}
-      style={{ cursor: 'pointer' }}
-      className="py-1 text-secondary small-hover"
-    >
-      {/* 🌟 Se for admin exibe 'Modulos', senão exibe 'Atendimento' */}
-      {usuarioLogado?.perfil === 'admin' ? 'Modulos' : 'Atendimento'}
-    </li>
-  </ul>
-</div>
+          <div className="menu-dropdown-secao-grupo mb-4">
+            <p className="menu-dropdown-secao-titulo d-flex align-items-center gap-2 fw-bold text-dark m-0 pb-1 fs-6">
+              <RefreshCcw size={18} className="text-secondary" /> Trocar contrato
+            </p>
+            <ul className="list-unstyled ps-1 mt-1">
+              <li 
+                onClick={() => { 
+                  // Se for admin vai para 'atendimento', senão vai para 'pesquisar-contrato'
+                  setPaginaAtiva(usuarioLogado?.perfil === 'admin' ? 'atendimento' : 'pesquisar-contrato'); 
+                  setMenuGeralAberto(false); 
+                }}
+                style={{ cursor: 'pointer' }}
+                className="py-1 text-secondary small-hover"
+              >
+                {/* Se for admin exibe 'Modulos', senão exibe 'Atendimento' */}
+                {usuarioLogado?.perfil === 'admin' ? 'Modulos' : 'Atendimento'}
+              </li>
+            </ul>
+          </div>
 
-
-          {/* 📊 SEÇÃO DE IDENTIFICAÇÃO E LOGOFF DENTRO DO SEU MenuHamburguer.tsx */}
+          {/* SEÇÃO DE IDENTIFICAÇÃO E LOGOFF DENTRO DO SEU MenuHamburguer.tsx */}
           <div className="d-flex align-items-center justify-content-between border-top pt-3 mt-2 gap-2">
             <span className="text-secondary small fw-semibold text-truncate" style={{ maxWidth: '140px', fontSize: '0.75rem' }}>
-              👤 {usuario?.nome || "Operador"}
+              👤 {usuarioLogado?.nome || "Operador"}
             </span>
           
             <button 
@@ -101,7 +100,7 @@ export const MenuHamburguer: React.FC<IMenuHumProps> = ({
                 localStorage.clear();
                 sessionStorage.clear();
           
-                // 3. 🚀 A FORÇA BRUTA: Destrói toda a memória RAM e força o navegador a carregar a raiz do zero.
+                // 3. A FORÇA BRUTA: Destrói toda a memória RAM e força o navegador a carregar a raiz do zero.
                 // Como limpamos o localStorage acima, o App.tsx vai acordar sem token e vai montar a TelaLogin na hora!
                 window.location.href = '/'; 
               }}
