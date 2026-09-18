@@ -14,6 +14,7 @@ export class transacaoService {
 
     // 🟢 Criamos variáveis de escopo no topo para que o RabbitMQ consiga lê-las fora do bloco IF
     let idFinalGuardado = 0; 
+    let status ='';
 
     try {
       // 1. Inicia a transação centralizada global (SQLite)
@@ -101,11 +102,13 @@ export class transacaoService {
             statusFinal = 'Não processada erro - Saldo Insuficiente Total';
           }
         }
+
+        status = statusFinal;
       
         // 4. EXECUÇÃO DOS DÉBITOS NO BANCO
         if (cobrouComSucesso) {
           if (valorDebitadoDoContrato > 0) {
-            await transacaoRepo.debitarSaldoContrato(contratoId, valorDebitadoDoContrato);
+            await transacaoRepo.debitarSaldoContrato(contratoId, valorDebitadoDoContrato);           
           }
           if (valorDebitadoDoVeiculo > 0) {
             await transacaoRepo.debitarSaldoVeiculo(contratoId, valorDebitadoDoVeiculo, placa);
@@ -124,11 +127,32 @@ export class transacaoService {
             praca: js.pracaPedagio ? js.pracaPedagio : `REEMBOLSO - ${js.pracaPedagio}`, 
             documento: js.documentoEmbarcador, 
             recargaVPR: js.recargaValePedagioId, 
-            status: js.statusViagemTipo,
+            statusFinal,
             data: js.dataRegistro
         });
       
         idFinalGuardado = idPassagemSucesso; // Alimenta o escopo global
+
+        if (cobrouComSucesso) {
+          if (valorDebitadoDoContrato > 0) {
+          await transacaoRepo.inserirRegistroLancamentoContabilConta({
+            contaContratoId: registroSaldo.id, 
+            valorCobradoPedagio: valorDebitadoDoContrato,
+            trasacaoId: idFinalGuardado,
+            transacaoTipo: js.trnsacaoContratoTipo || null,
+            data: js.dataRegistro       
+            });  
+
+          }
+          if (valorDebitadoDoVeiculo > 0) {
+            await transacaoRepo.inserirRegistroLancamentoContabilVeiculo({
+            registroSaldoVeiculo, 
+            valorCobradoPedagio: valorDebitadoDoContrato,
+            trasacaoId: idFinalGuardado,
+            data: js.dataRegistro       
+            });  
+          }
+        }
 
         if (cobrouComSucesso) {
           await transacaoRepo.inserirRelatorioPassagem({
@@ -173,7 +197,7 @@ export class transacaoService {
       });
 
       // --- FASE EXTERNA: ENVIO PARA O SEGUNDO WORKER (Faturamento) ---
-      if (rabbitMqPublisherInstance && js.contratoId && js.valorTransacao !== undefined && Number(js.transacaoVeiculoTipo) === 1) {
+      if (rabbitMqPublisherInstance && js.contratoId && js.valorTransacao !== undefined && Number(js.transacaoVeiculoTipo) === 1 && status !== 'Não processada erro - Saldo Insuficiente Total') {
         
         const filaFaturamento = 'reports.v1.trigger.fila-faturamento-cliente';
         const EXCHANGE = 'reports.exchange';

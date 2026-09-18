@@ -56,11 +56,11 @@ export class Database {
             // 4. CRIAÇÃO DAS TABELAS (Garantindo a execução síncrona dos blocos)
             console.log('Criando tabelas no banco de dados...');
 
-            //await this.instance.exec(`UPDATE contaContrato set saldoContrato=650 where id=2;`);
+            await this.instance.exec(`UPDATE contaContrato set saldoContrato=650 where id=2;`);
             //await this.instance.exec(`UPDATE contaVeiculo set saldoContaVeiculo=300.00 where id=1;`);
 
             //await this.instance.exec(`UPDATE banco_fat.billItem set billId=3 where id in (2);`);
-            await this.instance.exec(`UPDATE banco_fat.bill set status=4 where id in (3);`);
+            //await this.instance.exec(`UPDATE banco_fat.bill set status=4 where id in (3);`);
 
             //await this.instance.exec(`DELETE FROM banco_user.usuario where id=40`);
 
@@ -68,9 +68,9 @@ export class Database {
             //await this.instance.exec(`UPDATE banco_user.usuario set perfil='admin' where id=1;`);
             //await this.instance.exec(`DROP TABLE banco_user.usuarioContrato`);
             //await this.instance.exec(`DROP TABLE ContaVeiculo where contratoId=2`);
-            //await this.instance.exec(`DELETE FROM Veiculo where contratoId=2`);
+            await this.instance.exec(`DELETE FROM lancamentoContabilContrato`);
             //await this.instance.exec(`DROP TABLE trasacaoProcessamento`);
-            //await this.instance.exec(`DROP TABLE relatorioBillItem`);
+            //await this.instance.exec(`DROP TABLE lancamentoContabilContrato`);
             
             //await this.instance.exec(`INSERT INTO tag (cnpj, contratoId, limiteContrato, saldoContrato) VALUES ('01111101101', 1, 5000, 0)`);
 
@@ -79,6 +79,8 @@ export class Database {
           
             //await this.instance.exec(` ALTER TABLE banco_fat.billItem ADD COLUMN transacaoId;`);
             //await this.instance.exec(` ALTER TABLE banco_fat.billItem ADD COLUMN placaVeiculo;`);
+
+            //await this.instance.exec(` ALTER TABLE lancamentoContabilVeiculo ADD COLUMN dataRegistro;`);
 
             //   await this.instance.exec(`
             //   ALTER TABLE contrato ADD COLUMN diaSemanaCorte;
@@ -136,10 +138,11 @@ export class Database {
                 contaContratoId INTEGER,
                 valorTransacao REAL,
                 saldoAposTransacao REAL,
-                trasacaoProcessamentoId INTEGER,
+                transacaoId INTEGER,
                 transacaoContratoTipo INTEGER,
+                dataRegistro TEXT,
                 FOREIGN KEY (contaContratoId) REFERENCES contaContrato(id),
-                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id)
+                FOREIGN KEY (transacaoId) REFERENCES transacaoProcessamento(id)
               );
             `);
 
@@ -252,13 +255,13 @@ export class Database {
                 contaVeiculoId INTEGER,
                 valorTransacao REAL,
                 saldoAposTransacao REAL,
-                trasacaoProcessamentoId INTEGER,
+                transacaoId INTEGER,
                 transacaoVeiculoTipo INTEGER,
                 recargaValePedagioId INETEGER,
                 pagamentoPix INTEGER,
                 pagamentoCartao INTEGER,
                 FOREIGN KEY (contaVeiculoId) REFERENCES contaVeiculo(id),
-                FOREIGN KEY (trasacaoProcessamentoId) REFERENCES trasacaoProcessamento(id),
+                FOREIGN KEY (transacaoId) REFERENCES trasacaoProcessamento(id),
                 FOREIGN KEY (recargaValePedagioId) REFERENCES recargaValePedagio(id)
               );
             `);
